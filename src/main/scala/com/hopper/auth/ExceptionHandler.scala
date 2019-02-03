@@ -1,8 +1,7 @@
-package error
+package com.hopper.auth
 
-import com.twitter.finagle.SimpleFilter
+import com.twitter.finagle.{Service, SimpleFilter}
 import com.twitter.finagle.http.{Request, Response}
-import com.twitter.finagle.Service
 import com.twitter.util.Future
 
 /**

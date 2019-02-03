@@ -1,4 +1,4 @@
-package auth
+package com.hopper.auth
 
 import com.twitter.finagle.SimpleFilter
 import com.twitter.finagle.http.{Request, Response}

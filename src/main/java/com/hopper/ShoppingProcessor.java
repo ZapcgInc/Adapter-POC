@@ -1,3 +1,5 @@
+package com.hopper;
+
 import com.twitter.finagle.http.Request;
 import com.twitter.finagle.http.Response;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
