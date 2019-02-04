@@ -8,5 +8,5 @@ public class GlobalConstants
     public static final String LANGUAGE_CODE_KEY  = "language";
     public static final String COUNTRY_CODE_KEY   = "country_code";
     public static final String OCCUPANCY_KEY      = "occupancy";
-
+    public static final String AUTH_KEY           = "Authorization";
 }

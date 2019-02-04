@@ -12,17 +12,18 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AvailabilityRequest
 {
+    // TODO : what is siteId ?
     @XmlAttribute(name = "siteid")
-    private String siteId;
+    private String siteId = "123456";
 
     @XmlAttribute(name = "apiKey")
     private String apiKey;
 
     @XmlAttribute(name = "xmlns")
-    private String xmlns;
+    private String xmlns = "http://xml.agoda.com";
 
     @XmlAttribute(name = "xmlns:xsi")
-    private String xmlnsXsi;
+    private String xmlnsXsi = "http://www.w3.org/2001/XMLSchema-instance";
 
     @XmlElement(name = "Type")
     private Integer type;
