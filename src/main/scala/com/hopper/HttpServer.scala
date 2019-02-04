@@ -1,35 +1,36 @@
-package com.hopper.auth
+package com.hopper
 
 import java.net.InetSocketAddress
 
+import com.hopper.auth.AuthHandler
 import com.twitter.finagle.Service
+import com.hopper.error.ExceptionHandler
 import com.twitter.finagle.builder.ServerBuilder
 import com.twitter.finagle.http.service.RoutingService
-import com.twitter.finagle.http.{Http, Method, Request, Response, RichHttp}
+import com.twitter.finagle.http._
+import com.twitter.finagle.http.path._
+import com.hopper.request.AvailabilityRequestHandler
+import com.twitter.finagle.http.service.NotFoundService
 
 object HttpServer
 {
-    val routes: Service[Request, Response] = RoutingService.byMethodAndPath
+    val router = RoutingService.byPathObject[Request]
     {
-        case (Method.Get, "/properties/availability") =>
-        {
-            {
-                new ShoppingRequestHandler
-            }
-        }
+        case Root / "properties" / "availability"/ propertyID => new AvailabilityRequestHandler(propertyID);
+        case _ => NotFoundService
     }
 
     val handleExceptions = new ExceptionHandler
     val authorize = new AuthHandler
     val service: Service[Request, Response] = handleExceptions
       .andThen(authorize)
-      .andThen(routes);
+      .andThen(router);
 
     def start() = ServerBuilder()
       .codec(new RichHttp[Request](Http()))
-      .name("HttpServer")
+      .name("AgodaAdapter")
       .bindTo(new InetSocketAddress(7001))
-      .build(handleExceptions.andThen(authorize).andThen(routes))
+      .build(service)
 
     def main(args: Array[String])
     {
