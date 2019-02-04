@@ -27,24 +27,21 @@ public class AvailabilityProcessor
 {
     private static final String END_POINT = "http://sandbox-affiliateapi.agoda.com/xmlpartner/xmlservice/search_lrv3";
 
-    public static Response process(final Request request, final String propertyID) throws Exception
+    public static Response process(final Request request) throws Exception
     {
         final Response response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.OK));
         response.setContentTypeJson();
-        response.setContentString(_getResponseJSON(propertyID, request));
+        response.setContentString(_getResponseJSON(request));
         return response;
     }
 
-    private static String _getResponseJSON(final String propertyID, final Request request) throws Exception
+    private static String _getResponseJSON(final Request request) throws Exception
     {
-        final AvailabilityRequest availabilityRequest = _createRequest(propertyID, request);
-        _postRequest(availabilityRequest);
-
-        final JSONObject jsonObject = new JSONObject(new Map1<String, Object>("ID", propertyID));
-        return jsonObject.toString();
+        final AvailabilityRequest availabilityRequest = _createRequest(request);
+        return _postRequest(availabilityRequest).toString();
     }
 
-    private static void _postRequest(final AvailabilityRequest availabilityRequest) throws Exception
+    private static JSONObject _postRequest(final AvailabilityRequest availabilityRequest) throws Exception
     {
         final URL url = new URL(END_POINT);
         JAXB.marshal(availabilityRequest, System.out);
@@ -64,9 +61,11 @@ public class AvailabilityProcessor
 
         System.out.println(result);
 
+        final JSONObject jsonObject = new JSONObject(new Map1<String, Object>("ID", availabilityRequest.getPropertyIds()));
+        return jsonObject;
     }
 
-    private static AvailabilityRequest _createRequest(final String propertyID, final Request request)
+    private static AvailabilityRequest _createRequest(final Request request)
     {
         final AvailabilityRequest availabilityRequest = new AvailabilityRequest();
 
@@ -111,12 +110,13 @@ public class AvailabilityProcessor
             }
         }
 
-        request.getParams()
+        final String propertyIds = request.getParams()
                 .stream()
                 .filter(e -> e.getKey().equals("property_id"))
                 .map(e -> (String) e.getValue())
-                .forEach(availabilityRequest::setPropertyIds);
+                .collect(Collectors.joining(","));
 
+        availabilityRequest.setPropertyIds(propertyIds);
         return availabilityRequest;
     }
 

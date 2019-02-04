@@ -18,7 +18,7 @@ object HttpServer
 
     val router = RoutingService.byPathObject[Request]
     {
-        case Root / "properties" / "availability"/ propertyID => new AvailabilityRequestHandler(propertyID);
+        case Root / "properties" / "availability" => new AvailabilityRequestHandler;
         case _ => NotFoundService
     }
 

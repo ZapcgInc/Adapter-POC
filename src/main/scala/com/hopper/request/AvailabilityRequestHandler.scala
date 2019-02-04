@@ -5,11 +5,11 @@ import com.twitter.finagle.http.{Request, Response}
 import com.twitter.util.Future
 import com.hopper.AvailabilityProcessor
 
-class AvailabilityRequestHandler(propertyID: String) extends Service[Request, Response]
+class AvailabilityRequestHandler extends Service[Request, Response]
 {
     override def apply(request: Request): Future[Response] =
     {
 
-        Future.value(AvailabilityProcessor.process(request, propertyID))
+        Future.value(AvailabilityProcessor.process(request))
     }
 }
