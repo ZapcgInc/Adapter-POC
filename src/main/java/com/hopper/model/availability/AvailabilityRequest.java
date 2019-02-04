@@ -1,12 +1,21 @@
 package com.hopper.model.availability;
 
+import com.google.common.base.Preconditions;
+import com.hopper.constants.GlobalConstants;
+import com.twitter.finagle.http.Request;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @XmlRootElement(name = "AvailabilityRequestV2")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -101,9 +110,9 @@ public class AvailabilityRequest
         return type;
     }
 
-    public void setType(int type)
+    public void setType(final RequestType type)
     {
-        this.type = type;
+        this.type = type.getID();
     }
 
     public String getPropertyIds()
@@ -111,9 +120,9 @@ public class AvailabilityRequest
         return propertyIds;
     }
 
-    public void setPropertyIds(String propertyIds)
+    public void setPropertyIds(List<String> propertyIds)
     {
-        this.propertyIds = propertyIds;
+        this.propertyIds = String.join(",", propertyIds);
     }
 
     public String getCheckInDate()
@@ -194,5 +203,82 @@ public class AvailabilityRequest
     public void setChildrenAges(List<Integer> childrenAges)
     {
         this.childrenAges = childrenAges;
+    }
+
+    public static AvailabilityRequest create(final Request request)
+    {
+        final AvailabilityRequest availabilityRequest = new AvailabilityRequest();
+
+        for (Map.Entry header : request.getHeaders())
+        {
+            final String key = (String) header.getKey();
+            final String value = (String) header.getValue();
+
+            switch (key)
+            {
+            case GlobalConstants.CHECKIN_PARAM_KEY:
+            {
+                availabilityRequest.setCheckInDate(value);
+                break;
+            }
+
+            case GlobalConstants.CHECKOUT_PARAM_KEY:
+            {
+                availabilityRequest.setCheckOutDate(value);
+                break;
+            }
+            case GlobalConstants.CURRENCY_CODE_KEY:
+            {
+                availabilityRequest.setCurrency(value);
+                break;
+            }
+            case GlobalConstants.LANGUAGE_CODE_KEY:
+            {
+                availabilityRequest.setLanguage(value);
+                break;
+            }
+            case GlobalConstants.OCCUPANCY_KEY:
+            {
+                _populateOccupancy(value, availabilityRequest);
+                break;
+            }
+            case GlobalConstants.AUTH_KEY:
+            {
+                availabilityRequest.setApiKey(value);
+                break;
+            }
+            }
+        }
+
+        final List<String> propertyIds = request.getParams()
+                .stream()
+                .filter(e -> e.getKey().equals("property_id"))
+                .map(e -> (String) e.getValue())
+                .collect(Collectors.toList());
+
+        Preconditions.checkArgument(CollectionUtils.isNotEmpty(propertyIds), "At least one property ID must be specified.");
+        availabilityRequest.setPropertyIds(propertyIds);
+
+        availabilityRequest.setType(propertyIds.size() == 1 ? RequestType.HotelSearch : RequestType.HotelListSearch);
+        return availabilityRequest;
+    }
+
+    private static void _populateOccupancy(final String reqOccupancy, final AvailabilityRequest availabilityRequest)
+    {
+        if (StringUtils.isEmpty(reqOccupancy))
+        {
+            return;
+        }
+        final String[] split = reqOccupancy.split("-");
+
+        availabilityRequest.setAdultsCount(Integer.parseInt(split[0]));
+        if (split.length == 2)
+        {
+            availabilityRequest.setChildrenAges(
+                    Arrays.stream(split[1].split(","))
+                            .map(Integer::parseInt)
+                            .collect(Collectors.toList())
+            );
+        }
     }
 }

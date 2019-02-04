@@ -5,17 +5,14 @@ import java.net.InetSocketAddress
 import com.hopper.auth.AuthHandler
 import com.twitter.finagle.Service
 import com.twitter.finagle.builder.ServerBuilder
-import com.twitter.finagle.http.service.RoutingService
 import com.twitter.finagle.http._
 import com.twitter.finagle.http.path._
-import com.twitter.finagle.http.service.NotFoundService
+import com.twitter.finagle.http.service._
 import com.hopper.auth.AvailabilityRequestHandler
+import com.hopper.auth.ExceptionHandler
 
 object HttpServer
 {
-
-    import com.hopper.auth.ExceptionHandler
-
     val router = RoutingService.byPathObject[Request]
     {
         case Root / "properties" / "availability" => new AvailabilityRequestHandler;
