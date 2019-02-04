@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static scala.collection.immutable.Map.Map1;
@@ -33,7 +34,6 @@ public class AvailabilityProcessor
         response.setContentString(_getResponseJSON(propertyID, request));
         return response;
     }
-
 
     private static String _getResponseJSON(final String propertyID, final Request request) throws Exception
     {
@@ -65,25 +65,63 @@ public class AvailabilityProcessor
         System.out.println(result);
 
     }
+
     private static AvailabilityRequest _createRequest(final String propertyID, final Request request)
     {
         final AvailabilityRequest availabilityRequest = new AvailabilityRequest();
 
-        availabilityRequest.setCheckInDate(request.getParam(GlobalConstants.CHECKIN_PARAM_KEY));
-        availabilityRequest.setCheckOutDate(request.getParam(GlobalConstants.CHECKOUT_PARAM_KEY));
-        availabilityRequest.setCurrency(request.getParam(GlobalConstants.CURRENCY_CODE_KEY));
-        availabilityRequest.setLanguage(request.getParam(GlobalConstants.LANGUAGE_CODE_KEY));
-        availabilityRequest.setApiKey(request.getParam(GlobalConstants.AUTH_KEY));
+        for (Map.Entry header : request.getHeaders())
+        {
+            final String key = (String) header.getKey();
+            final String value = (String) header.getValue();
 
-        _populateOccupancy(request, availabilityRequest);
-        availabilityRequest.setPropertyIds(propertyID);
+            switch (key)
+            {
+                case GlobalConstants.CHECKIN_PARAM_KEY:
+                {
+                    availabilityRequest.setCheckInDate(value);
+                    break;
+                }
+
+                case GlobalConstants.CHECKOUT_PARAM_KEY:
+                {
+                    availabilityRequest.setCheckOutDate(value);
+                    break;
+                }
+                case GlobalConstants.CURRENCY_CODE_KEY:
+                {
+                    availabilityRequest.setCurrency(value);
+                    break;
+                }
+                case GlobalConstants.LANGUAGE_CODE_KEY:
+                {
+                    availabilityRequest.setLanguage(value);
+                    break;
+                }
+                case GlobalConstants.OCCUPANCY_KEY:
+                {
+                    _populateOccupancy(value, availabilityRequest);
+                    break;
+                }
+                case GlobalConstants.AUTH_KEY:
+                {
+                    availabilityRequest.setApiKey(value);
+                    break;
+                }
+            }
+        }
+
+        request.getParams()
+                .stream()
+                .filter(e -> e.getKey().equals("property_id"))
+                .map(e -> (String) e.getValue())
+                .forEach(availabilityRequest::setPropertyIds);
 
         return availabilityRequest;
     }
 
-    private static void _populateOccupancy(final Request request, final AvailabilityRequest availabilityRequest)
+    private static void _populateOccupancy(final String reqOccupancy, final AvailabilityRequest availabilityRequest)
     {
-        final String reqOccupancy = request.getParam(GlobalConstants.OCCUPANCY_KEY);
         if (StringUtils.isEmpty(reqOccupancy))
         {
             return;
@@ -94,9 +132,9 @@ public class AvailabilityProcessor
         if (split.length == 2)
         {
             availabilityRequest.setChildrenAges(
-            Arrays.stream(split[1].split(","))
-                    .map(Integer::parseInt)
-                    .collect(Collectors.toList())
+                    Arrays.stream(split[1].split(","))
+                            .map(Integer::parseInt)
+                            .collect(Collectors.toList())
             );
         }
     }

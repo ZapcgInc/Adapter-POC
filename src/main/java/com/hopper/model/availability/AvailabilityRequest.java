@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
 import java.util.List;
 
 @XmlRootElement(name = "AvailabilityRequestV2")
@@ -29,7 +30,7 @@ public class AvailabilityRequest
     private Integer type;
 
     @XmlElement(name = "Id")
-    private String propertyIds;
+    private List<String> propertyIds = new ArrayList<>();
 
     @XmlElement(name = "CheckIn")
     private String checkInDate;
@@ -106,14 +107,14 @@ public class AvailabilityRequest
         this.type = type;
     }
 
-    public String getPropertyIds()
+    public List<String> getPropertyIds()
     {
         return propertyIds;
     }
 
-    public void setPropertyIds(String propertyIds)
+    public void setPropertyIds(String propertyId)
     {
-        this.propertyIds = propertyIds;
+        this.propertyIds.add(propertyId);
     }
 
     public String getCheckInDate()
