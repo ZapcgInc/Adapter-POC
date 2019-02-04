@@ -15,6 +15,7 @@ import javax.xml.bind.JAXB;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -46,10 +47,17 @@ public class AvailabilityProcessor
     private static void _postRequest(final AvailabilityRequest availabilityRequest) throws Exception
     {
         final URL url = new URL(END_POINT);
+        JAXB.marshal(availabilityRequest, System.out);
         JAXB.marshal(availabilityRequest, url);
 
-        final InputStream inputStream = url.openStream();
-        String result = new BufferedReader(new InputStreamReader(inputStream))
+        final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
+
+        final int responseCode = connection.getResponseCode();
+        final InputStream inputStream = responseCode == 200 ? connection.getInputStream() : connection.getErrorStream();
+        final InputStreamReader reader = new InputStreamReader(inputStream);
+        String result = new BufferedReader(reader)
                 .lines()
                 .parallel()
                 .collect(Collectors.joining("\n"));
