@@ -18,4 +18,6 @@ public class GlobalConstants
     public static final String AUTH_KEY           = "Authorization";
     public static final String SANDBOX_API_HOST   = "http://sandbox-affiliateapi.agoda.com";
     public static final String AVAIL_END_POINT    = "xmlpartner/xmlservice/search_lrv3";
+    public static final String ACCEPT_ENCODING = "Accept-Encoding";
+    public static final String ACCEPT_FORMAT = "application/gzip";
 }

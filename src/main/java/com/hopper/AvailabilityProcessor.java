@@ -41,14 +41,14 @@ public class AvailabilityProcessor
     {
         final AvailabilityRequest availabilityRequest = AvailabilityRequest.create(request);
         final URL url = new URL(END_POINT);
-
+        System.out.println("Availability Request: "+availabilityRequest);
         JAXB.marshal(availabilityRequest, System.out); // Debug
         JAXB.marshal(availabilityRequest, url);
-
         final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod(GlobalConstants.HTTP_POST);
         connection.setRequestProperty(GlobalConstants.CONTENT_TYPE, GlobalConstants.CONTENT_FORMAT);
-
+        connection.setRequestProperty(GlobalConstants.AUTH_KEY, "1812488:6fae573e-b261-4c02-97b4-3dd20d1e74b2");
+        connection.setRequestProperty(GlobalConstants.ACCEPT_ENCODING,GlobalConstants.ACCEPT_FORMAT);
         return _parseAndGenerateRapidResponse(connection);
     }
 
@@ -60,6 +60,8 @@ public class AvailabilityProcessor
         final AvailabilityResponse response = JAXB.unmarshal(inputStream, AvailabilityResponse.class);
 
         System.out.println("Status : " + response.getStatus()); // DEBUG
+      //  String responseBody = connection.getContent().toString();
+      //  System.out.println("Response Body :" + responseBody);
 
         // TODO: parse and convert to RAPID Response.
         // Temporary stub.

@@ -26,7 +26,7 @@ public class AvailabilityRequest
     private String siteId = "123456";
 
     @XmlAttribute(name = "apiKey")
-    private String apiKey;
+    private String apiKey = "6fae573e-b261-4c02-97b4-3dd20d1e74b2";
 
     @XmlAttribute(name = "xmlns")
     private String xmlns = "http://xml.agoda.com";
@@ -209,6 +209,36 @@ public class AvailabilityRequest
     {
         final AvailabilityRequest availabilityRequest = new AvailabilityRequest();
 
+        for(Map.Entry param: request.getParams())
+        {
+            final String key = (String) param.getKey();
+            final String value = (String) param.getValue();
+            switch (key) {
+                case GlobalConstants.CHECKIN_PARAM_KEY: {
+                    availabilityRequest.setCheckInDate(value);
+                    break;
+                }
+
+                case GlobalConstants.CHECKOUT_PARAM_KEY: {
+                    availabilityRequest.setCheckOutDate(value);
+                    break;
+                }
+                case GlobalConstants.CURRENCY_CODE_KEY: {
+                    availabilityRequest.setCurrency(value);
+                    break;
+                }
+                case GlobalConstants.LANGUAGE_CODE_KEY: {
+                    availabilityRequest.setLanguage(value);
+                    break;
+                }
+                case GlobalConstants.OCCUPANCY_KEY: {
+                    _populateOccupancy(value, availabilityRequest);
+                    break;
+                }
+            }
+
+        }
+
         for (Map.Entry header : request.getHeaders())
         {
             final String key = (String) header.getKey();
@@ -216,32 +246,6 @@ public class AvailabilityRequest
 
             switch (key)
             {
-            case GlobalConstants.CHECKIN_PARAM_KEY:
-            {
-                availabilityRequest.setCheckInDate(value);
-                break;
-            }
-
-            case GlobalConstants.CHECKOUT_PARAM_KEY:
-            {
-                availabilityRequest.setCheckOutDate(value);
-                break;
-            }
-            case GlobalConstants.CURRENCY_CODE_KEY:
-            {
-                availabilityRequest.setCurrency(value);
-                break;
-            }
-            case GlobalConstants.LANGUAGE_CODE_KEY:
-            {
-                availabilityRequest.setLanguage(value);
-                break;
-            }
-            case GlobalConstants.OCCUPANCY_KEY:
-            {
-                _populateOccupancy(value, availabilityRequest);
-                break;
-            }
             case GlobalConstants.AUTH_KEY:
             {
                 availabilityRequest.setApiKey(value);
@@ -259,6 +263,7 @@ public class AvailabilityRequest
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(propertyIds), "At least one property ID must be specified.");
         availabilityRequest.setPropertyIds(propertyIds);
 
+
         availabilityRequest.setType(propertyIds.size() == 1 ? RequestType.HotelSearch : RequestType.HotelListSearch);
         return availabilityRequest;
     }
@@ -270,6 +275,8 @@ public class AvailabilityRequest
             return;
         }
         final String[] split = reqOccupancy.split("-");
+        final String[] rooms = reqOccupancy.split("|");
+        availabilityRequest.setRoomCount(rooms.length);
 
         availabilityRequest.setAdultsCount(Integer.parseInt(split[0]));
         if (split.length == 2)
@@ -280,5 +287,27 @@ public class AvailabilityRequest
                             .collect(Collectors.toList())
             );
         }
+        availabilityRequest.setChildrenCount(availabilityRequest.getChildrenAges()==null ?
+                0 : availabilityRequest.getChildrenAges().size() );
+    }
+
+    @Override
+    public String toString() {
+        return "AvailabilityRequest{" +
+                "siteId='" + siteId + '\'' +
+                ", apiKey='" + apiKey + '\'' +
+                ", xmlns='" + xmlns + '\'' +
+                ", xmlnsXsi='" + xmlnsXsi + '\'' +
+                ", type=" + type +
+                ", propertyIds='" + propertyIds + '\'' +
+                ", checkInDate='" + checkInDate + '\'' +
+                ", checkOutDate='" + checkOutDate + '\'' +
+                ", roomCount=" + roomCount +
+                ", currency='" + currency + '\'' +
+                ", language='" + language + '\'' +
+                ", adultsCount=" + adultsCount +
+                ", childrenCount=" + childrenCount +
+                ", childrenAges=" + childrenAges +
+                '}';
     }
 }
