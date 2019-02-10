@@ -8,13 +8,20 @@ import com.twitter.finagle.http.Response;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
+import scala.collection.immutable.Map;
 import scala.util.parsing.json.JSONObject;
+import sun.net.www.http.HttpCaptureInputStream;
 
 import javax.xml.bind.JAXB;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
-import java.io.InputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static scala.collection.immutable.Map.Map1;
 
@@ -42,30 +49,52 @@ public class AvailabilityProcessor
         final AvailabilityRequest availabilityRequest = AvailabilityRequest.create(request);
         final URL url = new URL(END_POINT);
         System.out.println("Availability Request: "+availabilityRequest);
+
+        StringWriter  sw=new StringWriter();
+        String  result;
+        try {
+            JAXBContext carContext = JAXBContext.newInstance(AvailabilityRequest.class);
+            Marshaller carMarshaller = carContext.createMarshaller();
+            carMarshaller.marshal(availabilityRequest, sw);
+         result = sw.toString();
+            System.out.println(result);
+        } catch (JAXBException e) {
+            throw new RuntimeException(e);
+        }
+
         JAXB.marshal(availabilityRequest, System.out); // Debug
         JAXB.marshal(availabilityRequest, url);
         final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod(GlobalConstants.HTTP_POST);
-        connection.setRequestProperty(GlobalConstants.CONTENT_TYPE, GlobalConstants.CONTENT_FORMAT);
+        System.out.println("Properties:"+connection.getRequestProperties());
         connection.setRequestProperty(GlobalConstants.AUTH_KEY, "1812488:6fae573e-b261-4c02-97b4-3dd20d1e74b2");
-        connection.setRequestProperty(GlobalConstants.ACCEPT_ENCODING,GlobalConstants.ACCEPT_FORMAT);
+        connection.setRequestProperty(GlobalConstants.CONTENT_TYPE, "text/xml; charset=utf-8");
+        connection.setDoOutput(true);
+        connection.setDoInput(true);
+        OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
+        wr.write(result);
+        wr.flush();
         return _parseAndGenerateRapidResponse(connection);
     }
 
     private static JSONObject _parseAndGenerateRapidResponse(final HttpURLConnection connection) throws Exception
     {
+
         final int responseCode = connection.getResponseCode();
         System.out.println("API Response code" + responseCode);
-        final InputStream inputStream = responseCode == 200 ? connection.getInputStream() : connection.getErrorStream();
-        final AvailabilityResponse response = JAXB.unmarshal(inputStream, AvailabilityResponse.class);
-
-        System.out.println("Status : " + response.getStatus()); // DEBUG
-      //  String responseBody = connection.getContent().toString();
-      //  System.out.println("Response Body :" + responseBody);
+        InputStream inputStream = responseCode == 200 ? connection.getInputStream() : connection.getErrorStream();
+        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+        StringBuilder data = new StringBuilder();
+        String s = "";
+        while((s = br.readLine()) != null)
+            data.append(s);
+        String content = data.toString();
+      //  System.out.println("content"+content);
+        Map1<String,Object> m=new Map1<>("content",content);
 
         // TODO: parse and convert to RAPID Response.
         // Temporary stub.
-        final JSONObject jsonObject = new JSONObject(new Map1<String, Object>("Response Status", responseCode));
+        final JSONObject jsonObject = new JSONObject(m);
         return jsonObject;
     }
 

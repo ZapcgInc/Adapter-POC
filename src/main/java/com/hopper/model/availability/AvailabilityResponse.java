@@ -12,6 +12,17 @@ public class AvailabilityResponse
     @XmlAttribute(name = "status")
     private int status;
 
+    @XmlAttribute(name = "")
+    private String content;
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
     public int getStatus()
     {
         return status;
@@ -21,4 +32,6 @@ public class AvailabilityResponse
     {
         this.status = status;
     }
+
+
 }

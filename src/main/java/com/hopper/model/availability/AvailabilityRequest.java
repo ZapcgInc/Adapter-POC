@@ -23,9 +23,9 @@ public class AvailabilityRequest
 {
     // TODO : what is siteId ?
     @XmlAttribute(name = "siteid")
-    private String siteId = "123456";
+    private String siteId = "1812488";
 
-    @XmlAttribute(name = "apiKey")
+    @XmlAttribute(name = "apikey")
     private String apiKey = "6fae573e-b261-4c02-97b4-3dd20d1e74b2";
 
     @XmlAttribute(name = "xmlns")
@@ -49,12 +49,6 @@ public class AvailabilityRequest
     @XmlElement(name = "Rooms")
     private Integer roomCount;
 
-    @XmlElement(name = "Currency")
-    private String currency;
-
-    @XmlElement(name = "Language")
-    private String language;
-
     @XmlElement(name = "Adults")
     private Integer adultsCount;
 
@@ -64,6 +58,12 @@ public class AvailabilityRequest
     @XmlElementWrapper(name="ChildrenAges")
     @XmlElement(name="age")
     private List<Integer> childrenAges;
+
+    @XmlElement(name = "Language")
+    private String language;
+
+    @XmlElement(name = "Currency")
+    private String currency;
 
     public String getSiteId()
     {
@@ -264,7 +264,9 @@ public class AvailabilityRequest
         availabilityRequest.setPropertyIds(propertyIds);
 
 
-        availabilityRequest.setType(propertyIds.size() == 1 ? RequestType.HotelSearch : RequestType.HotelListSearch);
+       availabilityRequest.setType(propertyIds.size() == 1 ? RequestType.HotelSearch : RequestType.HotelListSearch);
+      //  availabilityRequest.setType( RequestType.HotelListSearch);
+
         return availabilityRequest;
     }
 
