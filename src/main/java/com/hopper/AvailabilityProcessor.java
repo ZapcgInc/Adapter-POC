@@ -44,7 +44,7 @@ public class AvailabilityProcessor
 
     private static String _getResponseJSON(final Request request) throws Exception
     {
-        return _postRequest(request).toString();
+        return _postRequest(request);
     }
 
     private static String _postRequest(final Request request) throws Exception
@@ -202,7 +202,6 @@ public class AvailabilityProcessor
                     nightPriceList.add(priceList);
                     n--;
                 }
-              //  System.out.println("NgthlyLength"+nightPriceList.size());
                 roomPrice.setNightlyPrice(nightPriceList);
                 Map<String,RoomPrice> occupancyMap = new HashMap<>();
                 List<String> occupancyList = availabilityRequest.getOccupancy();
@@ -225,7 +224,7 @@ public class AvailabilityProcessor
 
         }
         ShoppingResponse shoppingResponse = new ShoppingResponse(propertyList.toArray(new Property[propertyList.size()]));
-//        shoppingResponse.setM_properties(propertyList);
+
 
         System.out.println(shoppingResponse);
         shoppingResponse.getProperties();
@@ -233,10 +232,7 @@ public class AvailabilityProcessor
         ObjectMapper objectMapper = new ObjectMapper();
 
         String responseFinal = objectMapper.writeValueAsString(shoppingResponse.getProperties());
-        // TODO: parse and convert to RAPID Response.
-        // Temporary stub.
-      //  final JSONObject jsonObject = new JSONObject(m);
-      //  return jsonObject.toString();
+
         return responseFinal;
     }
 }
