@@ -11,7 +11,7 @@ import com.twitter.finagle.http.service._
 import com.hopper.auth.AvailabilityRequestHandler
 import com.hopper.auth.ExceptionHandler
 
-object HttpServer
+object HttpServer extends App
 {
     val router = RoutingService.byPathObject[Request]
     {
@@ -31,8 +31,6 @@ object HttpServer
       .bindTo(new InetSocketAddress(7001))
       .build(service)
 
-    def main(args: Array[String])
-    {
         val server = start()
-    }
+
 }

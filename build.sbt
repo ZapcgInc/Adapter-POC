@@ -10,3 +10,6 @@ libraryDependencies ++= Seq(
   "junit" % "junit" % "4.11" % "test",
   "com.fasterxml.jackson.core" % "jackson-databind" % "2.9.7"
 )
+
+enablePlugins(JavaServerAppPackaging)
+
