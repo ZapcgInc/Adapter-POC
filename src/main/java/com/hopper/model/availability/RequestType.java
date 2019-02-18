@@ -17,4 +17,11 @@ public enum RequestType
     {
         return m_typeId;
     }
+
+    @Override
+    public String toString() {
+        return "RequestType{" +
+                "m_typeId=" + m_typeId +
+                '}';
+    }
 }

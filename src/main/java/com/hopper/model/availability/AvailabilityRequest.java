@@ -2,16 +2,12 @@ package com.hopper.model.availability;
 
 import com.google.common.base.Preconditions;
 import com.hopper.constants.GlobalConstants;
+import com.hopper.model.availability.shopping.Room;
 import com.twitter.finagle.http.Request;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +17,6 @@ import java.util.stream.Collectors;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AvailabilityRequest
 {
-    // TODO : what is siteId ?
     @XmlAttribute(name = "siteid")
     private String siteId = "1812488";
 
@@ -55,8 +50,7 @@ public class AvailabilityRequest
     @XmlElement(name = "Children")
     private Integer childrenCount;
 
-    @XmlElementWrapper(name="ChildrenAges")
-    @XmlElement(name="age")
+    @XmlTransient
     private List<Integer> childrenAges;
 
     @XmlElement(name = "Language")
@@ -64,6 +58,9 @@ public class AvailabilityRequest
 
     @XmlElement(name = "Currency")
     private String currency;
+
+    @XmlTransient
+    private List<String> occupancy;
 
     public String getSiteId()
     {
@@ -172,7 +169,7 @@ public class AvailabilityRequest
 
     public void setLanguage(String language)
     {
-        this.language = language;
+        this.language = language.toLowerCase();
     }
 
     public int getAdultsCount()
@@ -203,6 +200,14 @@ public class AvailabilityRequest
     public void setChildrenAges(List<Integer> childrenAges)
     {
         this.childrenAges = childrenAges;
+    }
+
+    public List<String> getOccupancy() {
+        return occupancy;
+    }
+
+    public void setOccupancy(List<String> occupancy) {
+        this.occupancy = occupancy;
     }
 
     public static AvailabilityRequest create(final Request request)
@@ -239,20 +244,20 @@ public class AvailabilityRequest
 
         }
 
-        for (Map.Entry header : request.getHeaders())
-        {
-            final String key = (String) header.getKey();
-            final String value = (String) header.getValue();
-
-            switch (key)
-            {
-            case GlobalConstants.AUTH_KEY:
-            {
-                availabilityRequest.setApiKey(value);
-                break;
-            }
-            }
-        }
+//        for (Map.Entry header : request.getHeaders())
+//        {
+//            final String key = (String) header.getKey();
+//            final String value = (String) header.getValue();
+//
+//            switch (key)
+//            {
+//            case GlobalConstants.AUTH_KEY:
+//            {
+//                availabilityRequest.setApiKey(value);
+//                break;
+//            }
+//            }
+//        }
 
         final List<String> propertyIds = request.getParams()
                 .stream()
@@ -262,10 +267,10 @@ public class AvailabilityRequest
 
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(propertyIds), "At least one property ID must be specified.");
         availabilityRequest.setPropertyIds(propertyIds);
+        System.out.println("PropSize"+propertyIds.size());
 
+        availabilityRequest.setType(propertyIds.size() == 1 ? RequestType.HotelSearch : RequestType.HotelListSearch);
 
-       availabilityRequest.setType(propertyIds.size() == 1 ? RequestType.HotelSearch : RequestType.HotelListSearch);
-      //  availabilityRequest.setType( RequestType.HotelListSearch);
 
         return availabilityRequest;
     }
@@ -276,21 +281,28 @@ public class AvailabilityRequest
         {
             return;
         }
-        final String[] split = reqOccupancy.split("-");
-        final String[] rooms = reqOccupancy.split("|");
-        availabilityRequest.setRoomCount(rooms.length);
+        //final String[] rooms = reqOccupancy.split("\\|");
+        final List<String> roomList = Arrays.stream(reqOccupancy.split("\\|"))
+                .collect(Collectors.toList());
+//        System.out.println("Length"+rooms.length);
+        availabilityRequest.setOccupancy(roomList);
+        availabilityRequest.setRoomCount(roomList.size());
 
-        availabilityRequest.setAdultsCount(Integer.parseInt(split[0]));
-        if (split.length == 2)
-        {
-            availabilityRequest.setChildrenAges(
-                    Arrays.stream(split[1].split(","))
-                            .map(Integer::parseInt)
-                            .collect(Collectors.toList())
-            );
-        }
-        availabilityRequest.setChildrenCount(availabilityRequest.getChildrenAges()==null ?
-                0 : availabilityRequest.getChildrenAges().size() );
+        roomList.forEach(room->{
+            final String[] split = reqOccupancy.split("-");
+            availabilityRequest.setAdultsCount(Integer.parseInt(split[0]));
+            if (split.length == 2)
+            {
+                availabilityRequest.setChildrenAges(
+                        Arrays.stream(split[1].split(","))
+                                .map(Integer::parseInt)
+                                .collect(Collectors.toList())
+                );
+            }
+            availabilityRequest.setChildrenCount(availabilityRequest.getChildrenAges()==null ?
+                    0 : availabilityRequest.getChildrenAges().size() );
+        });
+
     }
 
     @Override
