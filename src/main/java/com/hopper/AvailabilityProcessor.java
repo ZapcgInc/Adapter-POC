@@ -11,7 +11,6 @@ import com.twitter.finagle.http.Response;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
-import org.scalatest.time.Days;
 
 import javax.xml.bind.*;
 import java.io.*;
@@ -35,11 +34,11 @@ public class AvailabilityProcessor
     public static Response process(final Request request) throws Exception
     {
         // TODO : return Rapid HTTP Response code.
-        final Response response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.OK));
-        response.setContentTypeJson();
-        response.setContentString(_getResponseJSON(request));
+//        final Response response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.OK));
+//        response.setContentTypeJson();
+//        response.setContentString(_getResponseJSON(request));
 
-        return response;
+        return null;
     }
 
     private static String _getResponseJSON(final Request request) throws Exception
