@@ -24,6 +24,14 @@ public class PriceWithCurrency
         return request;
     }
 
+    public void setBillable(Price billable) {
+        this.billable = billable;
+    }
+
+    public void setRequest(Price request) {
+        this.request = request;
+    }
+
     @Override
     public String toString() {
         return "PriceWithCurrency{" +

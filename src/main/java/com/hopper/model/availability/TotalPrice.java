@@ -46,6 +46,26 @@ public class TotalPrice
         return minSellingPrice;
     }
 
+    public void setInclusive(PriceWithCurrency inclusive) {
+        this.inclusive = inclusive;
+    }
+
+    public void setExclusive(PriceWithCurrency exclusive) {
+        this.exclusive = exclusive;
+    }
+
+    public void setStrikeThrough(PriceWithCurrency strikeThrough) {
+        this.strikeThrough = strikeThrough;
+    }
+
+    public void setMarketingFee(PriceWithCurrency marketingFee) {
+        this.marketingFee = marketingFee;
+    }
+
+    public void setMinSellingPrice(PriceWithCurrency minSellingPrice) {
+        this.minSellingPrice = minSellingPrice;
+    }
+
     @Override
     public String toString() {
         return "TotalPrice{" +

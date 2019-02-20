@@ -172,18 +172,44 @@ public class AvailabilityProcessor
 
                 Price basePrice = new Price();
                 basePrice.setType("base_rate");
-                basePrice.setValue(Double.parseDouble(room.getRateInfo().getTotalPaymentAmount().getExclusive()));
+                basePrice.setValue(Double.parseDouble(room.getRateInfo().getRate().getExclusive()));
                 basePrice.setCurrency(room.getCurrency());
 
                 Price saleTaxPrice = new Price();
-                saleTaxPrice.setType("sale_tax");
+                saleTaxPrice.setType("sales_tax");
                 saleTaxPrice.setCurrency(room.getCurrency());
-                saleTaxPrice.setValue(Double.parseDouble(room.getRateInfo().getTotalPaymentAmount().getTax()));
+                saleTaxPrice.setValue(Double.parseDouble(room.getRateInfo().getRate().getTax()));
 
                 Price taxAndServiceFee = new Price();
                 taxAndServiceFee.setType("tax_and_service_fee");
                 taxAndServiceFee.setCurrency(room.getCurrency());
-                taxAndServiceFee.setValue(Double.parseDouble(room.getRateInfo().getTotalPaymentAmount().getFees()));
+                taxAndServiceFee.setValue(Double.parseDouble(room.getRateInfo().getRate().getFees()));
+
+                TotalPrice totalPrice = new TotalPrice();
+
+                PriceWithCurrency priceWithCurrencyInclusive = new PriceWithCurrency();
+
+                Price billable = new Price();
+                billable.setValue(Double.parseDouble(room.getRateInfo().getTotalPaymentAmount().getInclusive()));
+                billable.setCurrency(room.getCurrency());
+                priceWithCurrencyInclusive.setBillable(billable);
+
+                Price request = new Price();
+                request.setValue(Double.parseDouble(room.getRateInfo().getTotalPaymentAmount().getInclusive()));
+                request.setCurrency(room.getCurrency());
+                priceWithCurrencyInclusive.setRequest(request);
+                totalPrice.setInclusive(priceWithCurrencyInclusive);
+
+                PriceWithCurrency priceWithCurrencyExclusive = new PriceWithCurrency();
+
+                billable.setValue(Double.parseDouble(room.getRateInfo().getTotalPaymentAmount().getExclusive()));
+                billable.setCurrency(room.getCurrency());
+                priceWithCurrencyExclusive.setBillable(billable);
+
+                request.setValue(Double.parseDouble(room.getRateInfo().getTotalPaymentAmount().getExclusive()));
+                request.setCurrency(room.getCurrency());
+                priceWithCurrencyExclusive.setRequest(request);
+                totalPrice.setExclusive(priceWithCurrencyExclusive);
 
                 List <Price> priceList = new ArrayList<>();
                 priceList.add(basePrice);
@@ -194,7 +220,7 @@ public class AvailabilityProcessor
                 LocalDate checkout = LocalDate.parse(availabilityRequest.getCheckOutDate());
                 long lengthOfStay = 0;
                 lengthOfStay = Duration.between(checkin.atStartOfDay(),checkout.atStartOfDay()).toDays();
-                System.out.println("LOS"+lengthOfStay);
+               // System.out.println("LOS"+lengthOfStay);
 
                 List<List<Price>> nightPriceList  = new ArrayList<>();
                 long n = lengthOfStay;
@@ -203,9 +229,10 @@ public class AvailabilityProcessor
                     n--;
                 }
                 roomPrice.setNightlyPrice(nightPriceList);
+                roomPrice.setTotals(totalPrice);
                 Map<String,RoomPrice> occupancyMap = new HashMap<>();
                 List<String> occupancyList = availabilityRequest.getOccupancy();
-                System.out.println("OCC"+occupancyList);
+               // System.out.println("OCC"+occupancyList);
                 occupancyList.forEach(occupancy->{
                     occupancyMap.put(occupancy,roomPrice);
                 });
