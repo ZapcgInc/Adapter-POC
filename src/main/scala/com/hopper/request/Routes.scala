@@ -13,14 +13,32 @@ import com.twitter.finagle.http.{Request, Response}
 import com.twitter.util.Await
 import io.finch._
 import io.finch.catsEffect._
+import shapeless.HNil
 
 trait Routes {
 
-  def healthcheck: Endpoint[IO, String] = Endpoint.get(
-    "book" :: path[String] ::
-      param("pfoo") ::
-      header("Accept"))  {(id:String, pfoo:String, hfoo:String) =>
-    println(s"header = ${hfoo}, param = ${pfoo}, id=${id}")
+
+  val p = param("checkin") :: param("excesive")
+
+
+  /*
+    curl -v -w "\n" -H "Accept:application/json" -H "Accept-encoding:none" -H "Authorization: xyz" -H "Customer-Ip: 10.0.0.1" \
+       "localhost:9990/properties/availability?checkin=a&checkout=b&currency=dollar&language=english&country_code=091&occupancy=1&sales_channel=good&sales_environment=prod&sort_type=asc"
+   */
+  def propertiesAvailability: Endpoint[IO, String] = Endpoint.get(
+    "properties" :: "availability" ::
+      param("checkin") :: param("checkout") :: param("currency") :: param("language") :: param("country_code") ::
+      param("occupancy") :: paramOption("property_id") :: param("sales_channel") :: param("sales_environment") ::
+      param("sort_type") :: paramOption("filter") :: paramOption("include") :: paramOption("rate_option") ::
+      paramOption("billing_terms") :: paramOption("payment_terms") :: paramOption("partner_point_of_sale") ::
+      header("Accept") :: header("Accept-encoding") :: header("Authorization") :: header("Customer-Ip") ::
+      headerOption("Customer-Session-Id") :: header("User-Agent")
+  ) { (checkin:String, checkout:String, currency:String, language:String, countryCode:String, occupancy:String, propertyId:Option[String],salesChannel:String,
+       salesEnvironment:String, sortType:String, filter:Option[String], include:Option[String], rateOption:Option[String], billingTerms:Option[String],
+       paymentTerms:Option[String], partnerPos:Option[String],accept:String, acceptEncoding:String,authorization:String,customerIp:String,
+       customerSessionId:Option[String],userAgent:String ) =>
+
+
 
     Ok("health check")
   }
@@ -31,7 +49,7 @@ trait Routes {
 
 
   val service: Service[Request, Response] = Bootstrap
-    .serve[Text.Plain](healthcheck)
+    .serve[Text.Plain](propertiesAvailability)
     .serve[Text.Plain](ping)
     .toService
 
