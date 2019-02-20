@@ -8,6 +8,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.xml.bind.annotation.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -15,8 +16,7 @@ import java.util.stream.Collectors;
 
 @XmlRootElement(name = "AvailabilityRequestV2")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class AvailabilityRequest
-{
+public class AvailabilityRequest {
     @XmlAttribute(name = "siteid")
     private String siteId = "1812488";
 
@@ -62,143 +62,115 @@ public class AvailabilityRequest
     @XmlTransient
     private List<String> occupancy;
 
-    public String getSiteId()
-    {
+    public String getSiteId() {
         return siteId;
     }
 
-    public void setSiteId(String siteId)
-    {
+    public void setSiteId(String siteId) {
         this.siteId = siteId;
     }
 
-    public String getApiKey()
-    {
+    public String getApiKey() {
         return apiKey;
     }
 
-    public void setApiKey(String apiKey)
-    {
+    public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }
 
-    public String getXmlns()
-    {
+    public String getXmlns() {
         return xmlns;
     }
 
-    public void setXmlns(String xmlns)
-    {
+    public void setXmlns(String xmlns) {
         this.xmlns = xmlns;
     }
 
-    public String getXmlnsXsi()
-    {
+    public String getXmlnsXsi() {
         return xmlnsXsi;
     }
 
-    public void setXmlnsXsi(String xmlnsXsi)
-    {
+    public void setXmlnsXsi(String xmlnsXsi) {
         this.xmlnsXsi = xmlnsXsi;
     }
 
-    public int getType()
-    {
+    public int getType() {
         return type;
     }
 
-    public void setType(final RequestType type)
-    {
+    public void setType(final RequestType type) {
         this.type = type.getID();
     }
 
-    public String getPropertyIds()
-    {
+    public String getPropertyIds() {
         return propertyIds;
     }
 
-    public void setPropertyIds(List<String> propertyIds)
-    {
+    public void setPropertyIds(List<String> propertyIds) {
         this.propertyIds = String.join(",", propertyIds);
     }
 
-    public String getCheckInDate()
-    {
+    public String getCheckInDate() {
         return checkInDate;
     }
 
-    public void setCheckInDate(String checkInDate)
-    {
+    public void setCheckInDate(String checkInDate) {
         this.checkInDate = checkInDate;
     }
 
-    public String getCheckOutDate()
-    {
+    public String getCheckOutDate() {
         return checkOutDate;
     }
 
-    public void setCheckOutDate(String checkOutDate)
-    {
+    public void setCheckOutDate(String checkOutDate) {
         this.checkOutDate = checkOutDate;
     }
 
-    public int getRoomCount()
-    {
+    public int getRoomCount() {
         return roomCount;
     }
 
-    public void setRoomCount(int roomCount)
-    {
+    public void setRoomCount(int roomCount) {
         this.roomCount = roomCount;
     }
 
-    public String getCurrency()
-    {
+    public String getCurrency() {
         return currency;
     }
 
-    public void setCurrency(String currency)
-    {
+    public void setCurrency(String currency) {
         this.currency = currency;
     }
 
-    public String getLanguage()
-    {
+    public String getLanguage() {
         return language;
     }
 
-    public void setLanguage(String language)
-    {
+    public void setLanguage(String language) {
         this.language = language.toLowerCase();
     }
 
-    public int getAdultsCount()
-    {
+    public int getAdultsCount() {
         return adultsCount;
     }
 
-    public void setAdultsCount(int adultsCount)
-    {
+    public void setAdultsCount(int adultsCount) {
         this.adultsCount = adultsCount;
     }
 
-    public int getChildrenCount()
-    {
+    public int getChildrenCount() {
         return childrenCount;
     }
 
-    public void setChildrenCount(int childrenCount)
-    {
+    public void setChildrenCount(int childrenCount) {
         this.childrenCount = childrenCount;
     }
 
-    public List<Integer> getChildrenAges()
-    {
+    public List<Integer> getChildrenAges() {
         return childrenAges;
     }
 
-    public void setChildrenAges(List<Integer> childrenAges)
-    {
+    public void setChildrenAges(List<Integer> childrenAges) {
         this.childrenAges = childrenAges;
     }
 
@@ -210,12 +182,11 @@ public class AvailabilityRequest
         this.occupancy = occupancy;
     }
 
-    public static AvailabilityRequest create(final Request request)
-    {
+    public static AvailabilityRequest create(final Request request) {
         final AvailabilityRequest availabilityRequest = new AvailabilityRequest();
+        List<String> occupancies = new ArrayList<>();
+        for (Map.Entry param : request.getParams()) {
 
-        for(Map.Entry param: request.getParams())
-        {
             final String key = (String) param.getKey();
             final String value = (String) param.getValue();
             switch (key) {
@@ -237,11 +208,17 @@ public class AvailabilityRequest
                     break;
                 }
                 case GlobalConstants.OCCUPANCY_KEY: {
+                    System.out.println("Value" + value);
+                    occupancies.add(value);
                     _populateOccupancy(value, availabilityRequest);
                     break;
                 }
             }
 
+        }
+        if (CollectionUtils.isNotEmpty(occupancies)) {
+            availabilityRequest.setRoomCount(occupancies.size());
+            availabilityRequest.setOccupancy(occupancies);
         }
 
 //        for (Map.Entry header : request.getHeaders())
@@ -267,43 +244,37 @@ public class AvailabilityRequest
 
         Preconditions.checkArgument(CollectionUtils.isNotEmpty(propertyIds), "At least one property ID must be specified.");
         availabilityRequest.setPropertyIds(propertyIds);
-        System.out.println("PropSize"+propertyIds.size());
+        System.out.println("PropSize" + propertyIds.size());
 
         availabilityRequest.setType(propertyIds.size() == 1 ? RequestType.HotelSearch : RequestType.HotelListSearch);
+
+
 
 
         return availabilityRequest;
     }
 
-    private static void _populateOccupancy(final String reqOccupancy, final AvailabilityRequest availabilityRequest)
-    {
-        if (StringUtils.isEmpty(reqOccupancy))
-        {
+    private static void _populateOccupancy(final String reqOccupancy, final AvailabilityRequest availabilityRequest) {
+        if (StringUtils.isEmpty(reqOccupancy)) {
             return;
         }
-        //final String[] rooms = reqOccupancy.split("\\|");
-        final List<String> roomList = Arrays.stream(reqOccupancy.split("\\|"))
-                .collect(Collectors.toList());
-//        System.out.println("Length"+rooms.length);
-        availabilityRequest.setOccupancy(roomList);
-        availabilityRequest.setRoomCount(roomList.size());
-
-        roomList.forEach(room->{
-            final String[] split = reqOccupancy.split("-");
-            availabilityRequest.setAdultsCount(Integer.parseInt(split[0]));
-            if (split.length == 2)
-            {
-                availabilityRequest.setChildrenAges(
-                        Arrays.stream(split[1].split(","))
-                                .map(Integer::parseInt)
-                                .collect(Collectors.toList())
-                );
-            }
-            availabilityRequest.setChildrenCount(availabilityRequest.getChildrenAges()==null ?
-                    0 : availabilityRequest.getChildrenAges().size() );
-        });
+        final String[] split = reqOccupancy.split("-");
+        System.out.println("Children list: " + Arrays.toString(split));
+        availabilityRequest.setAdultsCount(Integer.parseInt(split[0]));
+        if (split.length == 2) {
+            availabilityRequest.setChildrenAges(
+                    Arrays.stream(split[1].split(","))
+                            .map(Integer::parseInt)
+                            .collect(Collectors.toList())
+            );
+            //        System.out.println("Child age for room"+room+"-"+availabilityRequest.getChildrenAges());
+        }
+        availabilityRequest.setChildrenCount(availabilityRequest.getChildrenAges() == null ?
+                0 : availabilityRequest.getChildrenAges().size());
 
     }
+
+
 
     @Override
     public String toString() {
