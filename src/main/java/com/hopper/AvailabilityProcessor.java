@@ -11,7 +11,6 @@ import com.twitter.finagle.http.Response;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
-import org.scalatest.time.Days;
 
 import javax.xml.bind.*;
 import java.io.*;
@@ -24,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.concurrent.TimeUnit.DAYS;
 import static scala.collection.immutable.Map.Map1;
 
 public class AvailabilityProcessor
@@ -37,7 +35,7 @@ public class AvailabilityProcessor
         // TODO : return Rapid HTTP Response code.
         final Response response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.OK));
         response.setContentTypeJson();
-        response.setContentString(_getResponseJSON(request));
+        response.setContentString("Test");
 
         return response;
     }

@@ -4,81 +4,66 @@ import com.twitter.finagle.http.Request
 import com.hopper.constants.GlobalConstants
 import javax.xml.bind.annotation._
 import org.apache.commons.lang.StringUtils
-
 import scala.collection.JavaConverters._
-
+import scala.collection.JavaConversions._
 
 @XmlRootElement(name = "AvailabilityRequestV2")
 @XmlAccessorType(XmlAccessType.FIELD)
-class AvailabilityRequest(val request: Request)
+class AvailabilityRequestV2
 {
     @XmlAttribute(name = "siteid")
-    private var siteId = "1812488"
+    val siteId:String = "1812488"
 
     @XmlAttribute(name = "apikey")
-    private var apiKey = "6fae573e-b261-4c02-97b4-3dd20d1e74b2"
-
-    @XmlAttribute(name = "xmlns")
-    private var xmlns = "http://xml.agoda.com"
-
-    @XmlAttribute(name = "xmlns:xsi")
-    private var xmlnsXsi = "http://www.w3.org/2001/XMLSchema-instance"
+    val apiKey:String  = "6fae573e-b261-4c02-97b4-3dd20d1e74b2"
 
     @XmlElement(name = "Type")
-    private var requestType = _
+    var requestType:Int  = _
 
     @XmlElement(name = "Id")
-    private var propertyIds = _
+    var propertyIds:String  = _
 
     @XmlElement(name = "CheckIn")
-    private var checkInDate = _
+    var checkInDate:String  = _
 
     @XmlElement(name = "CheckOut")
-    private var checkOutDate = _
+    var checkOutDate:String  = _
 
     @XmlElement(name = "Rooms")
-    private var roomCount = _
+    var roomCount:Int = _
 
     @XmlElement(name = "Adults")
-    private var adultsCount = _
+    var adultsCount:Int = _
 
     @XmlElement(name = "Children")
-    private var childrenCount = _
+    var childrenCount:Int = _
 
     @XmlTransient
-    private var childrenAges = _
+    var childrenAges:List[Int] = _
 
     @XmlElement(name = "Language")
-    private var language = _
+    var language:String = _
 
     @XmlElement(name = "Currency")
-    private var currency = _
+    var currency:String = _
 
     @XmlTransient
-    private var occupancy = _
+    var occupancy:List[String] = _
 
-    def this()
+    def this(request: Request)
     {
-        this(null)
+        this()
+        _populateRequestInfo(request)
+        _populatePropertyID(request)
     }
 
-    create()
-
-    def create(): Unit =
+    def _populateRequestInfo(request: Request) : Unit =
     {
-        if (request == null)
+        // TODO : I think this should be headers.
+        for (entry <- request.getParams().iterator())
         {
-            return
-        }
-
-        _populateRequestInfo()
-        _populatePropertyID()
-    }
-
-    def _populateRequestInfo() : Unit =
-    {
-        for ((k: String, v: String) <- request.getParams())
-        {
+            val k = entry.getKey
+            val v = entry.getValue
             k match
             {
                 case GlobalConstants.CHECKIN_PARAM_KEY =>
@@ -103,11 +88,12 @@ class AvailabilityRequest(val request: Request)
                 {
                     _populateOccupancy(v)
                 }
+                case _ =>
             }
         }
     }
 
-    def _populatePropertyID(): Unit =
+    def _populatePropertyID(request: Request): Unit =
     {
         import com.hopper.model.availability.agoda.constants.AgodaAvailabilityRequestType
         propertyIds = request.getParams(GlobalConstants.PROPERTY_ID).asScala.toList.mkString(",")
@@ -116,8 +102,10 @@ class AvailabilityRequest(val request: Request)
 
     def _populateOccupancy(reqOccupancy: String): Unit =
     {
-        if (StringUtils.isNotEmpty(reqOccupancy))
+        if (StringUtils.isEmpty(reqOccupancy))
+        {
             return
+        }
 
         val roomList = reqOccupancy.split("\\|").toList
 
