@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableList;
+import com.hopper.model.availability.ErrorResponse;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ShoppingResponse {
     private List<Property> m_properties;
-    // private ErrorResponse errorResponse;
+     private ErrorResponse errorResponse;
 
     public ShoppingResponse() {
         m_properties = null;

@@ -248,9 +248,6 @@ public class AvailabilityRequest {
 
         availabilityRequest.setType(propertyIds.size() == 1 ? RequestType.HotelSearch : RequestType.HotelListSearch);
 
-
-
-
         return availabilityRequest;
     }
 
