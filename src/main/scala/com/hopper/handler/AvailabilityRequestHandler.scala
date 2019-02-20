@@ -27,6 +27,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
 
     override def apply(request: Request): Future[Response] =
     {
+        import com.hopper.model.availability.eps.{EPSShoppingResponse, PropertyAvailability}
         // Create Agoda Request from EAN HTTP Request.
         val agodaAvailabilityRequest: AvailabilityRequestV2 = new AvailabilityRequestV2(request)
 
@@ -47,6 +48,19 @@ class AvailabilityRequestHandler extends Service[Request, Response]
         response.setContentTypeJson()
         response.setContentString(jsonResponse)
 
+        //Testing
+        val res:EPSShoppingResponse = new EPSShoppingResponse
+        val prop:PropertyAvailability = new PropertyAvailability
+        prop.property_id = "123"
+
+        res.properties = Array(prop)
+
+        val jsonResponse2 = (new ObjectMapper).writeValueAsString(res.properties)
+
+        println("**********")
+        println(jsonResponse2)
+        println("**********")
+        //Testing End
         Future.value(response)
     }
 

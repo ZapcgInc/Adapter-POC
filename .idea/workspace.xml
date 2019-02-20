@@ -2,94 +2,28 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4bfac849-d7f9-4999-8bc7-2a7451bac413" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/handler/AvailabilityRequestHandler.scala" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/handler/AvailabilityRequestHandlerHelper.scala" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/request/package-info.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/AvailabilityLongResponseV2.scala" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/Benefit.scala" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/Cancellation.scala" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/CheapestRoom.scala" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/Hotel.scala" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/MaxRoomOccupancy.scala" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/PaxSettings.scala" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/PolicyDate.scala" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/PolicyParameter.scala" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/PolicyText.scala" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/PolicyTranslated.scala" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/PromotionType.scala" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/Rate.scala" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/RateInfo.scala" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/Room.scala" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/TotalPaymentAmount.scala" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/package-info.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/EPSShoppingResponse.scala" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailability.scala" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityAmenities.scala" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityCancelPenalties.scala" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityLinks.scala" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityPrice.scala" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityRates.scala" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/AvailabilityProcessor.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/AvailabilityRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/RequestType.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/Availability.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/Benefit.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/Cancellation.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/CheapestRoom.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/Hotel.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/Hotels.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/MaxRoomOccupancy.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/PaxSettings.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/PolicyDate.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/PolicyDates.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/PolicyParameter.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/PolicyParameters.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/PolicyText.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/PolicyTranslated.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/PromotionType.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/Rate.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/RateInfo.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/RemainingRooms.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/Room.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/Rooms.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/TotalPaymentAmount.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/package-info.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/AvailabilityRequestV2.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/request/AvailabilityRequestV2.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/constants/AgodaAvailabilityRequestType.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/request/constants/AgodaAvailabilityRequestType.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/com/hopper/request/AvailabilityRequestHandler.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/adoga-adapter_2.10-1.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.10/adoga-adapter_2.10-1.0.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/AvailabilityProcessor.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/auth/AvailabilityRequestHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/auth/AvailabilityRequestHandler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/AvailabilityRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/RequestType.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/Availability.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/AvailabilityRequestV2$$anonfun$_populateOccupancy$1$$anonfun$apply$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/AvailabilityRequestV2$$anonfun$_populateOccupancy$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/AvailabilityRequestV2$$anonfun$_populateRequestInfo$1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/AvailabilityRequestV2.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/Benefit.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/Cancellation.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/CheapestRoom.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/Hotel.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/Hotels.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/MaxRoomOccupancy.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/PaxSettings.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/PolicyDate.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/PolicyDates.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/PolicyParameter.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/PolicyParameters.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/PolicyText.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/PolicyTranslated.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/PromotionType.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/Rate.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/RateInfo.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/RemainingRooms.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/Room.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/Rooms.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/TotalPaymentAmount.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/constants/AgodaAvailabilityRequestType$.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/constants/AgodaAvailabilityRequestType.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/scala-2.10/classes/com/hopper/model/availability/agoda/package-info.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/streams/compile/compile/$global/streams/out" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/compile/compile/$global/streams/out" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/streams/compile/compileIncSetup/$global/streams/inc_compile_2.10.zip" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/compile/compileIncSetup/$global/streams/inc_compile_2.10.zip" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/streams/compile/compileIncremental/$global/streams/export" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/compile/compileIncremental/$global/streams/export" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/streams/compile/compileIncremental/$global/streams/out" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/compile/compileIncremental/$global/streams/out" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/streams/compile/packageBin/$global/streams/inputs" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/compile/packageBin/$global/streams/inputs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/streams/compile/packageBin/$global/streams/out" beforeDir="false" afterPath="$PROJECT_DIR$/target/streams/compile/packageBin/$global/streams/out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/hopper/PreBookingProcessor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/com/hopper/handler/AvailabilityRequestHandler.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/handler/AvailabilityRequestHandler.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/com/hopper/model/scala/shopping/PropertyAvailability.scala" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/com/hopper/model/scala/shopping/PropertyAvailabilityAmenities.scala" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/com/hopper/model/scala/shopping/PropertyAvailabilityBedGroups.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityBedGroups.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/com/hopper/model/scala/shopping/PropertyAvailabilityCancelPenalties.scala" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/com/hopper/model/scala/shopping/PropertyAvailabilityLinks.scala" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/com/hopper/model/scala/shopping/PropertyAvailabilityPrice.scala" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/com/hopper/model/scala/shopping/PropertyAvailabilityPriceWithCurrency.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityPriceWithCurrency.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/com/hopper/model/scala/shopping/PropertyAvailabilityRates.scala" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/com/hopper/model/scala/shopping/PropertyAvailabilityRoomRates.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityRoomRates.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/com/hopper/model/scala/shopping/PropertyAvailabilityRooms.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityRooms.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/com/hopper/model/scala/shopping/PropertyAvailabilityTotalPrice.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityTotalPrice.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/com/hopper/model/scala/shopping/ShoppingResponseNew.scala" beforeDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <ignored path="$PROJECT_DIR$/project/project/target/" />
@@ -119,29 +53,29 @@
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="class" value="1" />
-          <entry key="java" value="81" />
+          <entry key="java" value="98" />
           <entry key="properties" value="2" />
-          <entry key="scala" value="200" />
+          <entry key="scala" value="262" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CLASS" value="1" />
-          <entry key="JAVA" value="81" />
+          <entry key="JAVA" value="98" />
           <entry key="Properties" value="2" />
-          <entry key="Scala" value="200" />
+          <entry key="Scala" value="262" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="java" value="308" />
-          <entry key="scala" value="4344" />
+          <entry key="scala" value="4890" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="JAVA" value="308" />
-          <entry key="Scala" value="4344" />
+          <entry key="Scala" value="4890" />
         </counts>
       </usages-collector>
     </session>
@@ -149,97 +83,91 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/handler/AvailabilityRequestHandler.scala">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityBedGroups.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="15">
-              <caret line="21" column="6" selection-start-line="21" selection-start-column="6" selection-end-line="21" selection-end-column="6" />
-              <folding>
-                <element signature="e#25#59#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/handler/AvailabilityRequestHandlerHelper.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="567">
-              <caret line="114" column="35" selection-start-line="114" selection-start-column="35" selection-end-line="114" selection-end-column="35" />
-              <folding>
-                <element signature="e#28#106#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="105">
+              <caret line="8" column="6" selection-start-line="8" selection-start-column="6" selection-end-line="8" selection-end-column="6" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/Room.scala">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityCancelPenalties.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="6" column="6" selection-start-line="6" selection-start-column="6" selection-end-line="6" selection-end-column="6" />
+            <state relative-caret-position="60">
+              <caret line="4" column="43" selection-start-line="4" selection-end-line="5" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/CheapestRoom.scala">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityLinks.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="6" column="6" selection-start-line="6" selection-start-column="6" selection-end-line="6" selection-end-column="6" />
+            <state relative-caret-position="45">
+              <caret line="4" column="43" selection-start-line="4" selection-end-line="5" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/PaxSettings.scala">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityPrice.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="6" column="6" selection-start-line="6" selection-start-column="6" selection-end-line="6" selection-end-column="6" />
+            <state relative-caret-position="75">
+              <caret line="5" column="6" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="6" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/AvailabilityLongResponseV2.scala">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityPriceWithCurrency.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
+            <state relative-caret-position="180">
+              <caret line="12" column="7" selection-start-line="12" selection-start-column="7" selection-end-line="12" selection-end-column="7" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityRates.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="60">
+              <caret line="4" column="43" selection-start-line="4" selection-start-column="43" selection-end-line="4" selection-end-column="43" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityRoomRates.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="75">
               <caret line="7" column="6" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/Hotel.scala">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityRooms.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
-              <caret line="2" selection-start-line="2" selection-end-line="2" />
+            <state relative-caret-position="210">
+              <caret line="15" column="7" selection-start-line="15" selection-start-column="7" selection-end-line="15" selection-end-column="7" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/Benefit.scala">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityTotalPrice.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="6" column="6" selection-start-line="6" selection-start-column="6" selection-end-line="6" selection-end-column="6" />
+            <state relative-caret-position="330">
+              <caret line="22" column="1" lean-forward="true" selection-start-line="22" selection-start-column="1" selection-end-line="22" selection-end-column="1" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/Cancellation.scala">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/EPSShoppingResponse.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="6" column="6" selection-start-line="6" selection-start-column="6" selection-end-line="6" selection-end-column="6" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/MaxRoomOccupancy.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="6" column="6" selection-start-line="6" selection-start-column="6" selection-end-line="6" selection-end-column="6" />
+            <state relative-caret-position="180">
+              <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="12" />
             </state>
           </provider>
         </entry>
@@ -251,6 +179,7 @@
       <list>
         <option value="Class" />
         <option value="package-info" />
+        <option value="Scala Class" />
       </list>
     </option>
   </component>
@@ -280,19 +209,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/AvailabilityRequest.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/package-info.java" />
-        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/PaxSettings.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/CheapestRoom.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/Rooms.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/MaxRoomOccupancy.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/Availability.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/Rate.java" />
-        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/Room.scala" />
-        <option value="$PROJECT_DIR$/src/main/java/com/hopper/model/availability/shopping/Amenities.java" />
-        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/Benefit.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/Rate.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/RateInfo.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/hopper/request/AvailabilityRequestHandler.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/hopper/util/TimesRepeat.scala" />
         <option value="$PROJECT_DIR$/src/main/java/com/hopper/AvailabilityProcessor.java" />
@@ -321,7 +237,6 @@
         <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/property/room/Benefit.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/package-info.java" />
         <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/property/room/MaxRoomOccupancy.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/handler/AvailabilityRequestHandler.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/hopper/HttpServer.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/property/room/Rooms.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/property/room/Room.scala" />
@@ -331,6 +246,20 @@
         <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/property/Hotel.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/Hotel.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/com/hopper/handler/AvailabilityRequestHandlerHelper.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/ShoppingResponseNew.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/EPSShoppingResponse.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/handler/AvailabilityRequestHandler.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailability.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityBedGroups.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityCancelPenalties.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityLinks.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityPrice.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityRates.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityRoomRates.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityAmenities.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityPriceWithCurrency.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityRooms.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityTotalPrice.scala" />
       </list>
     </option>
   </component>
@@ -466,7 +395,7 @@
               <item name="scala" type="462c0819:PsiDirectoryNode" />
               <item name="hopper" type="462c0819:PsiDirectoryNode" />
               <item name="model" type="462c0819:PsiDirectoryNode" />
-              <item name="agoda" type="462c0819:PsiDirectoryNode" />
+              <item name="availability" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="adapter-poc" type="b2602c69:ProjectViewProjectNode" />
@@ -476,19 +405,8 @@
               <item name="scala" type="462c0819:PsiDirectoryNode" />
               <item name="hopper" type="462c0819:PsiDirectoryNode" />
               <item name="model" type="462c0819:PsiDirectoryNode" />
-              <item name="agoda" type="462c0819:PsiDirectoryNode" />
-              <item name="request" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="adapter-poc" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Adapter-POC" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="scala" type="462c0819:PsiDirectoryNode" />
-              <item name="hopper" type="462c0819:PsiDirectoryNode" />
-              <item name="model" type="462c0819:PsiDirectoryNode" />
-              <item name="agoda" type="462c0819:PsiDirectoryNode" />
-              <item name="response" type="462c0819:PsiDirectoryNode" />
+              <item name="availability" type="462c0819:PsiDirectoryNode" />
+              <item name="eps" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -501,7 +419,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1550705279594" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1550707121140" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="project.structure.last.edited" value="Project" />
@@ -647,12 +565,12 @@
       <updated>1550673192962</updated>
       <workItem from="1550673197230" duration="6119000" />
       <workItem from="1550685453504" duration="14161000" />
-      <workItem from="1550703953645" duration="1280000" />
+      <workItem from="1550703953645" duration="3066000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="21560000" />
+    <option name="totallyTimeSpent" value="23346000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1680" height="1050" extended-state="6" />
@@ -692,7 +610,7 @@
       <window_info anchor="right" id="Theme Preview" order="11" />
     </layout>
     <layout-to-restore>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25274727" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25579977" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Image Layers" order="3" />
@@ -702,7 +620,7 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Run" order="2" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39938712" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -733,161 +651,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/agoda/Hotel.java" />
-    <entry file="jar://$USER_HOME$/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.10.4-sources.jar!/scala/util/Either.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="318">
-          <caret line="199" column="17" selection-start-line="199" selection-start-column="17" selection-end-line="199" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.10.4-sources.jar!/scala/Option.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2997">
-          <caret line="281" column="32" lean-forward="true" selection-start-line="281" selection-start-column="32" selection-end-line="281" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_141.jdk/Contents/Home/src.zip!/java/time/LocalDate.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="318">
-          <caret line="383" column="27" selection-start-line="383" selection-start-column="18" selection-end-line="383" selection-end-column="27" />
-          <folding>
-            <element signature="e#15963#15964#0" expanded="true" />
-            <element signature="e#16031#16032#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_141.jdk/Contents/Home/src.zip!/java/time/Duration.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="310">
-          <caret line="1124" column="15" selection-start-line="1124" selection-start-column="11" selection-end-line="1124" selection-end-column="15" />
-          <folding>
-            <element signature="e#48623#48624#0" expanded="true" />
-            <element signature="e#48671#48672#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/util/TimesRepeat.scala" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/Price.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/AvailabilityProcessor.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/AvailabilityRequest.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/shopping/BedGroups.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/shopping/Property.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/shopping/Rate.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="16" column="13" selection-start-line="16" selection-start-column="13" selection-end-line="16" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/CancelPolicies.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="8" column="13" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/ErrorResponse.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="10" column="13" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/Link.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="7" column="13" selection-start-line="7" selection-start-column="13" selection-end-line="7" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/RequestType.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/PriceWithCurrency.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/RoomPrice.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="9" column="13" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/TotalPrice.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="6" column="13" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/scala/shopping/PropertyAvailability.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="5" column="11" selection-start-line="5" selection-start-column="11" selection-end-line="5" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/scala/shopping/PropertyAvailabilityCancelPenalties.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/scala/shopping/ShoppingResponseNew.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="42" lean-forward="true" selection-start-line="2" selection-start-column="42" selection-end-line="2" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/Hotels.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/property.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/shopping/Room.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/package-info.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="12" column="1" lean-forward="true" selection-start-line="12" selection-start-column="1" selection-end-line="12" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/request/package-info.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret selection-end-line="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$USER_HOME$/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.10.4-sources.jar!/scala/package.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1">
@@ -1038,16 +801,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/handler/AvailabilityRequestHandler.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="21" column="6" selection-start-line="21" selection-start-column="6" selection-end-line="21" selection-end-column="6" />
-          <folding>
-            <element signature="e#25#59#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/agoda/response/Room.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
@@ -1062,6 +815,208 @@
           <folding>
             <element signature="e#28#106#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/scala/shopping/PropertyAvailabilityBedGroups.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="11" selection-start-line="2" selection-start-column="11" selection-end-line="2" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/PreBookingProcessor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/shopping/Property.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="25" column="26" selection-start-line="25" selection-start-column="4" selection-end-line="25" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/shopping/ShoppingResponse.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="19" column="22" selection-start-line="19" selection-start-column="22" selection-end-line="19" selection-end-column="22" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.10.4-sources.jar!/scala/Array.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="318">
+          <caret line="49" column="7" selection-start-line="49" selection-start-column="7" selection-end-line="49" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/handler/AvailabilityRequestHandler.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="311">
+          <caret line="34" column="28" selection-start-line="34" selection-start-column="28" selection-end-line="34" selection-end-column="28" />
+          <folding>
+            <element signature="e#25#59#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/shopping/Room.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="20" column="20" selection-start-line="20" selection-start-column="20" selection-end-line="20" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/shopping/Amenities.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="13" column="4" selection-start-line="13" selection-start-column="4" selection-end-line="13" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/shopping/BedGroups.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="11" column="27" lean-forward="true" selection-start-line="11" selection-end-line="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/CancelPolicies.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="11" column="18" selection-start-line="11" selection-start-column="12" selection-end-line="11" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/Link.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="9" selection-start-line="9" selection-end-line="13" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/Price.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="7" column="1" lean-forward="true" selection-start-line="7" selection-start-column="1" selection-end-line="7" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/PriceWithCurrency.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="8" selection-start-line="8" selection-end-line="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/shopping/Rate.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="16" column="13" selection-start-line="16" selection-start-column="13" selection-end-line="16" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/RoomPrice.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="21" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/hopper/model/availability/TotalPrice.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="8" selection-start-line="8" selection-end-line="21" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailability.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" selection-start-line="4" selection-end-line="5" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityAmenities.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="11" column="7" selection-start-line="11" selection-start-column="7" selection-end-line="11" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityBedGroups.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="8" column="6" selection-start-line="8" selection-start-column="6" selection-end-line="8" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityCancelPenalties.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="43" selection-start-line="4" selection-end-line="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityLinks.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="4" column="43" selection-start-line="4" selection-end-line="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityPrice.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="6" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityPriceWithCurrency.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="12" column="7" selection-start-line="12" selection-start-column="7" selection-end-line="12" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityRates.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="43" selection-start-line="4" selection-start-column="43" selection-end-line="4" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityRoomRates.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="7" column="6" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityRooms.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="15" column="7" selection-start-line="15" selection-start-column="7" selection-end-line="15" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/PropertyAvailabilityTotalPrice.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="22" column="1" lean-forward="true" selection-start-line="22" selection-start-column="1" selection-end-line="22" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/com/hopper/model/availability/eps/EPSShoppingResponse.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="12" />
         </state>
       </provider>
     </entry>
