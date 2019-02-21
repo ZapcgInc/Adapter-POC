@@ -1,5 +1,7 @@
 package com.hopper.model.availability.agoda.request
 
+import java.util
+
 import com.hopper.constants.GlobalConstants
 import com.hopper.model.availability.agoda.request.constants.AgodaAvailabilityRequestType
 import com.twitter.finagle.http.Request
@@ -61,11 +63,13 @@ class AvailabilityRequestV2
 
     def _populateRequestInfo(request: Request) : Unit =
     {
+        var occupancies  = List[String]()
         // TODO : I think this should be headers.
         for (entry <- request.getParams().iterator())
         {
             val k = entry.getKey
             val v = entry.getValue
+            print("Any Value: "+v)
             k match
             {
                 case GlobalConstants.CHECKIN_PARAM_KEY =>
@@ -89,18 +93,23 @@ class AvailabilityRequestV2
 
                 case GlobalConstants.OCCUPANCY_KEY =>
                 {
+                    //print("Value "+v)
+                    occupancies = v :: occupancies
                     _populateOccupancy(v)
                 }
 
                 case _ =>
             }
         }
+        occupancy = occupancies
+        roomCount = occupancy.size
     }
 
     def _populatePropertyID(request: Request): Unit =
     {
         propertyIds = request.getParams(GlobalConstants.PROPERTY_ID).asScala.toList.mkString(",")
-        requestType = if (request.getParams(GlobalConstants.PROPERTY_ID).size() == 1) AgodaAvailabilityRequestType.HotelSearch.id else AgodaAvailabilityRequestType.HotelListSearch.id
+        requestType = if (request.getParams(GlobalConstants.PROPERTY_ID).size() == 1) AgodaAvailabilityRequestType.HotelSearch.id
+        else AgodaAvailabilityRequestType.HotelListSearch.id
     }
 
     def _populateOccupancy(reqOccupancy: String): Unit =
@@ -112,11 +121,6 @@ class AvailabilityRequestV2
 
         val roomList = reqOccupancy.split("\\|").toList
 
-        occupancy = roomList
-        roomCount = roomList.size
-
-        for (room <- roomList)
-        {
             val split = reqOccupancy.split("-")
             adultsCount = split(0).toInt
             if (split.length == 2)
@@ -125,5 +129,4 @@ class AvailabilityRequestV2
                 childrenCount = childrenAges.size
             }
         }
-    }
 }
