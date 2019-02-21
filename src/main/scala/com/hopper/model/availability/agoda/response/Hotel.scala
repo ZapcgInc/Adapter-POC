@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.{XmlAccessType, XmlAccessorType, XmlElement, Xm
 class Hotel
 {
     @XmlElement(name = "Id")
-    var id: Int = 0
+    var id: String = _
 
     @XmlElement(name = "CheapestRoom")
     var cheapestRoom: CheapestRoom = _

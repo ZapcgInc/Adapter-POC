@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.{XmlAccessType, XmlAccessorType, XmlAttribute, 
 class Room
 {
     @XmlAttribute(name = "id")
-    var id: Int = _
+    var id: String = _
 
     @XmlAttribute(name = "name")
     var name: String = _

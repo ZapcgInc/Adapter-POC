@@ -1,23 +1,18 @@
 package com.hopper.auth
 
+import java.io.{IOException, StringReader, StringWriter}
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.hopper.constants.GlobalConstants
+import com.hopper.handler.AvailabilityRequestHandlerHelper
+import com.hopper.model.availability.agoda.request.AvailabilityRequestV2
+import com.hopper.model.availability.agoda.response.AvailabilityLongResponseV2
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.util.Future
-import com.hopper.model.availability.agoda.response.AvailabilityLongResponseV2
-import javax.xml.bind.Unmarshaller
-import javax.xml.bind.JAXBContext
-import java.io.StringWriter
-import java.io.IOException
-
-import javax.xml.bind.Marshaller
-import com.hopper.constants.GlobalConstants
-import javax.xml.bind.JAXBException
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.hopper.model.availability.shopping.ShoppingResponse
-import com.hopper.handler.AvailabilityRequestHandlerHelper
-import com.hopper.model.availability.agoda.request.AvailabilityRequestV2
+import javax.xml.bind.{JAXBContext, JAXBException, Marshaller, Unmarshaller}
 import org.jboss.netty.handler.codec.http.{DefaultHttpResponse, HttpResponseStatus, HttpVersion}
-import java.io.StringReader
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
 class AvailabilityRequestHandler extends Service[Request, Response]
 {
@@ -27,7 +22,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
 
     override def apply(request: Request): Future[Response] =
     {
-        import com.hopper.model.availability.eps.{EPSShoppingResponse, PropertyAvailability}
+        import com.hopper.model.availability.eps.EPSShoppingResponse
         // Create Agoda Request from EAN HTTP Request.
         val agodaAvailabilityRequest: AvailabilityRequestV2 = new AvailabilityRequestV2(request)
 
@@ -35,32 +30,19 @@ class AvailabilityRequestHandler extends Service[Request, Response]
         val agodaRequestXML: String = _convertToAgodaXMLRequest(agodaAvailabilityRequest)
 
         // Post to Agoda API and get response
-        val agodaResponse:AvailabilityLongResponseV2 = _postXMLRequest(agodaRequestXML)
+        val agodaResponse: AvailabilityLongResponseV2 = _postXMLRequest(agodaRequestXML)
 
         // Convert to EPS Response
-        val epsResponse:ShoppingResponse = AvailabilityRequestHandlerHelper.convertToEPSResponse(agodaAvailabilityRequest, agodaResponse)
+        val epsResponse: EPSShoppingResponse = AvailabilityRequestHandlerHelper.convertToEPSResponse(agodaAvailabilityRequest, agodaResponse)
 
         // Convert EPS Response to JSON
-        val jsonResponse = (new ObjectMapper).writeValueAsString(epsResponse.getProperties)
+        val jsonResponse = (new ObjectMapper).registerModule(DefaultScalaModule).writeValueAsString(epsResponse.properties)
 
         // Create and Return Valid HTTP Response
         val response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.OK))
         response.setContentTypeJson()
         response.setContentString(jsonResponse)
 
-        //Testing
-        val res:EPSShoppingResponse = new EPSShoppingResponse
-        val prop:PropertyAvailability = new PropertyAvailability
-        prop.property_id = "123"
-
-        res.properties = Array(prop)
-
-        val jsonResponse2 = (new ObjectMapper).writeValueAsString(res.properties)
-
-        println("**********")
-        println(jsonResponse2)
-        println("**********")
-        //Testing End
         Future.value(response)
     }
 
@@ -114,12 +96,19 @@ class AvailabilityRequestHandler extends Service[Request, Response]
     def _getResponse(connection: java.net.HttpURLConnection): AvailabilityLongResponseV2 =
     {
         import com.hopper.model.availability.agoda.response.AvailabilityLongResponseV2
-        var inputStream = if (connection.getResponseCode == 200) connection.getInputStream else connection.getErrorStream
+        var inputStream = if (connection.getResponseCode == 200)
+                          {
+                              connection.getInputStream
+                          }
+                          else
+                          {
+                              connection.getErrorStream
+                          }
         var responseStreamAsString = scala.io.Source.fromInputStream(inputStream).getLines().mkString("\n")
 
         println("Response From Agoda: " + responseStreamAsString)
 
-        val response:AvailabilityLongResponseV2 = AGODA_RESPONSE_UNMARSHALLER.unmarshal(new StringReader(responseStreamAsString)).asInstanceOf[AvailabilityLongResponseV2]
+        val response: AvailabilityLongResponseV2 = AGODA_RESPONSE_UNMARSHALLER.unmarshal(new StringReader(responseStreamAsString)).asInstanceOf[AvailabilityLongResponseV2]
 
         return response
     }

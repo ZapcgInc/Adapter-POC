@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonInclude, Json
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-class PropertyAvailabilityRooms
+class PropertyAvailabilityRoom
 {
     @JsonProperty("id")
     var id: String = _
@@ -13,5 +13,5 @@ class PropertyAvailabilityRooms
     var room_name: String = _
 
     @JsonProperty("rates")
-    var rates: List[PropertyAvailabilityRates] = _
+    var rates: Array[PropertyAvailabilityRates] = _
 }

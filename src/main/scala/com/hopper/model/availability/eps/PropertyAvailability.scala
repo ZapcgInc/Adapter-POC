@@ -10,7 +10,7 @@ class PropertyAvailability
     var property_id: String = _
 
     @JsonProperty("rooms")
-    var rooms: List[PropertyAvailabilityRooms] = _
+    var rooms: Array[PropertyAvailabilityRoom] = _
 
     @JsonProperty("links")
     var links: Map[String, PropertyAvailabilityLinks] = _

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonProperty}
 @JsonIgnoreProperties(ignoreUnknown = true)
 class PropertyAvailabilityAmenities
 {
-    @JsonProperty("name")
+    @JsonProperty("id")
     var id: String = _
 
     @JsonProperty("name")

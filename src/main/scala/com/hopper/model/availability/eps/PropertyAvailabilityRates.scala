@@ -24,16 +24,16 @@ class PropertyAvailabilityRates
     var merchantOfRecordString: String = _
 
     @JsonProperty("links")
-    var links: Map[String, String] = _
+    var links: Map[String, PropertyAvailabilityLinks] = _
 
     @JsonProperty("bed_groups")
-    var bedGroups: List[PropertyAvailabilityBedGroups] = _
+    var bedGroups: Array[PropertyAvailabilityBedGroups] = _
 
     @JsonProperty("cancel_penalties")
-    var cancelPolicies: List[PropertyAvailabilityCancelPenalties] = _
+    var cancelPolicies: Array[PropertyAvailabilityCancelPenalties] = _
 
     @JsonProperty("amenities")
-    var amenities: List[PropertyAvailabilityAmenities] = _
+    var amenities: Array[PropertyAvailabilityAmenities] = _
 
     @JsonProperty("occupancies")
     var roomPriceByOccupancy: Map[String, PropertyAvailabilityRoomRates] = _

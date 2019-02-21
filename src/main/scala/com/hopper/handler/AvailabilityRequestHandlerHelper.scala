@@ -1,43 +1,42 @@
 package com.hopper.handler
 
-import com.hopper.model.availability.agoda.response.AvailabilityLongResponseV2
-import com.hopper.model.availability.shopping.ShoppingResponse
-import com.hopper.model.availability.{CancelPolicies, Link, Price, RoomPrice}
-import com.hopper.model.availability.shopping.{Amenities, BedGroups, Property, Rate}
-import java.util
 import java.time.{Duration, LocalDate}
 
 import com.hopper.model.availability.agoda.request.AvailabilityRequestV2
+import com.hopper.model.availability.agoda.response.{AvailabilityLongResponseV2, Hotel, Room}
+import com.hopper.model.availability.eps.{EPSShoppingResponse, PropertyAvailability, PropertyAvailabilityAmenities, PropertyAvailabilityBedGroups, PropertyAvailabilityCancelPenalties, PropertyAvailabilityLinks, PropertyAvailabilityPrice, PropertyAvailabilityRates, PropertyAvailabilityRoom, PropertyAvailabilityRoomRates}
+import com.hopper.model.availability.eps.{PropertyAvailabilityPriceWithCurrency, PropertyAvailabilityTotalPrice}
 import scala.collection.JavaConversions._
+import scala.collection.mutable.ListBuffer
 
 object AvailabilityRequestHandlerHelper
 {
-
-    import com.hopper.model.availability.agoda.response.{Hotel, Room}
-
-    def convertToEPSResponse(request: AvailabilityRequestV2, response: AvailabilityLongResponseV2): ShoppingResponse =
+    def convertToEPSResponse(request: AvailabilityRequestV2, response: AvailabilityLongResponseV2): EPSShoppingResponse =
     {
-        println(response.toString)
-        println("Hotels List Size : "  +  response.hotels.size())
-        val lengthOfStay:Int = _calculateLengthOfStay(request)
+        val lengthOfStay: Int = _calculateLengthOfStay(request)
 
-        val propertyList: util.List[Property] = new util.ArrayList[Property]
+        val propertyList: ListBuffer[PropertyAvailability] = new ListBuffer[PropertyAvailability]
+
         for (hotel <- response.hotels)
         {
-            println(hotel.toString)
-            val property = new Property
-            property.setPropertyId(Integer.toString(hotel.id))
-            val roomList = new util.ArrayList[com.hopper.model.availability.shopping.Room]
+            val property = new PropertyAvailability
+            property.property_id = hotel.id
+
+            val roomList = new ListBuffer[PropertyAvailabilityRoom]
             for (r <- hotel.rooms)
             {
-                val room: com.hopper.model.availability.shopping.Room = _populateRoomInfo(request, r, hotel, lengthOfStay)
-                roomList.add(room)
+                val room: PropertyAvailabilityRoom = _populateRoomInfo(request, r, hotel, lengthOfStay)
+                roomList += room
             }
-            property.setRooms(roomList)
-            propertyList.add(property)
+
+            property.rooms = roomList.toArray
+            propertyList += property
         }
 
-        new ShoppingResponse(propertyList.toArray(new Array[Property](propertyList.size)))
+        val responseInEPSStandard: EPSShoppingResponse = new EPSShoppingResponse()
+        responseInEPSStandard.properties = propertyList.toArray
+
+        return responseInEPSStandard
     }
 
     def _calculateLengthOfStay(request: AvailabilityRequestV2): Int =
@@ -47,171 +46,201 @@ object AvailabilityRequestHandlerHelper
         Duration.between(checkin.atStartOfDay, checkout.atStartOfDay).toDays.toInt
     }
 
-    def _populateRoomInfo(request: AvailabilityRequestV2, r: Room, hotel: Hotel, lengthOfStay: Int): com.hopper.model.availability.shopping.Room =
+    def _populateRoomInfo(request: AvailabilityRequestV2, r: Room, hotel: Hotel, lengthOfStay: Int): PropertyAvailabilityRoom =
     {
-        val room: com.hopper.model.availability.shopping.Room = new com.hopper.model.availability.shopping.Room
+        val room: PropertyAvailabilityRoom = new PropertyAvailabilityRoom
 
-        room.setId(Integer.toString(r.id))
-        room.setName(r.name)
-        room.setRates(_getRateList(request, r, hotel, lengthOfStay))
+        room.id = r.id
+        room.room_name = r.name
+        room.rates = _getRateList(request, r, hotel, lengthOfStay)
 
         room
     }
 
-    def _getRateList(request: AvailabilityRequestV2, r: Room, hotel: Hotel, lengthOfStay: Int): util.List[Rate] =
+    def _getRateList(request: AvailabilityRequestV2, r: Room, hotel: Hotel, lengthOfStay: Int): Array[PropertyAvailabilityRates] =
     {
-        val rate: Rate = _populateRateInfo(request, r, hotel, lengthOfStay)
-        val ratesList: util.List[Rate] = new util.ArrayList[Rate]
-        ratesList.add(rate)
+        val rate: PropertyAvailabilityRates = _populateRateInfo(request, r, hotel, lengthOfStay)
 
-        ratesList
+        Array(rate)
     }
 
-    def _populateRateInfo(request: AvailabilityRequestV2, r: Room, hotel: Hotel, lengthOfStay: Int): Rate =
+    def _populateRateInfo(request: AvailabilityRequestV2, r: Room, hotel: Hotel, lengthOfStay: Int): PropertyAvailabilityRates =
     {
-        val rate: Rate = new Rate
-        rate.setId(r.rateCategoryID)
-        rate.setAvailableRooms(r.remainingRooms) // TODO: What is happening here ?
+        import com.hopper.model.availability.eps.PropertyAvailabilityCancelPenalties
+        val rate: PropertyAvailabilityRates = new PropertyAvailabilityRates
+        rate.id = r.rateCategoryID
+        rate.availableRooms = r.remainingRooms
 
         if (r.cancellation != null && r.cancellation.policyParameters != null)
         {
-            rate.setRefundable(r.cancellation.policyParameters.head.days != 365)
+            rate.refundable = r.cancellation.policyParameters.head.days != 365
         }
 
-        rate.setDepositRequired(false)
-        rate.setFencedDeal(false)
-        rate.setMerchantOfRecord("TBD")
+        rate.depositRequired = false
+        rate.fencedDeal = false
+        rate.merchantOfRecordString = "TBD"
 
-        rate.setAmenities(_populateAmenities(r))
-        rate.setLinks(_populateLinks(r, hotel))
-        rate.setBedGroups(_populateBedGroups(r, hotel))
+        rate.amenities = _populateAmenities(r)
+        rate.links = _populateLinks(r, hotel)
+        rate.bedGroups = _populateBedGroups(r, hotel)
 
-        val cancelPolicies: Option[util.ArrayList[CancelPolicies]] = _populateCancelPolicies(r)
+        val cancelPolicies: Option[Array[PropertyAvailabilityCancelPenalties]] = _populateCancelPolicies(r)
         if (cancelPolicies.isDefined)
         {
-            rate.setCancelPolicies(cancelPolicies.get)
+            rate.cancelPolicies = cancelPolicies.get
         }
 
-        rate.setRoomPriceByOccupancy(_populateRates(request, r, lengthOfStay))
+        rate.roomPriceByOccupancy = _populateRates(request, r, lengthOfStay)
 
         if (r.rateInfo.promotionType != null)
         {
-            rate.setPromoId(r.rateInfo.promotionType.id)
-            rate.setPromoDesc(r.rateInfo.promotionType.text)
+            rate.promoId = r.rateInfo.promotionType.id
+            rate.promoDesc = r.rateInfo.promotionType.text
         }
 
         rate
     }
 
-    def _populateRates(request: AvailabilityRequestV2, r: Room, lengthOfStay: Int): util.Map[String, RoomPrice] =
+    def _populateRates(request: AvailabilityRequestV2, r: Room, lengthOfStay: Int): Map[String, PropertyAvailabilityRoomRates] =
     {
-        import java.util
-        val basePrice = new Price
-        basePrice.setType("base_rate")
-        basePrice.setValue(r.rateInfo.totalPaymentAmount.exclusive)
-        basePrice.setCurrency(r.currency)
 
-        val saleTaxPrice: Price = new Price
-        saleTaxPrice.setType("sales_tax")
-        saleTaxPrice.setCurrency(r.currency)
-        saleTaxPrice.setValue(r.rateInfo.totalPaymentAmount.tax)
+        val basePrice = new PropertyAvailabilityPrice
+        basePrice.priceType = "base_rate"
+        basePrice.value = r.rateInfo.rate.exclusive
+        basePrice.currency = r.currency
 
-        val taxAndServiceFee: Price = new Price
-        taxAndServiceFee.setType("tax_and_service_fee")
-        taxAndServiceFee.setCurrency(r.currency)
-        taxAndServiceFee.setValue(r.rateInfo.totalPaymentAmount.fees)
+        val saleTaxPrice: PropertyAvailabilityPrice = new PropertyAvailabilityPrice
+        saleTaxPrice.priceType = "sales_tax"
+        saleTaxPrice.currency = r.currency
+        saleTaxPrice.value = r.rateInfo.rate.tax
 
-        val priceList: util.List[Price] = new util.ArrayList[Price]
-        priceList.add(basePrice)
-        priceList.add(saleTaxPrice)
-        priceList.add(taxAndServiceFee)
+        val taxAndServiceFee: PropertyAvailabilityPrice = new PropertyAvailabilityPrice
+        taxAndServiceFee.priceType = "tax_and_service_fee"
+        taxAndServiceFee.currency = r.currency
+        taxAndServiceFee.value = r.rateInfo.rate.fees
 
-        // TODO: Doesnt seem right.
-        val nightPriceList = new util.ArrayList[util.List[Price]]
-        (1 to lengthOfStay).map(_ => nightPriceList.add(priceList))
 
-        val roomPrice: RoomPrice = new RoomPrice
-        roomPrice.setNightlyPrice(nightPriceList)
+        val totalPrice: PropertyAvailabilityTotalPrice = new PropertyAvailabilityTotalPrice
+        totalPrice.inclusive = _populateInclusivePriceWithCurrency(r)
+        totalPrice.exclusive = _populateExclusivePriceWithCurrency(r)
 
-        val occupancyMap: util.Map[String, RoomPrice] = new util.HashMap[String, RoomPrice]
+        val priceList = List(basePrice, saleTaxPrice, taxAndServiceFee)
+
+        val nightPriceList = new ListBuffer[List[PropertyAvailabilityPrice]]
+        (1 to lengthOfStay).map(_ => nightPriceList += priceList)
+
+        val roomPrice: PropertyAvailabilityRoomRates = new PropertyAvailabilityRoomRates
+        roomPrice.nightlyPrice = nightPriceList.toList
+        roomPrice.totals = totalPrice
+
+        var occupancyMap: scala.collection.mutable.Map[String, PropertyAvailabilityRoomRates] = scala.collection.mutable.Map[String, PropertyAvailabilityRoomRates]()
         for (ocy <- request.occupancy)
         {
-            occupancyMap.put(ocy, roomPrice)
+            occupancyMap += (ocy -> roomPrice)
         }
 
-
-        occupancyMap
+        // return immutable Map.
+        occupancyMap.toMap
     }
 
-    def _populateCancelPolicies(r: Room): Option[util.ArrayList[CancelPolicies]] =
+    def _populateInclusivePriceWithCurrency(r: Room) : PropertyAvailabilityPriceWithCurrency =
+    {
+        val priceWithCurrencyInclusive:PropertyAvailabilityPriceWithCurrency = new PropertyAvailabilityPriceWithCurrency
+
+        val billable: PropertyAvailabilityPrice = new PropertyAvailabilityPrice
+        billable.value = r.rateInfo.totalPaymentAmount.inclusive
+        billable.currency = r.currency
+
+        priceWithCurrencyInclusive.billable = billable
+
+        val request: PropertyAvailabilityPrice = new PropertyAvailabilityPrice
+        request.value = r.rateInfo.totalPaymentAmount.inclusive
+        request.currency = r.currency
+
+        priceWithCurrencyInclusive.request = request
+
+        priceWithCurrencyInclusive
+    }
+
+    def _populateExclusivePriceWithCurrency(r: Room) : PropertyAvailabilityPriceWithCurrency =
+    {
+        val priceWithCurrencyExclusive:PropertyAvailabilityPriceWithCurrency = new PropertyAvailabilityPriceWithCurrency
+
+        val billable: PropertyAvailabilityPrice = new PropertyAvailabilityPrice
+        billable.value = r.rateInfo.totalPaymentAmount.exclusive
+        billable.currency = r.currency
+
+        priceWithCurrencyExclusive.billable = billable
+
+        val request: PropertyAvailabilityPrice = new PropertyAvailabilityPrice
+        request.value = r.rateInfo.totalPaymentAmount.exclusive
+        request.currency = r.currency
+
+        priceWithCurrencyExclusive.request = request
+
+        priceWithCurrencyExclusive
+    }
+
+    def _populateCancelPolicies(r: Room): Option[Array[PropertyAvailabilityCancelPenalties]] =
     {
         if (r.rateInfo.totalPaymentAmount.inclusive != 0)
         {
-            val policiesList = new util.ArrayList[CancelPolicies]
+            val policiesList = new ListBuffer[PropertyAvailabilityCancelPenalties]
             if (r.cancellation.policyDates != null)
             {
                 for (policyDate <- r.cancellation.policyDates)
                 {
-                    val cancelPolicies = new CancelPolicies
-                    cancelPolicies.setCurrency(r.currency)
-                    cancelPolicies.setStart(Option(policyDate.after).getOrElse(""))
-                    cancelPolicies.setEnd(Option(policyDate.before).getOrElse(""))
-                    cancelPolicies.setAmount(policyDate.rate.inclusive)
+                    val cancelPolicies = new PropertyAvailabilityCancelPenalties
+                    cancelPolicies.currency = r.currency
+                    cancelPolicies.start = Option(policyDate.after).getOrElse("")
+                    cancelPolicies.end = Option(policyDate.before).getOrElse("")
+                    cancelPolicies.amount = policyDate.rate.inclusive
 
-                    policiesList.add(cancelPolicies)
+                    policiesList += cancelPolicies
                 }
             }
 
-            return Option(policiesList)
+            return Option(policiesList.toArray)
         }
 
         Option.empty
     }
 
-    def _populateLinks(r: Room, hotel: Hotel): util.HashMap[String, Link] =
+    def _populateLinks(r: Room, hotel: Hotel): Map[String, PropertyAvailabilityLinks] =
     {
-        val linkMap = new util.HashMap[String, Link]
-        val link = new Link
-        val id = hotel.id
-        link.setHref("/2.1/properties/availability/" + id + "/rooms/201300484/rates/206295235/payment-options?token=Ql1WAERHXV1QO")
-        link.setMethod("GET")
-        linkMap.put("payment_options", link)
+        val link = new PropertyAvailabilityLinks
+        link.href = "/2.1/properties/availability/" + hotel.id + "/rooms/201300484/rates/206295235/payment-options?token=Ql1WAERHXV1QO"
+        link.method = "GET"
 
-        linkMap
+        Map("payment_options" -> link)
     }
 
-    def _populateBedGroups(r: Room, hotel: Hotel): util.ArrayList[BedGroups] =
+    def _populateBedGroups(r: Room, hotel: Hotel): Array[PropertyAvailabilityBedGroups] =
     {
-        val bedGroupList = new util.ArrayList[BedGroups]
-        val bedGroups = new BedGroups
+        val bedGroup = new PropertyAvailabilityBedGroups
+        val link = new PropertyAvailabilityLinks
+        link.method = "GET"
+        link.href = "/2.1/properties/availability/" + hotel.id + "/rooms/201300484/rates/206295235/price-check?token=Ql1WAERHXV1QO"
 
-        val links = new util.HashMap[String, Link]
-        val link = new Link
+        bedGroup.links = Map("price_check" -> link)
 
-        link.setMethod("GET")
-        link.setHref("/2.1/properties/availability/" + hotel.id + "/rooms/201300484/rates/206295235/price-check?token=Ql1WAERHXV1QO")
-        links.put("price_check", link)
-
-        bedGroups.setLinks(links)
-        bedGroupList.add(bedGroups)
-
-        bedGroupList
+        Array(bedGroup)
     }
 
-    def _populateAmenities(r: Room): util.List[Amenities] =
+    def _populateAmenities(r: Room): Array[PropertyAvailabilityAmenities] =
     {
-        val amenitiesList: util.List[Amenities] = new util.ArrayList[Amenities]
+        val amenitiesList = new ListBuffer[PropertyAvailabilityAmenities]
 
         if (r.benefits != null)
         {
             for (benefit <- r.benefits.iterator)
             {
-                val amenities: Amenities = new Amenities
-                amenities.setId(benefit.id)
-                amenitiesList.add(amenities)
+                val amenity: PropertyAvailabilityAmenities = new PropertyAvailabilityAmenities
+                amenity.id = benefit.id
+                amenitiesList += amenity
             }
         }
 
-        amenitiesList
+        amenitiesList.toArray
     }
 }
