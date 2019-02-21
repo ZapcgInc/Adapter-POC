@@ -11,6 +11,9 @@ import scala.collection.mutable.ListBuffer
 
 object AvailabilityRequestHandlerHelper
 {
+
+    import com.hopper.model.error.EPSErrorResponse
+
     def convertToEPSResponse(request: AvailabilityRequestV2, response: AvailabilityLongResponseV2): EPSShoppingResponse =
     {
         val lengthOfStay: Int = _calculateLengthOfStay(request)
@@ -37,6 +40,11 @@ object AvailabilityRequestHandlerHelper
         responseInEPSStandard.properties = propertyList.toArray
 
         return responseInEPSStandard
+    }
+
+    def convertToErrorResponse(request: AvailabilityRequestV2, response: AvailabilityLongResponseV2) : EPSErrorResponse =
+    {
+        return null
     }
 
     def _calculateLengthOfStay(request: AvailabilityRequestV2): Int =

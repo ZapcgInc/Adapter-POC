@@ -18,5 +18,9 @@ class AvailabilityLongResponseV2
     @XmlElement(name = "Hotel")
     var hotels: java.util.List[Hotel] = _
 
+    @XmlElementWrapper(name = "ErrorMessages")
+    @XmlElement(name = "ErrorMessage")
+    var errors: java.util.List[ErrorMessage] = _
+
     override def toString = s"AvailabilityLongResponseV2($status, $searchID, $hotels)"
 }
