@@ -110,6 +110,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
 
         val response: AvailabilityLongResponseV2 = AGODA_RESPONSE_UNMARSHALLER.unmarshal(new StringReader(responseStreamAsString)).asInstanceOf[AvailabilityLongResponseV2]
 
+
         return response
     }
 }

@@ -138,6 +138,37 @@ object AvailabilityRequestHandlerHelper
         (1 to lengthOfStay).map(_ => nightPriceList += priceList)
 
         val roomPrice: PropertyAvailabilityRoomRates = new PropertyAvailabilityRoomRates
+        print("ListOfS:"+r.rateInfo.surcharges)
+        if(!r.rateInfo.surcharges.isEmpty) {
+            print("lll")
+            var mandatory_fee = new PropertyAvailabilityPrice
+            var mandatory_tax = new PropertyAvailabilityPrice
+            var stayPriceProperty = new PropertyAvailabilityPrice
+            var stayPriceSale = new PropertyAvailabilityPrice
+            for (surcharge <- r.rateInfo.surcharges) {
+                print("Surcharge:"+surcharge)
+                if(surcharge.charge!=null) {
+                    if (surcharge.charge.equals("Excluded")) {
+                        mandatory_fee.priceType = "mandatory_fee"
+                        mandatory_fee.value = surcharge.rate.exclusive
+                        mandatory_fee.currency = r.currency
+                        mandatory_tax.priceType = "mandatory_tax"
+                        mandatory_tax.value = surcharge.rate.tax
+                        mandatory_tax.currency = r.currency
+                    } else {
+                        stayPriceProperty.priceType = "Property_fee"
+                        stayPriceProperty.value = surcharge.rate.exclusive
+                        stayPriceProperty.currency = r.currency
+                        stayPriceSale.priceType = "sales_tax"
+                        stayPriceSale.currency = r.currency
+                        stayPriceSale.value = surcharge.rate.tax
+                    }
+                }
+            }
+            roomPrice.fees=Array(mandatory_fee,mandatory_tax)
+            roomPrice.stayPrice=Array(stayPriceProperty,stayPriceSale)
+        }
+
         roomPrice.nightlyPrice = nightPriceList.toList
         roomPrice.totals = totalPrice
 
