@@ -1,9 +1,7 @@
 package com.hopper.model.availability.agoda.request
 
-import java.util
-
-import com.hopper.constants.GlobalConstants
 import com.hopper.model.availability.agoda.request.constants.AgodaAvailabilityRequestType
+import com.hopper.model.constants.GlobalConstants
 import com.twitter.finagle.http.Request
 import javax.xml.bind.annotation._
 import org.apache.commons.lang.StringUtils
@@ -93,7 +91,6 @@ class AvailabilityRequestV2
 
                 case GlobalConstants.OCCUPANCY_KEY =>
                 {
-                    //print("Value "+v)
                     occupancies = v :: occupancies
                     _populateOccupancy(v)
                 }

@@ -3,16 +3,16 @@ package com.hopper.auth
 import java.io.{IOException, StringReader, StringWriter}
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.hopper.constants.GlobalConstants
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.hopper.handler.AvailabilityRequestHandlerHelper
 import com.hopper.model.availability.agoda.request.AvailabilityRequestV2
 import com.hopper.model.availability.agoda.response.AvailabilityLongResponseV2
+import com.hopper.model.constants.GlobalConstants
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.util.Future
 import javax.xml.bind.{JAXBContext, JAXBException, Marshaller, Unmarshaller}
 import org.jboss.netty.handler.codec.http.{DefaultHttpResponse, HttpResponseStatus, HttpVersion}
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
 class AvailabilityRequestHandler extends Service[Request, Response]
 {
