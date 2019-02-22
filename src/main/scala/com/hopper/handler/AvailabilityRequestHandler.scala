@@ -1,6 +1,10 @@
 package com.hopper.auth
 
 import java.io.{IOException, StringReader, StringWriter}
+import collection.JavaConversions._
+import java.text.SimpleDateFormat
+import java.util
+import java.util.{Calendar, Date}
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
@@ -14,6 +18,7 @@ import com.twitter.finagle.http.{Request, Response}
 import com.twitter.util.Future
 import javax.xml.bind.{JAXBContext, JAXBException, Marshaller, Unmarshaller}
 import org.jboss.netty.handler.codec.http.{DefaultHttpResponse, HttpResponseStatus, HttpVersion}
+import sun.util.resources.cldr.aa.CalendarData_aa_ER
 
 class AvailabilityRequestHandler extends Service[Request, Response]
 {
@@ -30,12 +35,13 @@ class AvailabilityRequestHandler extends Service[Request, Response]
         dataValidation(request) match {
             case Some(s) => {
                 val jsonResponse = (new ObjectMapper).registerModule(DefaultScalaModule).writeValueAsString(s)
-                val response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.OK))
+                val response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.BAD_REQUEST ))
                 response.setContentTypeJson()
                 response.setContentString(jsonResponse)
                 Future.value(response)
             }
-                case None => {val agodaAvailabilityRequest: AvailabilityRequestV2 = new AvailabilityRequestV2(request)
+                case None => {
+                    val agodaAvailabilityRequest: AvailabilityRequestV2 = new AvailabilityRequestV2(request)
 
                     // Convert agoda POJO to XML.
                     val agodaRequestXML: String = _convertToAgodaXMLRequest(agodaAvailabilityRequest)
@@ -65,7 +71,9 @@ class AvailabilityRequestHandler extends Service[Request, Response]
     def dataValidation(request: Request): Option[EPSErrorResponse]=
     {
         var errorResponse : Option[EPSErrorResponse] = None
-        if(request.getParams("property_id")==None || request.getParams("property_id").isEmpty)
+        println(request)
+        //TODO: remove whitespace from params
+        if( request.getParams("property_id")==null ||  request.getParams("property_id").isEmpty)
         {
             var er = new EPSErrorResponse
             er.errorType="invalid_input"
@@ -141,7 +149,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
             rf.value= "null"
             re.errorType= "language.required"
             re.fields = Array(rf)
-            re.message = "Language is required."
+            re.message = "Language code is required."
             er.errors= Array(re)
             errorResponse = Some(er)
         }
@@ -157,7 +165,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
             rf.value= "null"
             re.errorType= "country_code.required"
             re.fields = Array(rf)
-            re.message = "Country Code is required."
+            re.message = "Country code is required."
             er.errors= Array(re)
             errorResponse = Some(er)
         }
@@ -173,7 +181,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
             rf.value= "null"
             re.errorType= "sales_channel.required"
             re.fields = Array(rf)
-            re.message = "Sales Channel is required."
+            re.message = "Sales Channel is required.  Accepted sales_channel values are: [website, agent_tool, mobile_app, mobile_web, cache, meta]."
             er.errors= Array(re)
             errorResponse = Some(er)
         }
@@ -189,7 +197,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
             rf.value= "null"
             re.errorType= "currency.required"
             re.fields = Array(rf)
-            re.message = "Currency Code is required."
+            re.message = "Currency code is required."
             er.errors= Array(re)
             errorResponse = Some(er)
         }
@@ -205,7 +213,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
             rf.value= "null"
             re.errorType= "sales_environment.required"
             re.fields = Array(rf)
-            re.message = "Sales Environment is required."
+            re.message = "Sales Environment is required.  Accepted sales_environment values are: [hotel_only, hotel_package, loyalty]."
             er.errors= Array(re)
             errorResponse = Some(er)
         }
@@ -221,10 +229,173 @@ class AvailabilityRequestHandler extends Service[Request, Response]
             rf.value= "null"
             re.errorType= "sort_type.required"
             re.fields = Array(rf)
-            re.message = "Sort Type is required."
+            re.message = "Sort Type is required.  Accepted sort_type values are: [preferred]."
             er.errors= Array(re)
             errorResponse = Some(er)
         }
+        if( request.getParams("property_id").size()>250)
+        {
+            var er = new EPSErrorResponse
+            er.errorType="invalid_input"
+            er.message="An invalid request was sent in, please check the nested errors for details."
+            var re = new ResponseErrors
+            var rf = new ResponseErrorFields
+            rf.errorType = "querystring"
+            rf.name = "property_id"
+            rf.value= request.getParams("property_id").size().toString
+            re.errorType= "property_id.above_maximum"
+            re.fields = Array(rf)
+            re.message = "The number of property_id's passed in must not be greater than 250."
+            er.errors= Array(re)
+            errorResponse = Some(er)
+        }
+        if(request.getParams("occupancy").size()>8)
+        {
+            var er = new EPSErrorResponse
+            er.errorType="invalid_input"
+            er.message="An invalid request was sent in, please check the nested errors for details."
+            var re = new ResponseErrors
+            var rf = new ResponseErrorFields
+            rf.errorType = "querystring"
+            rf.name = "occupancy"
+            rf.value= request.getParams("occupancy").size().toString
+            re.errorType= "number_of_occupancies.invalid_above_maximum"
+            re.fields = Array(rf)
+            re.message = "Number of occupancies must be less than 9."
+            er.errors= Array(re)
+            errorResponse = Some(er)
+        }
+        if(!request.getParams(GlobalConstants.OCCUPANCY_KEY).isEmpty)
+        {
+
+            var occupancyList:util.List[String]= request.getParams(GlobalConstants.OCCUPANCY_KEY)
+            println("Occupancy--"+occupancyList.toString)
+            for(occupancy:String<-occupancyList){
+                var split = occupancy.split("-")
+                var adultsCount = split(0).toInt
+                println("acount"+adultsCount)
+                if(adultsCount>8){
+                    var er = new EPSErrorResponse
+                    er.errorType="invalid_input"
+                    er.message="An invalid request was sent in, please check the nested errors for details."
+                    var re = new ResponseErrors
+                    var rf = new ResponseErrorFields
+                    rf.errorType = "querystring"
+                    rf.name = "occupancy"
+                    rf.value= adultsCount.toString
+                    re.errorType= "number_of_adults.invalid_above_maximum"
+                    re.fields = Array(rf)
+                    re.message = "Number of adults must be less than 9."
+                    er.errors= Array(re)
+                    errorResponse = Some(er)
+                }
+                if(adultsCount==0){
+                    var er = new EPSErrorResponse
+                    er.errorType="invalid_input"
+                    er.message="An invalid request was sent in, please check the nested errors for details."
+                    var re = new ResponseErrors
+                    var rf = new ResponseErrorFields
+                    rf.errorType = "querystring"
+                    rf.name = "occupancy"
+                    rf.value= adultsCount.toString
+                    re.errorType= "number_of_adults.invalid_below_minimum"
+                    re.fields = Array(rf)
+                    re.message = "Number of adults must be greater than 0."
+                    er.errors= Array(re)
+                    errorResponse = Some(er)
+                }
+                var childrenAges:List[Int]= List()
+                var childrenCount:Int=0
+                if (split.length == 2) {
+                    childrenAges = split(1).split(",").map(_.toInt).toList
+                    childrenCount = childrenAges.size
+                    for (childAge <- childrenAges) {
+                        if (childAge >= 18) {
+                            var er = new EPSErrorResponse
+                            er.errorType="invalid_input"
+                            er.message="An invalid request was sent in, please check the nested errors for details."
+                            var re = new ResponseErrors
+                            var rf = new ResponseErrorFields
+                            rf.errorType = "querystring"
+                            rf.name = "occupancy"
+                            rf.value= childAge.toString
+                            re.errorType= "child_age.invalid_outside_accepted_range"
+                            re.fields = Array(rf)
+                            re.message = "Child age must be between 0 and 17."
+                            er.errors= Array(re)
+                            errorResponse = Some(er)
+                        }
+                    }
+                }
+            }
+        }
+        if(request.getParam("checkin")!=null)
+        {
+            import java.text.SimpleDateFormat
+            import java.util.concurrent.TimeUnit
+            val checkin = request.getParam("checkin")
+            val df = new SimpleDateFormat("yyyy-MM-dd")
+            val checkinDate = df.parse(checkin)
+            val currdate = new Date()
+            val diff =  checkinDate.getTime- currdate.getTime
+            val days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)
+            println("Days"+days)
+            if(days<0){
+                val er = new EPSErrorResponse
+                er.errorType="invalid_input"
+                er.message="An invalid request was sent in, please check the nested errors for details."
+                var re = new ResponseErrors
+                var rf = new ResponseErrorFields
+                rf.errorType = "querystring"
+                rf.name = "checkin"
+               // rf.value= request.getParams("occupancy").size().toString
+                re.errorType= "checkin.invalid_date_in_the_past"
+                re.fields = Array(rf)
+                re.message = "Checkin cannot be in the past."
+                er.errors= Array(re)
+                errorResponse = Some(er)
+            }
+            if(days>500) {
+                val er = new EPSErrorResponse
+                er.errorType = "invalid_input"
+                er.message = "An invalid request was sent in, please check the nested errors for details."
+                var re = new ResponseErrors
+                var rf = new ResponseErrorFields
+                rf.errorType = "querystring"
+                rf.name = "checkin"
+                // rf.value= request.getParams("occupancy").size().toString
+                re.errorType = "checkin.invalid_date_too_far_out"
+                re.fields = Array(rf)
+                re.message = "Checkin too far in the future."
+                er.errors = Array(re)
+                errorResponse = Some(er)
+            }
+            if(request.getParam("checkout")!=null){
+                val checkout = request.getParam("checkout");
+                val diff =  df.parse(checkout).getTime-checkinDate.getTime
+                val days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)
+                if(days<0){
+                    val er = new EPSErrorResponse
+                    er.errorType = "invalid_input"
+                    er.message = "An invalid request was sent in, please check the nested errors for details."
+                    var re = new ResponseErrors
+                    var rf = new ResponseErrorFields
+                    var rf2 = new ResponseErrorFields
+                    rf.errorType = "querystring"
+                    rf.name = "checkin"
+                    rf2.errorType = "querystring"
+                    rf2.name = "checkout"
+                    // rf.value= request.getParams("occupancy").size().toString
+                    re.errorType = "checkout.invalid_checkout_before_checkin"
+                    re.fields = Array(rf,rf2)
+                    re.message = "Checkout must be after checkin."
+                    er.errors = Array(re)
+                    errorResponse = Some(er)
+                }
+            }
+
+        }
+
         errorResponse
     }
 

@@ -116,8 +116,6 @@ class AvailabilityRequestV2
             return
         }
 
-        val roomList = reqOccupancy.split("\\|").toList
-
             val split = reqOccupancy.split("-")
             adultsCount = split(0).toInt
             if (split.length == 2)

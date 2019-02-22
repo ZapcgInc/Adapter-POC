@@ -140,7 +140,6 @@ object AvailabilityRequestHandlerHelper
         val roomPrice: PropertyAvailabilityRoomRates = new PropertyAvailabilityRoomRates
         print("ListOfS:"+r.rateInfo.surcharges)
         if(!r.rateInfo.surcharges.isEmpty) {
-            print("lll")
             var mandatory_fee = new PropertyAvailabilityPrice
             var mandatory_tax = new PropertyAvailabilityPrice
             var stayPriceProperty = new PropertyAvailabilityPrice
