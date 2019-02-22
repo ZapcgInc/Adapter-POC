@@ -5,5 +5,5 @@ libraryDependencies ++= hai.build.deps
 
 enablePlugins(JavaServerAppPackaging)
 
-lazy val `agoda-svc` = project
+lazy val `agoda-svc` = project.in(file("."))
 

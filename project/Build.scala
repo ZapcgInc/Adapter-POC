@@ -23,13 +23,27 @@ object build {
   val junitint = "com.novocode" % "junit-interface" % "0.11"
   val scalatest = "org.scalatest" %% "scalatest" % "3.0.5"
 
+  val circe_generic = "io.circe" %% "circe-generic" % "0.11.1"
+  val circe_parse = "io.circe" %% "circe-parser" % "0.11.1"
+  val circe_libs = compile(circe_generic,circe_parse)
+
   val cucumber_libs = test(
     "io.cucumber" %% "cucumber-scala" % "4.2.0",
     "io.cucumber" % "cucumber-junit" % "4.2.0"
   )
 
-  val deps = finch_libs ++ logging_libs ++ cucumber_libs ++
-    test(junit, junitint)
+  val jackson_core = "com.fasterxml.jackson.core" % "jackson-core" % "2.9.8"
+  val jackson_scala = "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.9.8"
+
+  val apacheHttpVersion = "4.5.6"
+  val apacheHttpClient = "org.apache.httpcomponents" % "httpclient" % apacheHttpVersion
+
+  val commons_io = "commons-io" % "commons-io" % "2.6"
+
+
+  val deps = finch_libs ++ logging_libs ++ cucumber_libs ++ circe_libs ++
+    test(junit, junitint, scalatest) ++
+    compile(jackson_scala, apacheHttpClient, commons_io)
 
 
 }

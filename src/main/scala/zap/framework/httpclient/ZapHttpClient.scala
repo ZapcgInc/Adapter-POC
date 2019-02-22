@@ -1,5 +1,7 @@
 package zap.framework.httpclient
 
-class ZapHttpClient {
+trait ZapHttpClient {
+
+  def execute(request : ZapHttpRequest) : ZapHttpResponse
 
 }
