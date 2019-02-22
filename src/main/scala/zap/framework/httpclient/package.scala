@@ -1,9 +1,15 @@
 package zap.framework
 
+import org.apache.http.impl.client._
 import zap.framework.exceptions.ZapException
 
 package object httpclient {
 
+  var customHttpClient : Option[ZapHttpClient] = None
+
+  var zttpClient = customHttpClient.getOrElse(new ZapHttpApacheClient {
+    override val apacheClient: CloseableHttpClient = HttpClients.createDefault()
+  })
 
   implicit class StringToHttpMethod(string: String) {
     def toHttpMethod = {
