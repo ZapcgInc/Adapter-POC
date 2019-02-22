@@ -33,6 +33,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
         import com.hopper.model.availability.eps.EPSShoppingResponse
 
         dataValidation(request) match {
+
             case Some(s) => {
                 val jsonResponse = (new ObjectMapper).registerModule(DefaultScalaModule).writeValueAsString(s)
                 val response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.BAD_REQUEST ))
@@ -73,7 +74,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
         var errorResponse : Option[EPSErrorResponse] = None
         println(request)
         //TODO: remove whitespace from params
-        if( request.getParams("property_id")==null ||  request.getParams("property_id").isEmpty)
+        if( request.getParams(GlobalConstants.PROPERTY_ID)==null ||  request.getParams(GlobalConstants.PROPERTY_ID).isEmpty)
         {
             var er = new EPSErrorResponse
             er.errorType="invalid_input"
@@ -89,7 +90,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
             er.errors= Array(re)
             errorResponse = Some(er)
         }
-        if(request.getParam("checkin")==null || request.getParam("checkin").isEmpty )
+        if(request.getParam(GlobalConstants.CHECKIN_PARAM_KEY)==null || request.getParam(GlobalConstants.CHECKIN_PARAM_KEY).isEmpty )
         {
             var er = new EPSErrorResponse
             er.errorType="invalid_input"
@@ -105,7 +106,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
             er.errors= Array(re)
             errorResponse = Some(er)
         }
-        if(request.getParam("checkout")==null || request.getParam("checkout").isEmpty )
+        if(request.getParam(GlobalConstants.CHECKOUT_PARAM_KEY)==null || request.getParam(GlobalConstants.CHECKOUT_PARAM_KEY).isEmpty )
         {
             var er = new EPSErrorResponse
             er.errorType="invalid_input"
@@ -121,7 +122,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
             er.errors= Array(re)
             errorResponse = Some(er)
         }
-        if(request.getParam("occupancy")==null || request.getParam("occupancy").isEmpty  )
+        if(request.getParam(GlobalConstants.OCCUPANCY_KEY)==null || request.getParam(GlobalConstants.OCCUPANCY_KEY).isEmpty  )
         {
             var er = new EPSErrorResponse
             er.errorType="invalid_input"
@@ -137,7 +138,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
             er.errors= Array(re)
             errorResponse = Some(er)
         }
-        if(request.getParam("language")==null || request.getParam("language").isEmpty)
+        if(request.getParam(GlobalConstants.LANGUAGE_CODE_KEY)==null || request.getParam(GlobalConstants.LANGUAGE_CODE_KEY).isEmpty)
         {
             var er = new EPSErrorResponse
             er.errorType="invalid_input"
@@ -153,7 +154,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
             er.errors= Array(re)
             errorResponse = Some(er)
         }
-        if(request.getParam("country_code")==null||request.getParam("country_code").isEmpty)
+        if(request.getParam(GlobalConstants.COUNTRY_CODE_KEY)==null||request.getParam(GlobalConstants.COUNTRY_CODE_KEY).isEmpty)
         {
             var er = new EPSErrorResponse
             er.errorType="invalid_input"
@@ -185,7 +186,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
             er.errors= Array(re)
             errorResponse = Some(er)
         }
-        if(request.getParam("currency")==null||request.getParam("currency").isEmpty)
+        if(request.getParam(GlobalConstants.CURRENCY_CODE_KEY)==null||request.getParam(GlobalConstants.CURRENCY_CODE_KEY).isEmpty)
         {
             var er = new EPSErrorResponse
             er.errorType="invalid_input"
@@ -233,7 +234,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
             er.errors= Array(re)
             errorResponse = Some(er)
         }
-        if( request.getParams("property_id").size()>250)
+        if( request.getParams(GlobalConstants.PROPERTY_ID).size()>250)
         {
             var er = new EPSErrorResponse
             er.errorType="invalid_input"
@@ -249,7 +250,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
             er.errors= Array(re)
             errorResponse = Some(er)
         }
-        if(request.getParams("occupancy").size()>8)
+        if(request.getParams(GlobalConstants.OCCUPANCY_KEY).size()>8)
         {
             var er = new EPSErrorResponse
             er.errorType="invalid_input"
@@ -269,11 +270,11 @@ class AvailabilityRequestHandler extends Service[Request, Response]
         {
 
             var occupancyList:util.List[String]= request.getParams(GlobalConstants.OCCUPANCY_KEY)
-            println("Occupancy--"+occupancyList.toString)
+
             for(occupancy:String<-occupancyList){
                 var split = occupancy.split("-")
                 var adultsCount = split(0).toInt
-                println("acount"+adultsCount)
+
                 if(adultsCount>8){
                     var er = new EPSErrorResponse
                     er.errorType="invalid_input"
@@ -329,7 +330,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
                 }
             }
         }
-        if(request.getParam("checkin")!=null)
+        if(request.getParam(GlobalConstants.CHECKIN_PARAM_KEY)!=null)
         {
             import java.text.SimpleDateFormat
             import java.util.concurrent.TimeUnit
@@ -370,7 +371,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
                 er.errors = Array(re)
                 errorResponse = Some(er)
             }
-            if(request.getParam("checkout")!=null){
+            if(request.getParam(GlobalConstants.CHECKOUT_PARAM_KEY)!=null){
                 val checkout = request.getParam("checkout");
                 val diff =  df.parse(checkout).getTime-checkinDate.getTime
                 val days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)
@@ -393,6 +394,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
                     errorResponse = Some(er)
                 }
             }
+
 
         }
 

@@ -67,7 +67,6 @@ class AvailabilityRequestV2
         {
             val k = entry.getKey
             val v = entry.getValue
-            print("Any Value: "+v)
             k match
             {
                 case GlobalConstants.CHECKIN_PARAM_KEY =>
@@ -86,7 +85,7 @@ class AvailabilityRequestV2
 
                 case GlobalConstants.LANGUAGE_CODE_KEY =>
                 {
-                    language = v
+                    language = v.toLowerCase()
                 }
 
                 case GlobalConstants.OCCUPANCY_KEY =>
