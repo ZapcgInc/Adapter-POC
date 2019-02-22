@@ -31,16 +31,85 @@ class AvailabilityRequestHandler extends Service[Request, Response]
     override def apply(request: Request): Future[Response] =
     {
         import com.hopper.model.availability.eps.EPSShoppingResponse
+        println("Test"+request.getHeader("Test"))
+        var value = request.getHeader("Test")
 
-        dataValidation(request) match {
+        if(request.getHeader("Test")!=null && value.equals("no_availability")){
+                var er = new EPSErrorResponse
+                er.errorType = "no_availability"
+                er.message = "No availability was found for the properties requested."
+                var errorResponse: Option[EPSErrorResponse] = None
+                errorResponse = Some(er)
+                val jsonResponse = (new ObjectMapper).registerModule(DefaultScalaModule).writeValueAsString(errorResponse)
+                val response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.NOT_FOUND))
+                response.setContentTypeJson()
+                response.setContentString(jsonResponse)
+                Future.value(response)
 
-            case Some(s) => {
-                val jsonResponse = (new ObjectMapper).registerModule(DefaultScalaModule).writeValueAsString(s)
-                val response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.BAD_REQUEST ))
+            } else if (request.getHeader("Test")!=null && value.equals("unknown_internal_error")) {
+                var er = new EPSErrorResponse
+                er.errorType = "unknown_internal_error"
+                er.message = "An internal server error has occurred."
+                var errorResponse: Option[EPSErrorResponse] = None
+                errorResponse = Some(er)
+                val jsonResponse = (new ObjectMapper).registerModule(DefaultScalaModule).writeValueAsString(errorResponse)
+                val response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.INTERNAL_SERVER_ERROR))
+                response.setContentTypeJson()
+                response.setContentString(jsonResponse)
+                Future.value(response)
+            } else if (request.getHeader("Test")!=null && value.equals("service_unavailable")) {
+                println("Inside service unavailabe")
+                var er = new EPSErrorResponse
+                er.errorType = "service_unavailable"
+                er.message = "This service is currently unavailable."
+                var errorResponse: Option[EPSErrorResponse] = None
+                errorResponse = Some(er)
+                val jsonResponse = (new ObjectMapper).registerModule(DefaultScalaModule).writeValueAsString(errorResponse)
+                val response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.SERVICE_UNAVAILABLE))
+                println("Service code" + response.getStatusCode())
+                response.setContentTypeJson()
+                response.setContentString(jsonResponse)
+                Future.value(response)
+            } else if (value.equals("forbidden")) {
+            var er = new EPSErrorResponse
+            er.errorType = "request_forbidden"
+            er.message = "Your request could not be authorized. Ensure that you have access."
+            var errorResponse: Option[EPSErrorResponse] = None
+            errorResponse = Some(er)
+            val jsonResponse = (new ObjectMapper).registerModule(DefaultScalaModule).writeValueAsString(errorResponse)
+            val response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.FORBIDDEN))
+            response.setContentTypeJson()
+            response.setContentString(jsonResponse)
+            Future.value(response)
+        } else if (value.equals("INVALID")) {
+                var er = new EPSErrorResponse
+                er.errorType = "invalid_input"
+                er.message = "An invalid request was sent in, please check the nested errors for details."
+                var re = new ResponseErrors
+                re.errorType= "test.content_invalid"
+                re.message = "Content of the test header is invalid. Please use one of the following valid values: forbidden, no_availability, service_unavailable, standard, unknown_internal_error"
+                er.errors= Array(re)
+                var errorResponse: Option[EPSErrorResponse] = None
+                errorResponse = Some(er)
+                val jsonResponse = (new ObjectMapper).registerModule(DefaultScalaModule).writeValueAsString(errorResponse)
+                val response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.BAD_REQUEST))
                 response.setContentTypeJson()
                 response.setContentString(jsonResponse)
                 Future.value(response)
             }
+//            Future.value(null)
+            else
+        {
+            println("DATVALIDATION")
+            dataValidation(request) match {
+
+                case Some(s) => {
+                    val jsonResponse = (new ObjectMapper).registerModule(DefaultScalaModule).writeValueAsString(s)
+                    val response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.BAD_REQUEST))
+                    response.setContentTypeJson()
+                    response.setContentString(jsonResponse)
+                    Future.value(response)
+                }
                 case None => {
                     val agodaAvailabilityRequest: AvailabilityRequestV2 = new AvailabilityRequestV2(request)
 
@@ -61,7 +130,9 @@ class AvailabilityRequestHandler extends Service[Request, Response]
                     response.setContentTypeJson()
                     response.setContentString(jsonResponse)
 
-                    Future.value(response)}
+                    Future.value(response)
+                }
+            }
         }
 
 
@@ -202,6 +273,50 @@ class AvailabilityRequestHandler extends Service[Request, Response]
             er.errors= Array(re)
             errorResponse = Some(er)
         }
+        if(request.getParam(GlobalConstants.CURRENCY_CODE_KEY)!=null)
+        {
+            val allowedValues:util.List[String] = List("AED","ARS","AUD","BRL","CAD","CHF","CNY","DKK","EGP","EUR","GBP",
+                "HKD","IDR","ILS","INR","JPY","KRW","MXN","MYR","NOK","NZD","PHP","PLN", "RUB", "SAR", "SEK", "SGD", "THB",
+                "TRY", "TWD", "USD", "VND", "ZAR")
+            if(!(allowedValues.contains(request.getParam(GlobalConstants.CURRENCY_CODE_KEY)))){
+                var er = new EPSErrorResponse
+                er.errorType="invalid_input"
+                er.message="An invalid request was sent in, please check the nested errors for details."
+                var re = new ResponseErrors
+                var rf = new ResponseErrorFields
+                rf.errorType = "querystring"
+                rf.name = "currency"
+                rf.value= "null"
+                re.errorType= "currency.not_supported"
+                re.fields = Array(rf)
+                re.message = "Currency is not supported. Supported currencies are: [AED, ARS, AUD, BRL, CAD, CHF, CNY, DKK, EGP, EUR, GBP, HKD, IDR, ILS, INR, JPY, KRW, MXN, MYR, NOK, NZD, PHP, PLN, RUB, SAR, SEK, SGD, THB, TRY, TWD, USD, VND, ZAR]"
+                er.errors= Array(re)
+                errorResponse = Some(er)
+            }
+            if(request.getParam(GlobalConstants.LANGUAGE_CODE_KEY)!=null)
+            {
+                val allowedValues:util.List[String] = List("ar-SA", "cs-CZ", "da-DK", "de-DE", "el-GR", "en-US", "es-ES",
+                    "es-MX", "fi-FI", "fr-CA", "fr-FR", "hr-HR", "hu-HU", "id-ID", "is-IS", "it-IT", "ja-JP", "ko-KR",
+                    "lt-LT", "ms-MY", "nb-NO", "nl-NL", "pl-PL", "pt-BR", "pt-PT", "ru-RU", "sk-SK", "sv-SE", "th-TH",
+                    "tr-TR", "uk-UA", "vi-VN", "zh-CN", "zh-TW")
+                if(!(allowedValues.contains(request.getParam(GlobalConstants.LANGUAGE_CODE_KEY)))){
+                    var er = new EPSErrorResponse
+                    er.errorType="invalid_input"
+                    er.message="An invalid request was sent in, please check the nested errors for details."
+                    var re = new ResponseErrors
+                    var rf = new ResponseErrorFields
+                    rf.errorType = "querystring"
+                    rf.name = "language"
+                    rf.value= "null"
+                    re.errorType= "language.not_supported"
+                    re.fields = Array(rf)
+                    re.message = "Language is not supported. Supported languages are: [ar-SA, cs-CZ, da-DK, de-DE, el-GR, en-US, es-ES, es-MX, fi-FI, fr-CA, fr-FR, hr-HR, hu-HU, id-ID, is-IS, it-IT, ja-JP, ko-KR, lt-LT, ms-MY, nb-NO, nl-NL, pl-PL, pt-BR, pt-PT, ru-RU, sk-SK, sv-SE, th-TH, tr-TR, uk-UA, vi-VN, zh-CN, zh-TW]"
+                    er.errors= Array(re)
+                    errorResponse = Some(er)
+                }
+        }
+
+        }
         if(request.getParam("sales_environment")==null||request.getParam("sales_environment").isEmpty)
         {
             var er = new EPSErrorResponse
@@ -209,6 +324,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
             er.message="An invalid request was sent in, please check the nested errors for details."
             var re = new ResponseErrors
             var rf = new ResponseErrorFields
+
             rf.errorType = "querystring"
             rf.name = "sales_environment"
             rf.value= "null"
