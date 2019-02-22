@@ -2,7 +2,7 @@
   "container": {
     "type": "DOCKER",
     "docker": {
-      "image": "saiteja50/hopperadapterscala",
+      "image": "saiteja50/adapterv3",
       "network": "BRIDGE",
       "portMappings": [
         { "containerPort": 7001, "hostPort": 0, "protocol": "tcp" }
@@ -11,7 +11,7 @@
     }
   },
   "cmd": "sbt run",
-  "id": "hopperadapterscala",
+  "id": "adapterv3",
   "instances": 1,
   "cpus": 0.1,
   "mem": 1024,
