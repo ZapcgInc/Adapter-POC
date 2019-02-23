@@ -1,6 +1,7 @@
 package com.hopper.model.availability.eps
 
 import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonProperty}
+import com.hopper.model.availability.agoda.response.PolicyDate
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 class PropertyAvailabilityCancelPenalties
@@ -23,4 +24,22 @@ class PropertyAvailabilityCancelPenalties
     @JsonProperty("percent")
     var percentage: Float = _
 
+    def this(p_currency:String, p_start:String, p_end:String, p_amount:Double)
+    {
+        this()
+        currency = p_currency
+        start = p_start
+        end = p_end
+        amount = p_amount
+    }
+
+
+    def this(p_currency:String, policyDate: PolicyDate)
+    {
+        this()
+        currency = p_currency
+        start = Option(policyDate.after).getOrElse("")
+        end = Option(policyDate.before).getOrElse("")
+        amount =  policyDate.rate.inclusive
+    }
 }

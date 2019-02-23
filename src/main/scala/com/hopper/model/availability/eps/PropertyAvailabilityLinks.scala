@@ -10,4 +10,11 @@ class PropertyAvailabilityLinks
 
     @JsonProperty("href")
     var href: String = _
+
+    def this(httpMethod:String, hrefLink: String)
+    {
+        this()
+        method = httpMethod
+        href = hrefLink
+    }
 }

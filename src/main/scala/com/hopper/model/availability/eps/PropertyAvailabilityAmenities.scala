@@ -10,4 +10,10 @@ class PropertyAvailabilityAmenities
 
     @JsonProperty("name")
     var name: String = _
+
+    def this(p_id:String)
+    {
+        this()
+        id = p_id
+    }
 }

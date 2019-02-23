@@ -5,7 +5,6 @@ import java.io.{IOException, StringReader, StringWriter}
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.google.common.net.{HttpHeaders, MediaType}
-import com.hopper.handler.AvailabilityRequestHandlerHelper
 import com.hopper.model.availability.agoda.request.AvailabilityRequestV2
 import com.hopper.model.availability.agoda.response.AvailabilityLongResponseV2
 import com.hopper.model.availability.eps.EPSShoppingResponse
@@ -26,6 +25,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
 
     override def apply(request: Request): Future[Response] =
     {
+        import com.hopper.converter.AvailabilityResponseConverter
         var validationResponse: Option[(HttpResponseStatus, EPSErrorResponse)] = RequestTestHeaderValidator.validate(request)
         if (validationResponse.isDefined)
         {
@@ -49,7 +49,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
         val agodaResponse: AvailabilityLongResponseV2 = _postXMLRequest(agodaRequestXML)
 
         // Convert to EPS Response
-        val epsResponse: EPSShoppingResponse = AvailabilityRequestHandlerHelper.convertToEPSResponse(agodaAvailabilityRequest, agodaResponse)
+        val epsResponse: EPSShoppingResponse = new AvailabilityResponseConverter(agodaAvailabilityRequest, agodaResponse).convertToEPSResponse()
 
         Future.value(_convertToEPSResponse(HttpResponseStatus.OK, epsResponse.properties))
     }

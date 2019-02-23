@@ -14,4 +14,12 @@ class PropertyAvailabilityRoom
 
     @JsonProperty("rates")
     var rates: Array[PropertyAvailabilityRates] = _
+
+    def this(p_id: String, p_name: String, p_rates: Array[PropertyAvailabilityRates])
+    {
+        this()
+        id = p_id
+        room_name = p_name
+        rates = p_rates
+    }
 }

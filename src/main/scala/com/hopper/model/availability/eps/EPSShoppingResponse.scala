@@ -4,9 +4,13 @@ import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonInclude}
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-class EPSShoppingResponse
+class EPSShoppingResponse(val properties: Array[PropertyAvailability])
 {
-    var properties: Array[PropertyAvailability] = _
+    /*no-arg constructor for JSON Parser*/
+    def this()
+    {
+        this(null)
+    }
 }
 
 

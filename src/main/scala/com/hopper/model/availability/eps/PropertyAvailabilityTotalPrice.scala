@@ -20,4 +20,11 @@ class PropertyAvailabilityTotalPrice
 
     @JsonProperty("minimum_selling_price")
     var minSellingPrice: PropertyAvailabilityPriceWithCurrency = _
+
+    def this(p_inclusive:PropertyAvailabilityPriceWithCurrency, p_exclusive:PropertyAvailabilityPriceWithCurrency)
+    {
+        this()
+        inclusive = p_inclusive
+        exclusive = p_exclusive
+    }
 }

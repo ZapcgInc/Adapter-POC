@@ -10,4 +10,11 @@ class PropertyAvailabilityPriceWithCurrency
 
     @JsonProperty("request_currency")
     var request: PropertyAvailabilityPrice = _
+
+    def this(p_billable: PropertyAvailabilityPrice, p_request: PropertyAvailabilityPrice)
+    {
+        this()
+        billable = p_billable
+        request = p_request
+    }
 }

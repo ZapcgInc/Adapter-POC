@@ -1,8 +1,10 @@
 package com.hopper.model.availability.eps
 
-import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonProperty}
+import com.fasterxml.jackson.annotation.JsonInclude.Include
+import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonInclude, JsonProperty}
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(Include.NON_NULL, Include.NON_EMPTY)
 class PropertyAvailabilityRates
 {
     @JsonProperty("id")

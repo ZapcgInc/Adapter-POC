@@ -14,4 +14,11 @@ class PropertyAvailability
 
     @JsonProperty("links")
     var links: Map[String, PropertyAvailabilityLinks] = _
+
+    def this(hotelID: String, hotelRooms: Array[PropertyAvailabilityRoom])
+    {
+        this()
+        property_id = hotelID
+        rooms = hotelRooms
+    }
 }
