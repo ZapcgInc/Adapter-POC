@@ -8,7 +8,7 @@ class Cancellation
 {
     @XmlElementWrapper(name = "Hotels")
     @XmlElement(name = "Hotel")
-    var policyParameters: java.util.List[PolicyParameter] = _
+    var policyParameters: Array[PolicyParameter] = _
 
     @XmlElement(name = "PolicyText")
     var policyText: PolicyText = _
@@ -18,7 +18,7 @@ class Cancellation
 
     @XmlElementWrapper(name = "PolicyDates")
     @XmlElement(name = "PolicyDate")
-    var policyDates: java.util.List[PolicyDate] = _
+    var policyDates: Array[PolicyDate] = _
 
 
     override def toString = s"Cancellation(policyParameters=$policyParameters, policyText=$policyText, policyTranslated=$policyTranslated, policyDates=$policyDates)"

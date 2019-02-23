@@ -15,7 +15,7 @@ class RateInfo
 
     @XmlElementWrapper(name = "Surcharges")
     @XmlElement(name = "Surcharge")
-    var surcharges:java.util.List[Surcharge]= _
+    var surcharges:Array[Surcharge]= _
 
     @XmlElement(name = "TotalPaymentAmount")
     var totalPaymentAmount:TotalPaymentAmount = _

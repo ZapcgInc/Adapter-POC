@@ -7,7 +7,6 @@ import javax.xml.bind.annotation.XmlElementWrapper
 @XmlAccessorType(XmlAccessType.FIELD)
 class AvailabilityLongResponseV2
 {
-
     @XmlAttribute(name = "status")
     var status: Int = 0
 
@@ -16,11 +15,11 @@ class AvailabilityLongResponseV2
 
     @XmlElementWrapper(name = "Hotels")
     @XmlElement(name = "Hotel")
-    var hotels: java.util.List[Hotel] = _
+    var hotels: Array[Hotel] = _
 
     @XmlElementWrapper(name = "ErrorMessages")
     @XmlElement(name = "ErrorMessage")
-    var errors: java.util.List[ErrorMessage] = _
+    var errors: Array[ErrorMessage] = _
 
     override def toString = s"AvailabilityLongResponseV2($status, $searchID, $hotels)"
 }

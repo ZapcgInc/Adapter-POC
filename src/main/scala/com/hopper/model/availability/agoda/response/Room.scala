@@ -49,7 +49,7 @@ class Room
     var cancellation: Cancellation = _
 
     @XmlElement(name = "Benefits")
-    var benefits: java.util.List[Benefit] = _
+    var benefits: Array[Benefit] = _
 
 
     override def toString = s"Room(id=$id, name=$name, lineItemID=$lineItemID, ratePlan=$ratePlan, rateType=$rateType, currency=$currency, model=$model, rateCategoryID=$rateCategoryID, blockID=$blockID, standardTranslation=$standardTranslation, maxRoomOccupancy=$maxRoomOccupancy, remainingRooms=$remainingRooms, rateInfo=$rateInfo, cancellation=$cancellation, benefits=$benefits)"

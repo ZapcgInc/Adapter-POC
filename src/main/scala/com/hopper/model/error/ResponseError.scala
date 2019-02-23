@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonInclude, Json
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-class ResponseErrors
+class ResponseError
 {
     @JsonProperty("type")
     var errorType: String = _
@@ -14,4 +14,19 @@ class ResponseErrors
 
     @JsonProperty("fields")
     var fields: Array[ResponseErrorFields] = _
+
+    def this(p_errorType: String, p_message: String, p_field: ResponseErrorFields)
+    {
+        this()
+        errorType = p_errorType
+        message = p_message
+        fields = Array(p_field)
+    }
+
+    def this(p_errorType: String, p_message: String)
+    {
+        this()
+        errorType = p_errorType
+        message = p_message
+    }
 }

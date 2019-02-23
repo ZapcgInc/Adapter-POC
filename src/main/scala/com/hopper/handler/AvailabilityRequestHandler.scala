@@ -1,520 +1,69 @@
 package com.hopper.auth
 
 import java.io.{IOException, StringReader, StringWriter}
-import collection.JavaConversions._
-import java.text.SimpleDateFormat
-import java.util
-import java.util.{Calendar, Date}
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.google.common.net.{HttpHeaders, MediaType}
 import com.hopper.handler.AvailabilityRequestHandlerHelper
 import com.hopper.model.availability.agoda.request.AvailabilityRequestV2
 import com.hopper.model.availability.agoda.response.AvailabilityLongResponseV2
-import com.hopper.model.constants.GlobalConstants
-import com.hopper.model.error.{EPSErrorResponse, ResponseErrorFields, ResponseErrors}
+import com.hopper.model.availability.eps.EPSShoppingResponse
+import com.hopper.model.error.EPSErrorResponse
+import com.hopper.validators.{AvailabilityRequestDataValidator, RequestTestHeaderValidator}
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{Request, Response}
+import com.twitter.finagle.http.{Method, Request, Response}
 import com.twitter.util.Future
 import javax.xml.bind.{JAXBContext, JAXBException, Marshaller, Unmarshaller}
 import org.jboss.netty.handler.codec.http.{DefaultHttpResponse, HttpResponseStatus, HttpVersion}
-import sun.util.resources.cldr.aa.CalendarData_aa_ER
 
 class AvailabilityRequestHandler extends Service[Request, Response]
 {
     private val END_POINT = "http://sandbox-affiliateapi.agoda.com/xmlpartner/xmlservice/search_lrv3"
+
     private val AGODA_REQUEST_MARSHALLER: Marshaller = JAXBContext.newInstance(classOf[AvailabilityRequestV2]).createMarshaller
     private val AGODA_RESPONSE_UNMARSHALLER: Unmarshaller = JAXBContext.newInstance(classOf[AvailabilityLongResponseV2]).createUnmarshaller()
 
-
-
     override def apply(request: Request): Future[Response] =
     {
-        import com.hopper.model.availability.eps.EPSShoppingResponse
-        println("Test"+request.getHeader("Test"))
-        var value = request.getHeader("Test")
-
-        if(request.getHeader("Test")!=null && value.equals("no_availability")){
-                var er = new EPSErrorResponse
-                er.errorType = "no_availability"
-                er.message = "No availability was found for the properties requested."
-                var errorResponse: Option[EPSErrorResponse] = None
-                errorResponse = Some(er)
-                val jsonResponse = (new ObjectMapper).registerModule(DefaultScalaModule).writeValueAsString(errorResponse)
-                val response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.NOT_FOUND))
-                response.setContentTypeJson()
-                response.setContentString(jsonResponse)
-                Future.value(response)
-
-            } else if (request.getHeader("Test")!=null && value.equals("unknown_internal_error")) {
-                var er = new EPSErrorResponse
-                er.errorType = "unknown_internal_error"
-                er.message = "An internal server error has occurred."
-                var errorResponse: Option[EPSErrorResponse] = None
-                errorResponse = Some(er)
-                val jsonResponse = (new ObjectMapper).registerModule(DefaultScalaModule).writeValueAsString(errorResponse)
-                val response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.INTERNAL_SERVER_ERROR))
-                response.setContentTypeJson()
-                response.setContentString(jsonResponse)
-                Future.value(response)
-            } else if (request.getHeader("Test")!=null && value.equals("service_unavailable")) {
-                println("Inside service unavailabe")
-                var er = new EPSErrorResponse
-                er.errorType = "service_unavailable"
-                er.message = "This service is currently unavailable."
-                var errorResponse: Option[EPSErrorResponse] = None
-                errorResponse = Some(er)
-                val jsonResponse = (new ObjectMapper).registerModule(DefaultScalaModule).writeValueAsString(errorResponse)
-                val response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.SERVICE_UNAVAILABLE))
-                println("Service code" + response.getStatusCode())
-                response.setContentTypeJson()
-                response.setContentString(jsonResponse)
-                Future.value(response)
-            } else if (value.equals("forbidden")) {
-            var er = new EPSErrorResponse
-            er.errorType = "request_forbidden"
-            er.message = "Your request could not be authorized. Ensure that you have access."
-            var errorResponse: Option[EPSErrorResponse] = None
-            errorResponse = Some(er)
-            val jsonResponse = (new ObjectMapper).registerModule(DefaultScalaModule).writeValueAsString(errorResponse)
-            val response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.FORBIDDEN))
-            response.setContentTypeJson()
-            response.setContentString(jsonResponse)
-            Future.value(response)
-        } else if (value.equals("INVALID")) {
-                var er = new EPSErrorResponse
-                er.errorType = "invalid_input"
-                er.message = "An invalid request was sent in, please check the nested errors for details."
-                var re = new ResponseErrors
-                re.errorType= "test.content_invalid"
-                re.message = "Content of the test header is invalid. Please use one of the following valid values: forbidden, no_availability, service_unavailable, standard, unknown_internal_error"
-                er.errors= Array(re)
-                var errorResponse: Option[EPSErrorResponse] = None
-                errorResponse = Some(er)
-                val jsonResponse = (new ObjectMapper).registerModule(DefaultScalaModule).writeValueAsString(errorResponse)
-                val response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.BAD_REQUEST))
-                response.setContentTypeJson()
-                response.setContentString(jsonResponse)
-                Future.value(response)
-            }
-//            Future.value(null)
-            else
+        var validationResponse: Option[(HttpResponseStatus, EPSErrorResponse)] = RequestTestHeaderValidator.validate(request)
+        if (validationResponse.isDefined)
         {
-            println("DATVALIDATION")
-            dataValidation(request) match {
+            return Future.value(_convertToEPSResponse(validationResponse.get._1, validationResponse.get._2))
+        }
 
-                case Some(s) => {
-                    val jsonResponse = (new ObjectMapper).registerModule(DefaultScalaModule).writeValueAsString(s)
-                    val response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.BAD_REQUEST))
-                    response.setContentTypeJson()
-                    response.setContentString(jsonResponse)
-                    Future.value(response)
-                }
-                case None => {
-                    val agodaAvailabilityRequest: AvailabilityRequestV2 = new AvailabilityRequestV2(request)
-
-                    // Convert agoda POJO to XML.
-                    val agodaRequestXML: String = _convertToAgodaXMLRequest(agodaAvailabilityRequest)
-
-                    // Post to Agoda API and get response
-                    val agodaResponse: AvailabilityLongResponseV2 = _postXMLRequest(agodaRequestXML)
-
-                    // Convert to EPS Response
-                    val epsResponse: EPSShoppingResponse = AvailabilityRequestHandlerHelper.convertToEPSResponse(agodaAvailabilityRequest, agodaResponse)
-
-                    // Convert EPS Response to JSON
-                    val jsonResponse = (new ObjectMapper).registerModule(DefaultScalaModule).writeValueAsString(epsResponse.properties)
-
-                    // Create and Return Valid HTTP Response
-                    val response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.OK))
-                    response.setContentTypeJson()
-                    response.setContentString(jsonResponse)
-
-                    Future.value(response)
-                }
-            }
+        validationResponse = AvailabilityRequestDataValidator.validate(request)
+        if (validationResponse.isDefined)
+        {
+            return Future.value(_convertToEPSResponse(validationResponse.get._1, validationResponse.get._2))
         }
 
 
         // Create Agoda Request from EAN HTTP Request.
+        val agodaAvailabilityRequest: AvailabilityRequestV2 = new AvailabilityRequestV2(request)
 
+        // Convert agoda POJO to XML.
+        val agodaRequestXML: String = _convertToAgodaXMLRequest(agodaAvailabilityRequest)
+
+        // Post to Agoda API and get response
+        val agodaResponse: AvailabilityLongResponseV2 = _postXMLRequest(agodaRequestXML)
+
+        // Convert to EPS Response
+        val epsResponse: EPSShoppingResponse = AvailabilityRequestHandlerHelper.convertToEPSResponse(agodaAvailabilityRequest, agodaResponse)
+
+        Future.value(_convertToEPSResponse(HttpResponseStatus.OK, epsResponse.properties))
     }
 
-    def dataValidation(request: Request): Option[EPSErrorResponse]=
+    def _convertToEPSResponse(httpResponseStatus: HttpResponseStatus, agodaResponse: AnyRef): Response =
     {
-        var errorResponse : Option[EPSErrorResponse] = None
-        println(request)
-        //TODO: remove whitespace from params
-        if( request.getParams(GlobalConstants.PROPERTY_ID)==null ||  request.getParams(GlobalConstants.PROPERTY_ID).isEmpty)
-        {
-            var er = new EPSErrorResponse
-            er.errorType="invalid_input"
-            er.message="An invalid request was sent in, please check the nested errors for details."
-            var re = new ResponseErrors
-            var rf = new ResponseErrorFields
-            rf.errorType = "querystring"
-            rf.name = "property_id"
-            rf.value= "null"
-            re.errorType= "property_id.required"
-            re.fields = Array(rf)
-            re.message = "Property Id is required."
-            er.errors= Array(re)
-            errorResponse = Some(er)
-        }
-        if(request.getParam(GlobalConstants.CHECKIN_PARAM_KEY)==null || request.getParam(GlobalConstants.CHECKIN_PARAM_KEY).isEmpty )
-        {
-            var er = new EPSErrorResponse
-            er.errorType="invalid_input"
-            er.message="An invalid request was sent in, please check the nested errors for details."
-            var re = new ResponseErrors
-            var rf = new ResponseErrorFields
-            rf.errorType = "querystring"
-            rf.name = "checkin"
-            rf.value= "null"
-            re.errorType= "checkin.required"
-            re.fields = Array(rf)
-            re.message = "Checkin is required."
-            er.errors= Array(re)
-            errorResponse = Some(er)
-        }
-        if(request.getParam(GlobalConstants.CHECKOUT_PARAM_KEY)==null || request.getParam(GlobalConstants.CHECKOUT_PARAM_KEY).isEmpty )
-        {
-            var er = new EPSErrorResponse
-            er.errorType="invalid_input"
-            er.message="An invalid request was sent in, please check the nested errors for details."
-            var re = new ResponseErrors
-            var rf = new ResponseErrorFields
-            rf.errorType = "querystring"
-            rf.name = "checkout"
-            rf.value= "null"
-            re.errorType= "checkout.required"
-            re.fields = Array(rf)
-            re.message = "Checkout is required."
-            er.errors= Array(re)
-            errorResponse = Some(er)
-        }
-        if(request.getParam(GlobalConstants.OCCUPANCY_KEY)==null || request.getParam(GlobalConstants.OCCUPANCY_KEY).isEmpty  )
-        {
-            var er = new EPSErrorResponse
-            er.errorType="invalid_input"
-            er.message="An invalid request was sent in, please check the nested errors for details."
-            var re = new ResponseErrors
-            var rf = new ResponseErrorFields
-            rf.errorType = "querystring"
-            rf.name = "occupancy"
-            rf.value= "null"
-            re.errorType= "occupancy.required"
-            re.fields = Array(rf)
-            re.message = "Occupancy is required."
-            er.errors= Array(re)
-            errorResponse = Some(er)
-        }
-        if(request.getParam(GlobalConstants.LANGUAGE_CODE_KEY)==null || request.getParam(GlobalConstants.LANGUAGE_CODE_KEY).isEmpty)
-        {
-            var er = new EPSErrorResponse
-            er.errorType="invalid_input"
-            er.message="An invalid request was sent in, please check the nested errors for details."
-            var re = new ResponseErrors
-            var rf = new ResponseErrorFields
-            rf.errorType = "querystring"
-            rf.name = "language"
-            rf.value= "null"
-            re.errorType= "language.required"
-            re.fields = Array(rf)
-            re.message = "Language code is required."
-            er.errors= Array(re)
-            errorResponse = Some(er)
-        }
-        if(request.getParam(GlobalConstants.COUNTRY_CODE_KEY)==null||request.getParam(GlobalConstants.COUNTRY_CODE_KEY).isEmpty)
-        {
-            var er = new EPSErrorResponse
-            er.errorType="invalid_input"
-            er.message="An invalid request was sent in, please check the nested errors for details."
-            var re = new ResponseErrors
-            var rf = new ResponseErrorFields
-            rf.errorType = "querystring"
-            rf.name = "country_code"
-            rf.value= "null"
-            re.errorType= "country_code.required"
-            re.fields = Array(rf)
-            re.message = "Country code is required."
-            er.errors= Array(re)
-            errorResponse = Some(er)
-        }
-        if(request.getParam("sales_channel")==null||request.getParam("sales_channel").isEmpty)
-        {
-            var er = new EPSErrorResponse
-            er.errorType="invalid_input"
-            er.message="An invalid request was sent in, please check the nested errors for details."
-            var re = new ResponseErrors
-            var rf = new ResponseErrorFields
-            rf.errorType = "querystring"
-            rf.name = "sales_channel"
-            rf.value= "null"
-            re.errorType= "sales_channel.required"
-            re.fields = Array(rf)
-            re.message = "Sales Channel is required.  Accepted sales_channel values are: [website, agent_tool, mobile_app, mobile_web, cache, meta]."
-            er.errors= Array(re)
-            errorResponse = Some(er)
-        }
-        if(request.getParam(GlobalConstants.CURRENCY_CODE_KEY)==null||request.getParam(GlobalConstants.CURRENCY_CODE_KEY).isEmpty)
-        {
-            var er = new EPSErrorResponse
-            er.errorType="invalid_input"
-            er.message="An invalid request was sent in, please check the nested errors for details."
-            var re = new ResponseErrors
-            var rf = new ResponseErrorFields
-            rf.errorType = "querystring"
-            rf.name = "currency"
-            rf.value= "null"
-            re.errorType= "currency.required"
-            re.fields = Array(rf)
-            re.message = "Currency code is required."
-            er.errors= Array(re)
-            errorResponse = Some(er)
-        }
-        if(request.getParam(GlobalConstants.CURRENCY_CODE_KEY)!=null)
-        {
-            val allowedValues:util.List[String] = List("AED","ARS","AUD","BRL","CAD","CHF","CNY","DKK","EGP","EUR","GBP",
-                "HKD","IDR","ILS","INR","JPY","KRW","MXN","MYR","NOK","NZD","PHP","PLN", "RUB", "SAR", "SEK", "SGD", "THB",
-                "TRY", "TWD", "USD", "VND", "ZAR")
-            if(!(allowedValues.contains(request.getParam(GlobalConstants.CURRENCY_CODE_KEY)))){
-                var er = new EPSErrorResponse
-                er.errorType="invalid_input"
-                er.message="An invalid request was sent in, please check the nested errors for details."
-                var re = new ResponseErrors
-                var rf = new ResponseErrorFields
-                rf.errorType = "querystring"
-                rf.name = "currency"
-                rf.value= "null"
-                re.errorType= "currency.not_supported"
-                re.fields = Array(rf)
-                re.message = "Currency is not supported. Supported currencies are: [AED, ARS, AUD, BRL, CAD, CHF, CNY, DKK, EGP, EUR, GBP, HKD, IDR, ILS, INR, JPY, KRW, MXN, MYR, NOK, NZD, PHP, PLN, RUB, SAR, SEK, SGD, THB, TRY, TWD, USD, VND, ZAR]"
-                er.errors= Array(re)
-                errorResponse = Some(er)
-            }
-            if(request.getParam(GlobalConstants.LANGUAGE_CODE_KEY)!=null)
-            {
-                val allowedValues:util.List[String] = List("ar-SA", "cs-CZ", "da-DK", "de-DE", "el-GR", "en-US", "es-ES",
-                    "es-MX", "fi-FI", "fr-CA", "fr-FR", "hr-HR", "hu-HU", "id-ID", "is-IS", "it-IT", "ja-JP", "ko-KR",
-                    "lt-LT", "ms-MY", "nb-NO", "nl-NL", "pl-PL", "pt-BR", "pt-PT", "ru-RU", "sk-SK", "sv-SE", "th-TH",
-                    "tr-TR", "uk-UA", "vi-VN", "zh-CN", "zh-TW")
-                if(!(allowedValues.contains(request.getParam(GlobalConstants.LANGUAGE_CODE_KEY)))){
-                    var er = new EPSErrorResponse
-                    er.errorType="invalid_input"
-                    er.message="An invalid request was sent in, please check the nested errors for details."
-                    var re = new ResponseErrors
-                    var rf = new ResponseErrorFields
-                    rf.errorType = "querystring"
-                    rf.name = "language"
-                    rf.value= "null"
-                    re.errorType= "language.not_supported"
-                    re.fields = Array(rf)
-                    re.message = "Language is not supported. Supported languages are: [ar-SA, cs-CZ, da-DK, de-DE, el-GR, en-US, es-ES, es-MX, fi-FI, fr-CA, fr-FR, hr-HR, hu-HU, id-ID, is-IS, it-IT, ja-JP, ko-KR, lt-LT, ms-MY, nb-NO, nl-NL, pl-PL, pt-BR, pt-PT, ru-RU, sk-SK, sv-SE, th-TH, tr-TR, uk-UA, vi-VN, zh-CN, zh-TW]"
-                    er.errors= Array(re)
-                    errorResponse = Some(er)
-                }
-        }
+        // Convert EPS Response to JSON
+        val jsonResponse = (new ObjectMapper).registerModule(DefaultScalaModule).writeValueAsString(agodaResponse)
 
-        }
-        if(request.getParam("sales_environment")==null||request.getParam("sales_environment").isEmpty)
-        {
-            var er = new EPSErrorResponse
-            er.errorType="invalid_input"
-            er.message="An invalid request was sent in, please check the nested errors for details."
-            var re = new ResponseErrors
-            var rf = new ResponseErrorFields
+        val response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, httpResponseStatus))
+        response.setContentTypeJson()
+        response.setContentString(jsonResponse)
 
-            rf.errorType = "querystring"
-            rf.name = "sales_environment"
-            rf.value= "null"
-            re.errorType= "sales_environment.required"
-            re.fields = Array(rf)
-            re.message = "Sales Environment is required.  Accepted sales_environment values are: [hotel_only, hotel_package, loyalty]."
-            er.errors= Array(re)
-            errorResponse = Some(er)
-        }
-        if(request.getParam("sort_type")==null||request.getParam("sort_type").isEmpty)
-        {
-            var er = new EPSErrorResponse
-            er.errorType="invalid_input"
-            er.message="An invalid request was sent in, please check the nested errors for details."
-            var re = new ResponseErrors
-            var rf = new ResponseErrorFields
-            rf.errorType = "querystring"
-            rf.name = "sort_type"
-            rf.value= "null"
-            re.errorType= "sort_type.required"
-            re.fields = Array(rf)
-            re.message = "Sort Type is required.  Accepted sort_type values are: [preferred]."
-            er.errors= Array(re)
-            errorResponse = Some(er)
-        }
-        if( request.getParams(GlobalConstants.PROPERTY_ID).size()>250)
-        {
-            var er = new EPSErrorResponse
-            er.errorType="invalid_input"
-            er.message="An invalid request was sent in, please check the nested errors for details."
-            var re = new ResponseErrors
-            var rf = new ResponseErrorFields
-            rf.errorType = "querystring"
-            rf.name = "property_id"
-            rf.value= request.getParams("property_id").size().toString
-            re.errorType= "property_id.above_maximum"
-            re.fields = Array(rf)
-            re.message = "The number of property_id's passed in must not be greater than 250."
-            er.errors= Array(re)
-            errorResponse = Some(er)
-        }
-        if(request.getParams(GlobalConstants.OCCUPANCY_KEY).size()>8)
-        {
-            var er = new EPSErrorResponse
-            er.errorType="invalid_input"
-            er.message="An invalid request was sent in, please check the nested errors for details."
-            var re = new ResponseErrors
-            var rf = new ResponseErrorFields
-            rf.errorType = "querystring"
-            rf.name = "occupancy"
-            rf.value= request.getParams("occupancy").size().toString
-            re.errorType= "number_of_occupancies.invalid_above_maximum"
-            re.fields = Array(rf)
-            re.message = "Number of occupancies must be less than 9."
-            er.errors= Array(re)
-            errorResponse = Some(er)
-        }
-        if(!request.getParams(GlobalConstants.OCCUPANCY_KEY).isEmpty)
-        {
-
-            var occupancyList:util.List[String]= request.getParams(GlobalConstants.OCCUPANCY_KEY)
-
-            for(occupancy:String<-occupancyList){
-                var split = occupancy.split("-")
-                var adultsCount = split(0).toInt
-
-                if(adultsCount>8){
-                    var er = new EPSErrorResponse
-                    er.errorType="invalid_input"
-                    er.message="An invalid request was sent in, please check the nested errors for details."
-                    var re = new ResponseErrors
-                    var rf = new ResponseErrorFields
-                    rf.errorType = "querystring"
-                    rf.name = "occupancy"
-                    rf.value= adultsCount.toString
-                    re.errorType= "number_of_adults.invalid_above_maximum"
-                    re.fields = Array(rf)
-                    re.message = "Number of adults must be less than 9."
-                    er.errors= Array(re)
-                    errorResponse = Some(er)
-                }
-                if(adultsCount==0){
-                    var er = new EPSErrorResponse
-                    er.errorType="invalid_input"
-                    er.message="An invalid request was sent in, please check the nested errors for details."
-                    var re = new ResponseErrors
-                    var rf = new ResponseErrorFields
-                    rf.errorType = "querystring"
-                    rf.name = "occupancy"
-                    rf.value= adultsCount.toString
-                    re.errorType= "number_of_adults.invalid_below_minimum"
-                    re.fields = Array(rf)
-                    re.message = "Number of adults must be greater than 0."
-                    er.errors= Array(re)
-                    errorResponse = Some(er)
-                }
-                var childrenAges:List[Int]= List()
-                var childrenCount:Int=0
-                if (split.length == 2) {
-                    childrenAges = split(1).split(",").map(_.toInt).toList
-                    childrenCount = childrenAges.size
-                    for (childAge <- childrenAges) {
-                        if (childAge >= 18) {
-                            var er = new EPSErrorResponse
-                            er.errorType="invalid_input"
-                            er.message="An invalid request was sent in, please check the nested errors for details."
-                            var re = new ResponseErrors
-                            var rf = new ResponseErrorFields
-                            rf.errorType = "querystring"
-                            rf.name = "occupancy"
-                            rf.value= childAge.toString
-                            re.errorType= "child_age.invalid_outside_accepted_range"
-                            re.fields = Array(rf)
-                            re.message = "Child age must be between 0 and 17."
-                            er.errors= Array(re)
-                            errorResponse = Some(er)
-                        }
-                    }
-                }
-            }
-        }
-        if(request.getParam(GlobalConstants.CHECKIN_PARAM_KEY)!=null)
-        {
-            import java.text.SimpleDateFormat
-            import java.util.concurrent.TimeUnit
-            val checkin = request.getParam("checkin")
-            val df = new SimpleDateFormat("yyyy-MM-dd")
-            val checkinDate = df.parse(checkin)
-            val currdate = new Date()
-            val diff =  checkinDate.getTime- currdate.getTime
-            val days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)
-            println("Days"+days)
-            if(days<0){
-                val er = new EPSErrorResponse
-                er.errorType="invalid_input"
-                er.message="An invalid request was sent in, please check the nested errors for details."
-                var re = new ResponseErrors
-                var rf = new ResponseErrorFields
-                rf.errorType = "querystring"
-                rf.name = "checkin"
-               // rf.value= request.getParams("occupancy").size().toString
-                re.errorType= "checkin.invalid_date_in_the_past"
-                re.fields = Array(rf)
-                re.message = "Checkin cannot be in the past."
-                er.errors= Array(re)
-                errorResponse = Some(er)
-            }
-            if(days>500) {
-                val er = new EPSErrorResponse
-                er.errorType = "invalid_input"
-                er.message = "An invalid request was sent in, please check the nested errors for details."
-                var re = new ResponseErrors
-                var rf = new ResponseErrorFields
-                rf.errorType = "querystring"
-                rf.name = "checkin"
-                // rf.value= request.getParams("occupancy").size().toString
-                re.errorType = "checkin.invalid_date_too_far_out"
-                re.fields = Array(rf)
-                re.message = "Checkin too far in the future."
-                er.errors = Array(re)
-                errorResponse = Some(er)
-            }
-            if(request.getParam(GlobalConstants.CHECKOUT_PARAM_KEY)!=null){
-                val checkout = request.getParam("checkout");
-                val diff =  df.parse(checkout).getTime-checkinDate.getTime
-                val days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)
-                if(days<0){
-                    val er = new EPSErrorResponse
-                    er.errorType = "invalid_input"
-                    er.message = "An invalid request was sent in, please check the nested errors for details."
-                    var re = new ResponseErrors
-                    var rf = new ResponseErrorFields
-                    var rf2 = new ResponseErrorFields
-                    rf.errorType = "querystring"
-                    rf.name = "checkin"
-                    rf2.errorType = "querystring"
-                    rf2.name = "checkout"
-                    // rf.value= request.getParams("occupancy").size().toString
-                    re.errorType = "checkout.invalid_checkout_before_checkin"
-                    re.fields = Array(rf,rf2)
-                    re.message = "Checkout must be after checkin."
-                    er.errors = Array(re)
-                    errorResponse = Some(er)
-                }
-            }
-
-
-        }
-
-        errorResponse
+        response
     }
 
     def _convertToAgodaXMLRequest(agodaRequest: AvailabilityRequestV2): String =
@@ -525,9 +74,9 @@ class AvailabilityRequestHandler extends Service[Request, Response]
             AGODA_REQUEST_MARSHALLER.marshal(agodaRequest, stringWriter)
 
             // Debug
-            println("Agoda Request:"+stringWriter.toString)
+            println("Agoda Request:" + stringWriter.toString)
 
-            return stringWriter.toString
+            stringWriter.toString
         }
         catch
         {
@@ -544,15 +93,15 @@ class AvailabilityRequestHandler extends Service[Request, Response]
         val connection = url.openConnection.asInstanceOf[java.net.HttpURLConnection]
         try
         {
-            connection.setRequestMethod("POST")
+            connection.setRequestMethod(Method.Post.getName)
             connection.setDoOutput(true)
-            connection.setRequestMethod(GlobalConstants.HTTP_POST)
-            connection.setRequestProperty(GlobalConstants.AUTH_KEY, "1812488:6fae573e-b261-4c02-97b4-3dd20d1e74b2")
-            connection.setRequestProperty(GlobalConstants.CONTENT_TYPE, "text/xml; charset=utf-8")
+            connection.setRequestProperty(HttpHeaders.AUTHORIZATION, "1812488:6fae573e-b261-4c02-97b4-3dd20d1e74b2")
+            connection.setRequestProperty(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML_UTF_8.toString)
+            connection.setRequestProperty(HttpHeaders.ACCEPT_ENCODING, MediaType.GZIP.toString)
             connection.getOutputStream.write(agodaXMLRequest.getBytes)
             connection.getOutputStream.close
 
-            return _getResponse(connection)
+            _getResponse(connection)
         }
         catch
         {
@@ -582,6 +131,6 @@ class AvailabilityRequestHandler extends Service[Request, Response]
         val response: AvailabilityLongResponseV2 = AGODA_RESPONSE_UNMARSHALLER.unmarshal(new StringReader(responseStreamAsString)).asInstanceOf[AvailabilityLongResponseV2]
 
 
-        return response
+        response
     }
 }

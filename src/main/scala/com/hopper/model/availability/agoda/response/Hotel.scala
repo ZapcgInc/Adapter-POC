@@ -17,7 +17,7 @@ class Hotel
 
     @XmlElementWrapper(name = "Rooms")
     @XmlElement(name = "Room")
-    var rooms: java.util.List[Room] = _
+    var rooms: Array[Room] = _
 
     override def toString = s"Hotel(id=$id, cheapestRoom=$cheapestRoom, paxSettings=$paxSettings, rooms=$rooms)"
 }
