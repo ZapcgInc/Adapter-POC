@@ -2,10 +2,10 @@ package com.hopper.validators
 
 import com.hopper.model.constants.EPSResponseErrorType
 import com.hopper.model.error.{EPSErrorResponse, ResponseError}
-import com.hopper.util.BaseStringUtils
-import com.twitter.finagle.http.Request
+import com.twitter.finagle.http.{Request, Status}
+import org.apache.commons.lang.StringUtils
 import org.jboss.netty.handler.codec.http.HttpResponseStatus
-import com.twitter.finagle.http.Status
+
 /**
   * Util class to handle Test Suite Requests.
   * Request of EPS format can send a Header Parameters with Key "Test" that contains the desired Response "Status"
@@ -13,17 +13,16 @@ import com.twitter.finagle.http.Status
   */
 object RequestTestHeaderValidator extends RequestValidator
 {
-    private val INVALID_CONTENT_TYPE_RESPONSE_ERROR_TYPE:String = "test.content_invalid"
-    private val INVALID_CONTENT_TYPE_RESPONSE_ERROR_MSG:String = "Content of the test header is invalid. Please use one of the following valid values " + ValidTestResponse.getValueSetAsString()
+    private val INVALID_CONTENT_TYPE_RESPONSE_ERROR_TYPE: String = "test.content_invalid"
+    private val INVALID_CONTENT_TYPE_RESPONSE_ERROR_MSG: String = "Content of the test header is invalid. Please use one of the following valid values " + ValidTestResponse.getValueSetAsString()
 
-    private val INVALID_CONTENT_TYPE_RESPONSE_ERROR:ResponseError = new ResponseError(INVALID_CONTENT_TYPE_RESPONSE_ERROR_TYPE, INVALID_CONTENT_TYPE_RESPONSE_ERROR_MSG)
+    private val INVALID_CONTENT_TYPE_RESPONSE_ERROR: ResponseError = new ResponseError(INVALID_CONTENT_TYPE_RESPONSE_ERROR_TYPE, INVALID_CONTENT_TYPE_RESPONSE_ERROR_MSG)
 
     override def validate(request: Request): Option[(HttpResponseStatus, EPSErrorResponse)] =
     {
-
         val expectedResponse: String = request.getHeader("Test")
 
-        if (BaseStringUtils.isBlank(expectedResponse))
+        if (StringUtils.isBlank(expectedResponse))
         {
             None
         }

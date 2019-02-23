@@ -4,13 +4,12 @@ import java.time.format.DateTimeFormatter
 import java.time.{Duration, LocalDate}
 import java.util
 
-import com.hopper.model.constants.EPSResponseErrorType
+import com.hopper.model.constants.{AvailabilityRequestHeaders, EPSResponseErrorType}
 import com.hopper.model.error.{EPSErrorResponse, EPSErrorResponseBuilder, ResponseError, ResponseErrorFields}
-import com.twitter.finagle.http.Request
+import com.twitter.finagle.http.{Request, Status}
 import org.apache.commons.collections.CollectionUtils
 import org.apache.commons.lang.StringUtils
 import org.jboss.netty.handler.codec.http.HttpResponseStatus
-import com.twitter.finagle.http.Status
 
 import scala.collection.JavaConversions._
 
@@ -19,73 +18,45 @@ import scala.collection.JavaConversions._
   */
 object AvailabilityRequestDataValidator extends RequestValidator
 {
-
-    import com.hopper.model.constants.AvailabilityRequestHeaders
-
-    val VALID_CURRENCY_CODES: util.List[String] = List("AED", "ARS", "AUD", "BRL", "CAD", "CHF", "CNY", "DKK", "EGP", "EUR", "GBP",
-        "HKD", "IDR", "ILS", "INR", "JPY", "KRW", "MXN", "MYR", "NOK", "NZD", "PHP", "PLN", "RUB", "SAR", "SEK", "SGD", "THB",
-        "TRY", "TWD", "USD", "VND", "ZAR")
-
-    val VALID_LANGUAGE_CODES: util.List[String] = List("ar-SA", "cs-CZ", "da-DK", "de-DE", "el-GR", "en-US", "es-ES",
-        "es-MX", "fi-FI", "fr-CA", "fr-FR", "hr-HR", "hu-HU", "id-ID", "is-IS", "it-IT", "ja-JP", "ko-KR",
-        "lt-LT", "ms-MY", "nb-NO", "nl-NL", "pl-PL", "pt-BR", "pt-PT", "ru-RU", "sk-SK", "sv-SE", "th-TH",
-        "tr-TR", "uk-UA", "vi-VN", "zh-CN", "zh-TW")
-
     def validate(request: Request): Option[(HttpResponseStatus, EPSErrorResponse)] =
     {
         for (header <- AvailabilityRequestHeaders.values)
         {
-            var errorResponse: Option[EPSErrorResponse] = _validateMissingOrBlank(request, header.toString)
-            if (errorResponse.isDefined)
-            {
-                return Some(Status.BadRequest, errorResponse.get);
-            }
-
-            errorResponse = _validateStayInfo(request)
+            val errorResponse: Option[EPSErrorResponse] = _validateMissingOrBlank(request, header.toString)
             if (errorResponse.isDefined)
             {
                 return Some(Status.BadRequest, errorResponse.get)
             }
+        }
 
-            header match
-            {
-                case AvailabilityRequestHeaders.CURRENCY_CODE_KEY =>
-                {
-                    if (!VALID_CURRENCY_CODES.contains(request.getParam(header.toString)))
-                    {
-                        return Some(Status.BadRequest, EPSErrorResponseBuilder.createForUnsupportedInput(header.toString).get)
-                    }
-                }
-                case AvailabilityRequestHeaders.LANGUAGE_CODE_KEY =>
-                {
-                    if (!VALID_LANGUAGE_CODES.contains(request.getParam(header.toString)))
-                    {
-                        return Some(Status.BadRequest, EPSErrorResponseBuilder.createForUnsupportedInput(header.toString).get)
-                    }
-                }
-                case AvailabilityRequestHeaders.PROPERTY_ID =>
-                {
-                    if (request.getParams(header.toString).size() > 250)
-                    {
-                        val responseError: ResponseError = new ResponseError(
-                            "property_id.above_maximum",
-                            "The number of property_id's passed in must not be greater than 250.",
-                            new ResponseErrorFields("property_id", request.getParams("property_id").size().toString))
+        var errorResponse: Option[EPSErrorResponse] = _validatePropertyID(request)
+        if (errorResponse.isDefined)
+        {
+            return Some(Status.BadRequest, errorResponse.get)
+        }
 
-                        return Some(Status.BadRequest, new EPSErrorResponse(EPSResponseErrorType.INVALID_INPUT, responseError))
-                    }
-                }
-                case AvailabilityRequestHeaders.OCCUPANCY_KEY =>
-                {
-                    val errorResponse: Option[EPSErrorResponse] = _validateOccupancy(request)
-                    if (errorResponse.isDefined)
-                    {
-                        return Some(Status.BadRequest, errorResponse.get)
-                    }
+        errorResponse = _validateStayInfo(request)
+        if (errorResponse.isDefined)
+        {
+            return Some(Status.BadRequest, errorResponse.get)
+        }
 
-                }
-                case _ => None
-            }
+        errorResponse = _validateOccupancy(request)
+        if (errorResponse.isDefined)
+        {
+            return Some(Status.BadRequest, errorResponse.get)
+        }
+
+        errorResponse = CurrencyCodeValidator.validate(request)
+        if (errorResponse.isDefined)
+        {
+            return Some(Status.BadRequest, errorResponse.get)
+        }
+
+        errorResponse = LanguageCodeValidator.validate(request)
+        if (errorResponse.isDefined)
+        {
+            return Some(Status.BadRequest, errorResponse.get)
         }
 
         None
@@ -93,7 +64,7 @@ object AvailabilityRequestDataValidator extends RequestValidator
 
     def _validateMissingOrBlank(request: Request, header: String): Option[EPSErrorResponse] =
     {
-        val headerValues: util.List[String] = request.getParams(header.toString);
+        val headerValues: util.List[String] = request.getParams(header.toString)
         if (CollectionUtils.isEmpty(headerValues))
         {
             return Some(EPSErrorResponseBuilder.createForMissingInput(header.toString).get)
@@ -103,7 +74,22 @@ object AvailabilityRequestDataValidator extends RequestValidator
         val countNonBlankValues: Int = headerValues.count(StringUtils.isNotBlank)
         if (countNonBlankValues == 0)
         {
-            return Some(EPSErrorResponseBuilder.createForMissingInput(header.toString).get);
+            return Some(EPSErrorResponseBuilder.createForMissingInput(header.toString).get)
+        }
+
+        None
+    }
+
+    def _validatePropertyID(request: Request): Option[EPSErrorResponse] =
+    {
+        if (request.getParams(AvailabilityRequestHeaders.PROPERTY_ID.toString).size() > 250)
+        {
+            val responseError: ResponseError = new ResponseError(
+                "property_id.above_maximum",
+                "The number of property_id's passed in must not be greater than 250.",
+                new ResponseErrorFields("property_id", request.getParams("property_id").size().toString))
+
+            return Some(new EPSErrorResponse(EPSResponseErrorType.INVALID_INPUT, responseError))
         }
 
         None
@@ -115,7 +101,7 @@ object AvailabilityRequestDataValidator extends RequestValidator
         val countNonBlankOccupancy: Int = request.getParams(AvailabilityRequestHeaders.OCCUPANCY_KEY.toString).count(StringUtils.isNotBlank)
         if (countNonBlankOccupancy == 0)
         {
-            return Some(EPSErrorResponseBuilder.createForMissingInput(AvailabilityRequestHeaders.OCCUPANCY_KEY.toString).get);
+            return Some(EPSErrorResponseBuilder.createForMissingInput(AvailabilityRequestHeaders.OCCUPANCY_KEY.toString).get)
         }
 
         for (occupancy: String <- request.getParams(AvailabilityRequestHeaders.OCCUPANCY_KEY.toString))
@@ -166,11 +152,12 @@ object AvailabilityRequestDataValidator extends RequestValidator
 
     def _validateStayInfo(request: Request): Option[EPSErrorResponse] =
     {
-        val checkin = request.getParam("checkin")
+        val checkinParam: String = request.getParam(AvailabilityRequestHeaders.CHECKIN_PARAM_KEY.toString)
+        val checkoutParam: String = request.getParam(AvailabilityRequestHeaders.CHECKOUT_PARAM_KEY.toString)
 
         val differenceInDays: Long = Duration.between(
             LocalDate.now().atStartOfDay(),
-            LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(checkin)).atStartOfDay()
+            LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(checkinParam)).atStartOfDay()
         ).toDays
 
         if (differenceInDays < 0)
@@ -178,7 +165,7 @@ object AvailabilityRequestDataValidator extends RequestValidator
             val responseError: ResponseError = new ResponseError(
                 "checkin.invalid_date_in_the_past",
                 "Checkin cannot be in the past.",
-                new ResponseErrorFields("checkin", request.getParam("checkin")))
+                new ResponseErrorFields("checkin", checkinParam))
 
             return Some(new EPSErrorResponse(EPSResponseErrorType.INVALID_INPUT, responseError))
         }
@@ -188,16 +175,14 @@ object AvailabilityRequestDataValidator extends RequestValidator
             val responseError: ResponseError = new ResponseError(
                 "checkin.invalid_date_too_far_out",
                 "Checkin too far in the future.",
-                new ResponseErrorFields("checkin", request.getParam("checkin")))
+                new ResponseErrorFields("checkin", checkinParam))
 
             return Some(new EPSErrorResponse(EPSResponseErrorType.INVALID_INPUT, responseError))
         }
 
-        val checkout = request.getParam("checkout");
-
         val differenceBetweenStayDates: Long = Duration.between(
-            LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(checkin)).atStartOfDay(),
-            LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(checkout)).atStartOfDay()
+            LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(checkinParam)).atStartOfDay(),
+            LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(checkoutParam)).atStartOfDay()
         ).toDays
 
         if (differenceBetweenStayDates < 0)
