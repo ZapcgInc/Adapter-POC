@@ -1,23 +1,26 @@
 package com.hopper.auth
 
-import java.io.{IOException, StringReader, StringWriter}
+import java.io.{StringReader, StringWriter}
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
-import com.google.common.net.{HttpHeaders, MediaType}
-import com.hopper.model.availability.agoda.request.AvailabilityRequestV2
+import com.hopper.converter.AvailabilityResponseConverter
 import com.hopper.model.availability.agoda.response.AvailabilityLongResponseV2
 import com.hopper.model.availability.eps.EPSShoppingResponse
 import com.hopper.model.error.EPSErrorResponse
+import com.hopper.util.AgodaPOSTRequestUtil
 import com.hopper.validators.{AvailabilityRequestDataValidator, RequestTestHeaderValidator}
 import com.twitter.finagle.Service
-import com.twitter.finagle.http.{Method, Request, Response}
+import com.twitter.finagle.http.{Request, Response}
 import com.twitter.util.Future
 import javax.xml.bind.{JAXBContext, JAXBException, Marshaller, Unmarshaller}
 import org.jboss.netty.handler.codec.http.{DefaultHttpResponse, HttpResponseStatus, HttpVersion}
 
 class AvailabilityRequestHandler extends Service[Request, Response]
 {
+
+    import com.hopper.model.availability.agoda.request.AvailabilityRequestV2
+
     private val END_POINT = "http://sandbox-affiliateapi.agoda.com/xmlpartner/xmlservice/search_lrv3"
 
     private val AGODA_REQUEST_MARSHALLER: Marshaller = JAXBContext.newInstance(classOf[AvailabilityRequestV2]).createMarshaller
@@ -25,7 +28,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
 
     override def apply(request: Request): Future[Response] =
     {
-        import com.hopper.converter.AvailabilityResponseConverter
+
         var validationResponse: Option[(HttpResponseStatus, EPSErrorResponse)] = RequestTestHeaderValidator.validate(request)
         if (validationResponse.isDefined)
         {
@@ -38,15 +41,17 @@ class AvailabilityRequestHandler extends Service[Request, Response]
             return Future.value(_convertToEPSResponse(validationResponse.get._1, validationResponse.get._2))
         }
 
-
         // Create Agoda Request from EAN HTTP Request.
         val agodaAvailabilityRequest: AvailabilityRequestV2 = new AvailabilityRequestV2(request)
 
         // Convert agoda POJO to XML.
-        val agodaRequestXML: String = _convertToAgodaXMLRequest(agodaAvailabilityRequest)
+        val agodaRequestXML: String = agodaAvailabilityRequest.convertToXML()
 
         // Post to Agoda API and get response
-        val agodaResponse: AvailabilityLongResponseV2 = _postXMLRequest(agodaRequestXML)
+        val agodaResponseAsString:String = AgodaPOSTRequestUtil.postXMLRequestAndGetResponse(agodaRequestXML, END_POINT)
+        val agodaResponse: AvailabilityLongResponseV2 = AGODA_RESPONSE_UNMARSHALLER
+          .unmarshal(new StringReader(agodaResponseAsString))
+          .asInstanceOf[AvailabilityLongResponseV2]
 
         // Convert to EPS Response
         val epsResponse: EPSShoppingResponse = new AvailabilityResponseConverter(agodaAvailabilityRequest, agodaResponse).convertToEPSResponse()
@@ -70,12 +75,8 @@ class AvailabilityRequestHandler extends Service[Request, Response]
     {
         try
         {
-            val stringWriter = new StringWriter
+            val stringWriter: StringWriter = new StringWriter
             AGODA_REQUEST_MARSHALLER.marshal(agodaRequest, stringWriter)
-
-            // Debug
-            println("Agoda Request:" + stringWriter.toString)
-
             stringWriter.toString
         }
         catch
@@ -85,52 +86,5 @@ class AvailabilityRequestHandler extends Service[Request, Response]
                 throw new RuntimeException("Failed to marshall availability request")
             }
         }
-    }
-
-    def _postXMLRequest(agodaXMLRequest: String): AvailabilityLongResponseV2 =
-    {
-        val url = new java.net.URL(END_POINT)
-        val connection = url.openConnection.asInstanceOf[java.net.HttpURLConnection]
-        try
-        {
-            connection.setRequestMethod(Method.Post.getName)
-            connection.setDoOutput(true)
-            connection.setRequestProperty(HttpHeaders.AUTHORIZATION, "1812488:6fae573e-b261-4c02-97b4-3dd20d1e74b2")
-            connection.setRequestProperty(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML_UTF_8.toString)
-            connection.setRequestProperty(HttpHeaders.ACCEPT_ENCODING, MediaType.GZIP.toString)
-            connection.getOutputStream.write(agodaXMLRequest.getBytes)
-            connection.getOutputStream.close
-
-            _getResponse(connection)
-        }
-        catch
-        {
-            case exp: IOException =>
-            {
-                exp.printStackTrace()
-                throw new RuntimeException("Error connecting to Agoda Adapter.")
-            }
-        }
-    }
-
-    def _getResponse(connection: java.net.HttpURLConnection): AvailabilityLongResponseV2 =
-    {
-        import com.hopper.model.availability.agoda.response.AvailabilityLongResponseV2
-        var inputStream = if (connection.getResponseCode == 200)
-                          {
-                              connection.getInputStream
-                          }
-                          else
-                          {
-                              connection.getErrorStream
-                          }
-        var responseStreamAsString = scala.io.Source.fromInputStream(inputStream).getLines().mkString("\n")
-
-        println("Response From Agoda: " + responseStreamAsString)
-
-        val response: AvailabilityLongResponseV2 = AGODA_RESPONSE_UNMARSHALLER.unmarshal(new StringReader(responseStreamAsString)).asInstanceOf[AvailabilityLongResponseV2]
-
-
-        response
     }
 }

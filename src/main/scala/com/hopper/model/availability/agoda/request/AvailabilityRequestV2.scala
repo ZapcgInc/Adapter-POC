@@ -1,9 +1,13 @@
 package com.hopper.model.availability.agoda.request
 
+import java.io.StringWriter
+
+import com.hopper.converter.PriceCheckHrefConverter.PriceCheckToken
 import com.hopper.model.availability.agoda.request.constants.AgodaAvailabilityRequestType
 import com.hopper.model.constants.AvailabilityRequestHeaders
 import com.twitter.finagle.http.Request
 import javax.xml.bind.annotation._
+import javax.xml.bind.{JAXBContext, JAXBException, Marshaller}
 import org.apache.commons.lang.StringUtils
 
 import scala.collection.JavaConversions._
@@ -50,6 +54,24 @@ class AvailabilityRequestV2
 
     @XmlTransient
     var occupancy: List[String] = _
+
+    def this(hotelID: String, token: PriceCheckToken)
+    {
+        this()
+        requestType = AgodaAvailabilityRequestType.get(1)
+        propertyIds = hotelID
+
+        checkInDate = token.requestParams.checkInDate
+        checkOutDate = token.requestParams.checkOutDate
+
+        roomCount = token.requestParams.roomCount
+        adultsCount = token.requestParams.adultsCount
+        childrenCount = token.requestParams.childrenCount
+
+        occupancy = token.requestParams.occupancy
+        currency = token.requestParams.currency
+        language = token.requestParams.language
+    }
 
     def this(request: Request)
     {
@@ -115,7 +137,7 @@ class AvailabilityRequestV2
 
     def _populateOccupancy(reqOccupancy: String): Unit =
     {
-        val split:Array[String] = reqOccupancy.split("-")
+        val split: Array[String] = reqOccupancy.split("-")
         adultsCount = split(0).toInt
         if (split.length == 2)
         {
@@ -123,4 +145,27 @@ class AvailabilityRequestV2
             childrenCount = childrenAges.size
         }
     }
+
+    def convertToXML(): String =
+    {
+        try
+        {
+            import com.hopper.model.availability.agoda.request.AvailabilityRequestV2.AGODA_REQUEST_MARSHALLER
+            val stringWriter: StringWriter = new StringWriter
+            AGODA_REQUEST_MARSHALLER.marshal(this, stringWriter)
+            stringWriter.toString
+        }
+        catch
+        {
+            case jexp: JAXBException =>
+            {
+                throw new RuntimeException("Failed to marshall availability request")
+            }
+        }
+    }
+}
+
+object AvailabilityRequestV2
+{
+    private val AGODA_REQUEST_MARSHALLER: Marshaller = JAXBContext.newInstance(classOf[AvailabilityRequestV2]).createMarshaller
 }

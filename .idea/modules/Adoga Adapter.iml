@@ -22,6 +22,7 @@
     <orderEntry type="library" name="sbt: javax.inject:javax.inject:1:jar" level="project" />
     <orderEntry type="library" name="sbt: io.netty:netty:3.9.1.1.Final:jar" level="project" />
     <orderEntry type="library" name="sbt: commons-lang:commons-lang:2.6:jar" level="project" />
+    <orderEntry type="library" name="sbt: commons-io:commons-io:2.6:jar" level="project" />
     <orderEntry type="library" name="sbt: commons-collections:commons-collections:3.2.1:jar" level="project" />
     <orderEntry type="library" name="sbt: commons-codec:commons-codec:1.6:jar" level="project" />
     <orderEntry type="library" name="sbt: com.twitter:util-logging_2.10:6.19.0:jar" level="project" />

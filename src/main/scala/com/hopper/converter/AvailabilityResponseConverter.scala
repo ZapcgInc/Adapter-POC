@@ -23,6 +23,18 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
         new EPSShoppingResponse(propertyList)
     }
 
+    def convertToEPSResponse(roomID:String): EPSShoppingResponse =
+    {
+        val propertyList: Array[PropertyAvailability] = response.hotels
+          .map(hotel => new PropertyAvailability(
+              hotel.id,
+              hotel.rooms.filter(room => room.id == roomID).map(r => _getRoomInfo(r, hotel)))
+          )
+
+        new EPSShoppingResponse(propertyList)
+    }
+
+
     def _getRoomInfo(r: Room, hotel: Hotel): PropertyAvailabilityRoom =
     {
         new PropertyAvailabilityRoom(
@@ -48,7 +60,6 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
         rate.fencedDeal = false
         rate.merchantOfRecordString = "TBD"
 
-        rate.links = _populateLinks(r, hotel)
         rate.bedGroups = _populateBedGroups(r, hotel)
         rate.roomPriceByOccupancy = _populateRates(r)
 
@@ -180,25 +191,12 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
         Option.empty
     }
 
-    def _populateLinks(r: Room, hotel: Hotel): Map[String, PropertyAvailabilityLinks] =
-    {
-        val link = new PropertyAvailabilityLinks(
-            Method.Get.toString,
-            "/2.1/properties/availability/" + hotel.id + "/rooms/201300484/rates/206295235/payment-options?token=Ql1WAERHXV1QO"
-        )
-
-        Map("payment_options" -> link)
-    }
-
     def _populateBedGroups(r: Room, hotel: Hotel): Array[PropertyAvailabilityBedGroups] =
     {
         val bedGroup = new PropertyAvailabilityBedGroups
-        val link = new PropertyAvailabilityLinks(
-            Method.Get.toString,
-            "/2.1/properties/availability/" + hotel.id + "/rooms/201300484/rates/206295235/price-check?token=Ql1WAERHXV1QO"
-        )
+        val href:String = PriceCheckHrefConverter.buildHref(r, hotel, request)
 
-        bedGroup.links = Map("price_check" -> link)
+        bedGroup.links = Map("price_check" -> new PropertyAvailabilityLinks(Method.Get.toString, href))
 
         Array(bedGroup)
     }
