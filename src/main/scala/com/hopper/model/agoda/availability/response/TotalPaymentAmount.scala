@@ -1,20 +1,20 @@
-package com.hopper.model.availability.agoda.response
+package com.hopper.model.agoda.availability.response
 
 import javax.xml.bind.annotation.{XmlAccessType, XmlAccessorType, XmlAttribute, XmlRootElement}
 
-@XmlRootElement(name = "Rate")
+@XmlRootElement(name = "TotalPaymentAmount")
 @XmlAccessorType(XmlAccessType.NONE)
-class Rate
+class TotalPaymentAmount
 {
     @XmlAttribute(name = "inclusive")
-    var inclusive: Double = _
+    var inclusive:Double = _
 
     @XmlAttribute(name = "fees")
-    var fees: Double = _
+    var fees:Double = _
 
     @XmlAttribute(name = "exclusive")
-    var exclusive: Double = _
+    var exclusive:Double = _
 
     @XmlAttribute(name = "tax")
-    var tax: Double = _
+    var tax:Double = _
 }

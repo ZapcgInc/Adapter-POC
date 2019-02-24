@@ -1,4 +1,4 @@
-package com.hopper.model.availability.agoda.request.constants
+package com.hopper.model.agoda.availability.request.constants
 
 object AgodaAvailabilityRequestType extends Enumeration
 {

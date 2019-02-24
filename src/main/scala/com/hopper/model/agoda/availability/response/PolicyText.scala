@@ -1,10 +1,10 @@
-package com.hopper.model.availability.agoda.response
+package com.hopper.model.agoda.availability.response
 
 import javax.xml.bind.annotation.{XmlAccessType, XmlAccessorType, XmlAttribute, XmlRootElement, XmlValue}
 
-@XmlRootElement(name = "PolicyTranslated")
+@XmlRootElement(name = "PolicyText")
 @XmlAccessorType(XmlAccessType.NONE)
-class PolicyTranslated
+class PolicyText
 {
     @XmlAttribute(name = "language")
     var language: String = _

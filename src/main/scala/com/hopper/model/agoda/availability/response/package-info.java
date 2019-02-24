@@ -12,6 +12,6 @@
             }
 )
 
-package com.hopper.model.availability.agoda.response;
+package com.hopper.model.agoda.availability.response;
 
 import javax.xml.bind.annotation.XmlNs;

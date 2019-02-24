@@ -9,4 +9,18 @@ object BookHrefBuilder
         val bookingToken:String = "TODOTOken"
         BOOKING_HREF_TEMPLATE.format(bookingToken)
     }
+
+    class AvailabilityRequestParams
+    {
+        var checkInDate: String = _
+        var checkOutDate: String = _
+        var roomCount: Int = _
+        var adultsCount: Int = _
+        var childrenCount: Int = _
+        var childrenAges: Array[Int] = _
+        var language: String = _
+        var currency: String = _
+        var occupancy: List[String] = _
+
+    }
 }

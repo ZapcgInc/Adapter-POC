@@ -2,11 +2,11 @@ package com.hopper.converter
 
 import java.time.{Duration, LocalDate}
 
-import com.hopper.commons.eps.model.availability.{EPSShoppingResponse, PropertyAvailabilityAmenities, PropertyAvailabilityBedGroups, PropertyAvailabilityCancelPenalties, PropertyAvailabilityLinks, PropertyAvailabilityPrice, PropertyAvailabilityPriceWithCurrency, PropertyAvailabilityRates, PropertyAvailabilityRoom, PropertyAvailabilityRoomRates, PropertyAvailabilityTotalPrice}
+import com.hopper.commons.eps.model.availability.{EPSShoppingResponse, PropertyAvailability, PropertyAvailabilityAmenities, PropertyAvailabilityBedGroups, PropertyAvailabilityCancelPenalties, PropertyAvailabilityLinks, PropertyAvailabilityPrice, PropertyAvailabilityPriceWithCurrency, PropertyAvailabilityRates, PropertyAvailabilityRoom, PropertyAvailabilityRoomRates, PropertyAvailabilityTotalPrice}
 import com.hopper.commons.eps.model.prebook.EPSPreBookingResponse
 import com.hopper.converter.href.{BookHrefBuilder, PreBookHrefBuilder}
-import com.hopper.model.availability.agoda.request.AvailabilityRequestV2
-import com.hopper.model.availability.agoda.response.{AvailabilityLongResponseV2, Hotel, Room}
+import com.hopper.model.agoda.availability.request.AvailabilityRequestV2
+import com.hopper.model.agoda.availability.response.{AvailabilityLongResponseV2, Hotel, Room}
 import com.twitter.finagle.http.Method
 
 /**
@@ -16,7 +16,6 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
 {
     def convertToEPSResponse(): EPSShoppingResponse =
     {
-        import com.hopper.commons.eps.model.availability.PropertyAvailability
         val propertyList: Array[PropertyAvailability] = response.hotels
           .map(hotel => new PropertyAvailability(
               hotel.id,
@@ -28,6 +27,7 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
 
     def convertToEPSResponse(hotelID: String, roomID: String): Option[EPSPreBookingResponse] =
     {
+
         val hotel: Option[Hotel] = response.hotels.find(hotel => hotel.id == hotelID)
         if (hotel.isEmpty)
         {
@@ -49,7 +49,6 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
     {
         Map("book" -> new PropertyAvailabilityLinks(Method.Get.toString, BookHrefBuilder.buildHref()))
     }
-
 
     def _getRoomInfo(r: Room, hotel: Hotel): PropertyAvailabilityRoom =
     {

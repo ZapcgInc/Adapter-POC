@@ -1,25 +1,25 @@
 package com.hopper.auth
 
-import java.io.{StringReader, StringWriter}
+import java.io.StringReader
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.hopper.commons.eps.model.availability.EPSShoppingResponse
-import com.hopper.converter.AvailabilityResponseConverter
-import com.hopper.model.availability.agoda.response.AvailabilityLongResponseV2
 import com.hopper.commons.eps.model.error.EPSErrorResponse
+import com.hopper.converter.AvailabilityResponseConverter
+import com.hopper.model.agoda.availability.response.AvailabilityLongResponseV2
 import com.hopper.util.AgodaPOSTRequestUtil
 import com.hopper.validators.{AvailabilityRequestDataValidator, RequestTestHeaderValidator}
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.util.Future
-import javax.xml.bind.{JAXBContext, JAXBException, Marshaller, Unmarshaller}
+import javax.xml.bind.{JAXBContext, Marshaller, Unmarshaller}
 import org.jboss.netty.handler.codec.http.{DefaultHttpResponse, HttpResponseStatus, HttpVersion}
 
 class AvailabilityRequestHandler extends Service[Request, Response]
 {
 
-    import com.hopper.model.availability.agoda.request.AvailabilityRequestV2
+    import com.hopper.model.agoda.availability.request.AvailabilityRequestV2
 
     private val END_POINT = "http://sandbox-affiliateapi.agoda.com/xmlpartner/xmlservice/search_lrv3"
 
@@ -48,7 +48,8 @@ class AvailabilityRequestHandler extends Service[Request, Response]
         val agodaRequestXML: String = agodaAvailabilityRequest.convertToXML()
 
         // Post to Agoda API and get response
-        val agodaResponseAsString:String = AgodaPOSTRequestUtil.postXMLRequestAndGetResponse(agodaRequestXML, END_POINT)
+        val agodaResponseAsString: String = AgodaPOSTRequestUtil.postXMLRequestAndGetResponse(agodaRequestXML, END_POINT)
+        println(agodaResponseAsString)
         val agodaResponse: AvailabilityLongResponseV2 = AGODA_RESPONSE_UNMARSHALLER
           .unmarshal(new StringReader(agodaResponseAsString))
           .asInstanceOf[AvailabilityLongResponseV2]
@@ -69,22 +70,5 @@ class AvailabilityRequestHandler extends Service[Request, Response]
         response.setContentString(jsonResponse)
 
         response
-    }
-
-    def _convertToAgodaXMLRequest(agodaRequest: AvailabilityRequestV2): String =
-    {
-        try
-        {
-            val stringWriter: StringWriter = new StringWriter
-            AGODA_REQUEST_MARSHALLER.marshal(agodaRequest, stringWriter)
-            stringWriter.toString
-        }
-        catch
-        {
-            case jexp: JAXBException =>
-            {
-                throw new RuntimeException("Failed to marshall availability request")
-            }
-        }
     }
 }

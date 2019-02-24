@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import com.hopper.commons.util.GZIPStringURLEncoder
-import com.hopper.model.availability.agoda.request.AvailabilityRequestV2
-import com.hopper.model.availability.agoda.response.{Hotel, RateInfo, Room}
+import com.hopper.model.agoda.availability.request.AvailabilityRequestV2
+import com.hopper.model.agoda.availability.response.{Hotel, RateInfo, Room}
 
 object PreBookHrefBuilder
 {
@@ -44,9 +44,12 @@ object PreBookHrefBuilder
     {
         var checkInDate: String = _
         var checkOutDate: String = _
+
         var roomCount: Int = _
         var adultsCount: Int = _
         var childrenCount: Int = _
+        var childrenAges: Array[Int] = _
+
         var language: String = _
         var currency: String = _
         var occupancy: List[String] = _
@@ -59,6 +62,7 @@ object PreBookHrefBuilder
             roomCount = request.roomCount
             adultsCount = request.adultsCount
             childrenCount = request.childrenCount
+            childrenAges = request.childrenAges
             language = request.language
             currency = request.currency
             occupancy = request.occupancy

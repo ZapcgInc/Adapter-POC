@@ -1,12 +1,12 @@
-package com.hopper.model.availability.agoda.request
+package com.hopper.model.agoda.availability.request
 
 import java.io.StringWriter
 
 import com.hopper.converter.href.PreBookHrefBuilder.PriceCheckToken
-import com.hopper.model.availability.agoda.request.constants.AgodaAvailabilityRequestType
+import com.hopper.model.agoda.availability.request.constants.AgodaAvailabilityRequestType
 import com.hopper.model.constants.AvailabilityRequestHeaders
 import com.twitter.finagle.http.Request
-import javax.xml.bind.annotation._
+import javax.xml.bind.annotation.{XmlElement, _}
 import javax.xml.bind.{JAXBContext, JAXBException, Marshaller}
 import org.apache.commons.lang.StringUtils
 
@@ -16,6 +16,9 @@ import scala.collection.JavaConversions._
 @XmlAccessorType(XmlAccessType.FIELD)
 class AvailabilityRequestV2
 {
+    @XmlTransient
+    private val AGODA_REQUEST_MARSHALLER: Marshaller = JAXBContext.newInstance(classOf[AvailabilityRequestV2]).createMarshaller
+
     @XmlAttribute(name = "siteid")
     val siteId: String = "1812488"
 
@@ -43,8 +46,9 @@ class AvailabilityRequestV2
     @XmlElement(name = "Children")
     var childrenCount: Int = _
 
-    @XmlTransient
-    var childrenAges: List[Int] = _
+    @XmlElementWrapper(name = "ChildrenAges")
+    @XmlElement(name = "Age")
+    var childrenAges: Array[Int] = _
 
     @XmlElement(name = "Language")
     var language: String = _
@@ -127,6 +131,7 @@ class AvailabilityRequestV2
 
     def _populatePropertyID(request: Request): Unit =
     {
+        import com.hopper.model.agoda.availability.request.constants.AgodaAvailabilityRequestType
         val requestPropertyIds: List[String] = request.getParams(AvailabilityRequestHeaders.PROPERTY_ID.toString)
           .filter(p => StringUtils.isNotBlank(p))
           .toList
@@ -141,8 +146,8 @@ class AvailabilityRequestV2
         adultsCount = split(0).toInt
         if (split.length == 2)
         {
-            childrenAges = split(1).split(",").map(_.toInt).toList
-            childrenCount = childrenAges.size
+            childrenAges = split(1).split(",").map(_.toInt)
+            childrenCount = childrenAges.length
         }
     }
 
@@ -150,7 +155,6 @@ class AvailabilityRequestV2
     {
         try
         {
-            import com.hopper.model.availability.agoda.request.AvailabilityRequestV2.AGODA_REQUEST_MARSHALLER
             val stringWriter: StringWriter = new StringWriter
             AGODA_REQUEST_MARSHALLER.marshal(this, stringWriter)
             stringWriter.toString
@@ -165,7 +169,4 @@ class AvailabilityRequestV2
     }
 }
 
-object AvailabilityRequestV2
-{
-    private val AGODA_REQUEST_MARSHALLER: Marshaller = JAXBContext.newInstance(classOf[AvailabilityRequestV2]).createMarshaller
-}
+object AvailabilityRequestV2 extends AvailabilityRequestV2 {}

@@ -1,7 +1,7 @@
 package com.hopper.commons.eps.model.availability
 
 import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonProperty}
-import com.hopper.model.availability.agoda.response.PolicyDate
+import com.hopper.model.agoda.availability.response.PolicyDate
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 class PropertyAvailabilityCancelPenalties

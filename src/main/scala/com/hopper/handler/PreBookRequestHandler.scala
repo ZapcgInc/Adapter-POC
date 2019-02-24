@@ -8,8 +8,7 @@ import com.hopper.commons.eps.model.prebook.EPSPreBookingResponse
 import com.hopper.converter.AvailabilityResponseConverter
 import com.hopper.converter.href.PreBookHrefBuilder
 import com.hopper.converter.href.PreBookHrefBuilder.PriceCheckToken
-import com.hopper.model.availability.agoda.request.AvailabilityRequestV2
-import com.hopper.model.availability.agoda.response.AvailabilityLongResponseV2
+import com.hopper.model.agoda.availability.response.AvailabilityLongResponseV2
 import com.hopper.util.AgodaPOSTRequestUtil
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
@@ -24,6 +23,7 @@ class PreBookRequestHandler(hotelID: String, roomID: String, rateId: String) ext
 
     override def apply(request: Request): Future[Response] =
     {
+        import com.hopper.model.agoda.availability.request.AvailabilityRequestV2
 
         val token: PriceCheckToken = PreBookHrefBuilder.getShopRequestDetail(request.getParam("token"))
 
