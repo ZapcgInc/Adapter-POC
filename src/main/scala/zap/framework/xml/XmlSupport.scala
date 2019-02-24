@@ -1,5 +1,11 @@
 package zap.framework.xml
 
-class XmlSupport {
+
+
+trait XmlSupport[T] {
+
+  def fromXml(node: scala.xml.Node) : T
+  def toXml(any:T) : scala.xml.Elem
+
 
 }

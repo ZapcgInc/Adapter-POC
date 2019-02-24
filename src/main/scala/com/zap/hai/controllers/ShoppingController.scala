@@ -4,8 +4,8 @@ import zap.framework.httpclient.{ZapHttpRequest, ZapHttpResponse}
 
 trait ShoppingController {
 
-  def priceCheck(request: ZapHttpRequest) : ZapHttpResponse
+  def priceCheck(request: ControllerRequest) : ZapHttpResponse
 
-  def getPropertyAvailability(request : ZapHttpRequest) : ZapHttpResponse
+  def getPropertyAvailability(request : ControllerRequest) : ZapHttpResponse
 
 }

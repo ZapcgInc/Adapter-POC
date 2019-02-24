@@ -19,16 +19,16 @@ trait ZapHttpApacheClient extends ZapHttpClient with LazyLogging {
 
   private def convertToApacheRequest(zrequest: ZapHttpRequest): HttpRequestBase = {
     val request: HttpRequestBase = zrequest.method match {
-      case Get => new HttpGet(zrequest.url)
+      case Get => new HttpGet(zrequest.url.build)
       case Post => {
-        val post = new HttpPost(zrequest.url)
+        val post = new HttpPost(zrequest.url.build)
         if (zrequest.body.isDefined) {
           post.setEntity(createEntity(zrequest.body.get))
         }
         post
       }
       case Put => {
-        val put = new HttpPut(zrequest.url)
+        val put = new HttpPut(zrequest.url.build)
         if (zrequest.body.isDefined) {
           put.setEntity(createEntity(zrequest.body.get))
         }

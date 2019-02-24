@@ -12,7 +12,11 @@ case class ZapHttpStringEntity(content:String) extends ZapHttpEntity
 case class ZapHttpFormParamsEntity(formParams : Map[String,String]) extends ZapHttpEntity
 case class ZapHttpByteArrayEntity(array:Array[Byte]) extends ZapHttpEntity
 
-case class ZapUrl(baseUrl:String, params:(String,String)*)
+case class ZapUrl(baseUrl:String,params:(String,String)*) {
+  def build : String = {
+    ???
+  }
+}
 
 case class ZapHttpRequest(method:ZapHttpMethod, url:ZapUrl, body : Option[ZapHttpEntity], headers: (String,String)*)
 

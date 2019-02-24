@@ -22,13 +22,17 @@ package object httpclient {
     }
   }
 
+  implicit class ZapHttpEntityToContent(zhe : ZapHttpEntity) {
+    def asString = zhe.asInstanceOf[ZapHttpStringEntity].content
+    def asByteArray = zhe.asInstanceOf[ZapHttpByteArrayEntity].array
+  }
 
-  def GetReq(url: String) = ZapHttpRequest(Get, url, None)
+  def GetReq(url: String) = ZapHttpRequest(Get, ZapUrl(url), None)
 
-  def GetReq(url: String, headers: (String, String)*) = ZapHttpRequest(Get, url, None, headers)
+  def GetReq(url: String, headers: (String, String)*) = ZapHttpRequest(Get, ZapUrl(url), None, headers:_*)
 
-  def PostReq(url: String, body: ZapHttpEntity, headers: (String, String)*) = ZapHttpRequest(Get, url, Some(body), headers)
+  def PostReq(url: String, body: ZapHttpEntity, headers: (String, String)*) = ZapHttpRequest(Get, ZapUrl(url), Some(body), headers:_*)
 
-  def PostReq(url: String, headers: (String, String)*) = ZapHttpRequest(Get, url, None, headers)
+  def PostReq(url: String, headers: (String, String)*) = ZapHttpRequest(Get, ZapUrl(url), None, headers:_*)
 
 }

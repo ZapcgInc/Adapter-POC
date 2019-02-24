@@ -25,7 +25,7 @@ object build {
 
   val circe_generic = "io.circe" %% "circe-generic" % "0.11.1"
   val circe_parse = "io.circe" %% "circe-parser" % "0.11.1"
-  val circe_libs = compile(circe_generic,circe_parse)
+  val circe_libs = compile(circe_generic, circe_parse)
 
   val cucumber_libs = test(
     "io.cucumber" %% "cucumber-scala" % "4.2.0",
@@ -40,10 +40,11 @@ object build {
 
   val commons_io = "commons-io" % "commons-io" % "2.6"
 
+  val scala_xml = "org.scala-lang.modules" %% "scala-xml" % "1.1.1"
 
-  val deps = finch_libs ++ logging_libs ++ cucumber_libs ++ circe_libs ++
+  val deps = compile(jackson_scala, apacheHttpClient, commons_io, scala_xml) ++
     test(junit, junitint, scalatest) ++
-    compile(jackson_scala, apacheHttpClient, commons_io)
+    finch_libs ++ logging_libs ++ cucumber_libs ++ circe_libs
 
 
 }
