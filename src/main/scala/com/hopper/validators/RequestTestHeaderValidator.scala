@@ -1,7 +1,7 @@
 package com.hopper.validators
 
 import com.hopper.model.constants.EPSResponseErrorType
-import com.hopper.model.error.{EPSErrorResponse, ResponseError}
+import com.hopper.commons.eps.model.error.{EPSErrorResponse, ResponseError}
 import com.twitter.finagle.http.{Request, Status}
 import org.apache.commons.lang.StringUtils
 import org.jboss.netty.handler.codec.http.HttpResponseStatus

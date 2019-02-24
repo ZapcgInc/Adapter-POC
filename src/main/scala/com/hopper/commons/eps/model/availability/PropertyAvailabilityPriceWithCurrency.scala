@@ -1,10 +1,11 @@
-package com.hopper.model.availability.eps
+package com.hopper.commons.eps.model.availability
 
 import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonProperty}
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 class PropertyAvailabilityPriceWithCurrency
 {
+
     @JsonProperty("billable_currency")
     var billable: PropertyAvailabilityPrice = _
 

@@ -1,7 +1,7 @@
 package com.hopper.validators
 
 import com.twitter.finagle.http.Request
-import com.hopper.model.error.EPSErrorResponse
+import com.hopper.commons.eps.model.error.EPSErrorResponse
 import org.jboss.netty.handler.codec.http.HttpResponseStatus
 
 trait RequestValidator

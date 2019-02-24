@@ -3,7 +3,7 @@ package com.hopper
 import java.net.InetSocketAddress
 
 import com.hopper.auth.{AuthHandler, AvailabilityRequestHandler, ExceptionHandler}
-import com.hopper.handler.PriceCheckRequestHandler
+import com.hopper.handler.PreBookRequestHandler
 import com.twitter.finagle.Service
 import com.twitter.finagle.builder.{Server, ServerBuilder}
 import com.twitter.finagle.http._
@@ -44,7 +44,7 @@ object HttpServer
           }
           case Root / "properties" / "availability" / hotelID / "rooms" / roomID / "rates" / rateID / "price-check" =>
           {
-              new PriceCheckRequestHandler(hotelID, roomID, rateID)
+              new PreBookRequestHandler(hotelID, roomID, rateID)
           }
           case Root / "properties" / "availability" =>
           {

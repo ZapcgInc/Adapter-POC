@@ -1,7 +1,7 @@
 package com.hopper.validators
 
 import com.hopper.model.constants.AvailabilityRequestHeaders
-import com.hopper.model.error.{EPSErrorResponse, EPSErrorResponseBuilder}
+import com.hopper.commons.eps.model.error.{EPSErrorResponse, EPSErrorResponseBuilder}
 import com.twitter.finagle.http.Request
 
 object LanguageCodeValidator

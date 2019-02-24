@@ -1,7 +1,7 @@
 package com.hopper.validators
-import com.hopper.model.error.EPSErrorResponse
+import com.hopper.commons.eps.model.error.EPSErrorResponse
 import com.twitter.finagle.http.Request
-import com.hopper.model.error.EPSErrorResponseBuilder
+import com.hopper.commons.eps.model.error.EPSErrorResponseBuilder
 import com.hopper.model.constants.AvailabilityRequestHeaders
 
 object CurrencyCodeValidator

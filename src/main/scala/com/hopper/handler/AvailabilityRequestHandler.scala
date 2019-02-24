@@ -4,10 +4,10 @@ import java.io.{StringReader, StringWriter}
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import com.hopper.commons.eps.model.availability.EPSShoppingResponse
 import com.hopper.converter.AvailabilityResponseConverter
 import com.hopper.model.availability.agoda.response.AvailabilityLongResponseV2
-import com.hopper.model.availability.eps.EPSShoppingResponse
-import com.hopper.model.error.EPSErrorResponse
+import com.hopper.commons.eps.model.error.EPSErrorResponse
 import com.hopper.util.AgodaPOSTRequestUtil
 import com.hopper.validators.{AvailabilityRequestDataValidator, RequestTestHeaderValidator}
 import com.twitter.finagle.Service

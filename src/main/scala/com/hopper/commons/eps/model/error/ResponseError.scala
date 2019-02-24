@@ -1,4 +1,4 @@
-package com.hopper.model.error
+package com.hopper.commons.eps.model.error
 
 import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonInclude, JsonProperty}
 

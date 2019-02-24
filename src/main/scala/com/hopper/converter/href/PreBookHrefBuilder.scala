@@ -1,18 +1,13 @@
-package com.hopper.converter
-
-import java.io.{ByteArrayInputStream, ByteArrayOutputStream}
-import java.nio.charset.StandardCharsets
-import java.util.Base64
-import java.util.zip.{GZIPInputStream, GZIPOutputStream}
+package com.hopper.converter.href
 
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
+import com.hopper.commons.util.GZIPStringURLEncoder
 import com.hopper.model.availability.agoda.request.AvailabilityRequestV2
 import com.hopper.model.availability.agoda.response.{Hotel, RateInfo, Room}
-import com.twitter.io.StreamIO
 
-object PriceCheckHrefConverter
+object PreBookHrefBuilder
 {
     private val PRICE_CHECK_HREF_TEMPLATE: String = s"/properties/availability/%s/rooms/%s/rates/%s/price-check?token=%s"
 
@@ -20,49 +15,20 @@ object PriceCheckHrefConverter
     {
         val tokenInfo: PriceCheckToken = new PriceCheckToken(new AvailabilityRequestParams(request), room.rateInfo)
         val jsonResponse: String = (new ObjectMapper).registerModule(DefaultScalaModule).writeValueAsString(tokenInfo)
-        val encodedToken: String = _encode(jsonResponse)
+        val encodedToken: String = GZIPStringURLEncoder.encodeString(jsonResponse)
 
-        println("Encoded" + encodedToken)
-        println("Decoded" + _decode(encodedToken))
         PRICE_CHECK_HREF_TEMPLATE.format(hotel.id, room.id, room.rateCategoryID, encodedToken)
     }
 
     def getShopRequestDetail(token: String): PriceCheckToken =
     {
-        println("Decoding : " + token)
-        val jsonString: String = _decode(token)
+        val jsonString: String = GZIPStringURLEncoder.decodeString(token)
 
         val objectMapper = new ObjectMapper() with ScalaObjectMapper
         objectMapper.registerModule(DefaultScalaModule)
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
         objectMapper.readValue[PriceCheckToken](jsonString)
-    }
-
-    def _encode(input: String): String =
-    {
-
-        val byteArrayOutputStream: ByteArrayOutputStream = new ByteArrayOutputStream
-        val gzipOutputStream: GZIPOutputStream = new GZIPOutputStream(byteArrayOutputStream)
-        gzipOutputStream.write(input.getBytes(StandardCharsets.UTF_8))
-
-        gzipOutputStream.finish()
-
-        byteArrayOutputStream.toByteArray
-
-        Base64.getUrlEncoder
-          .withoutPadding()
-          .encodeToString(byteArrayOutputStream.toByteArray)
-    }
-
-    def _decode(input: String): String =
-    {
-        val decoded: Array[Byte] = Base64.getUrlDecoder.decode(input)
-        val baos = new ByteArrayOutputStream
-
-        StreamIO.copy(new GZIPInputStream(new ByteArrayInputStream(decoded)), baos)
-
-        new String(baos.toByteArray, "UTF-8")
     }
 
     case class PriceCheckToken(requestParams: AvailabilityRequestParams, rateInfo: RateInfo)

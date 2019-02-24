@@ -5,7 +5,7 @@ import java.time.{Duration, LocalDate}
 import java.util
 
 import com.hopper.model.constants.{AvailabilityRequestHeaders, EPSResponseErrorType}
-import com.hopper.model.error.{EPSErrorResponse, EPSErrorResponseBuilder, ResponseError, ResponseErrorFields}
+import com.hopper.commons.eps.model.error.{EPSErrorResponse, EPSErrorResponseBuilder, ResponseError, ResponseErrorFields}
 import com.twitter.finagle.http.{Request, Status}
 import org.apache.commons.collections.CollectionUtils
 import org.apache.commons.lang.StringUtils

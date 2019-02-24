@@ -2,9 +2,11 @@ package com.hopper.converter
 
 import java.time.{Duration, LocalDate}
 
+import com.hopper.commons.eps.model.availability.{EPSShoppingResponse, PropertyAvailabilityAmenities, PropertyAvailabilityBedGroups, PropertyAvailabilityCancelPenalties, PropertyAvailabilityLinks, PropertyAvailabilityPrice, PropertyAvailabilityPriceWithCurrency, PropertyAvailabilityRates, PropertyAvailabilityRoom, PropertyAvailabilityRoomRates, PropertyAvailabilityTotalPrice}
+import com.hopper.commons.eps.model.prebook.EPSPreBookingResponse
+import com.hopper.converter.href.{BookHrefBuilder, PreBookHrefBuilder}
 import com.hopper.model.availability.agoda.request.AvailabilityRequestV2
 import com.hopper.model.availability.agoda.response.{AvailabilityLongResponseV2, Hotel, Room}
-import com.hopper.model.availability.eps.{EPSShoppingResponse, PropertyAvailability, PropertyAvailabilityAmenities, PropertyAvailabilityBedGroups, PropertyAvailabilityCancelPenalties, PropertyAvailabilityLinks, PropertyAvailabilityPrice, PropertyAvailabilityPriceWithCurrency, PropertyAvailabilityRates, PropertyAvailabilityRoom, PropertyAvailabilityRoomRates, PropertyAvailabilityTotalPrice}
 import com.twitter.finagle.http.Method
 
 /**
@@ -14,6 +16,7 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
 {
     def convertToEPSResponse(): EPSShoppingResponse =
     {
+        import com.hopper.commons.eps.model.availability.PropertyAvailability
         val propertyList: Array[PropertyAvailability] = response.hotels
           .map(hotel => new PropertyAvailability(
               hotel.id,
@@ -23,15 +26,28 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
         new EPSShoppingResponse(propertyList)
     }
 
-    def convertToEPSResponse(roomID:String): EPSShoppingResponse =
+    def convertToEPSResponse(hotelID: String, roomID: String): Option[EPSPreBookingResponse] =
     {
-        val propertyList: Array[PropertyAvailability] = response.hotels
-          .map(hotel => new PropertyAvailability(
-              hotel.id,
-              hotel.rooms.filter(room => room.id == roomID).map(r => _getRoomInfo(r, hotel)))
-          )
+        val hotel: Option[Hotel] = response.hotels.find(hotel => hotel.id == hotelID)
+        if (hotel.isEmpty)
+        {
+            None
+        }
 
-        new EPSShoppingResponse(propertyList)
+        val room: Option[Room] = hotel.get.rooms.find(room => room.id == roomID)
+        if (room.isEmpty)
+        {
+            None
+        }
+
+        val rates: Map[String, PropertyAvailabilityRoomRates] = _populateRates(room.get)
+
+        Some(new EPSPreBookingResponse("matched", rates, _populateBookingHref()))
+    }
+
+    def _populateBookingHref(): Map[String, PropertyAvailabilityLinks] =
+    {
+        Map("book" -> new PropertyAvailabilityLinks(Method.Get.toString, BookHrefBuilder.buildHref()))
     }
 
 
@@ -63,7 +79,8 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
         rate.bedGroups = _populateBedGroups(r, hotel)
         rate.roomPriceByOccupancy = _populateRates(r)
 
-        Option(r.rateInfo.promotionType).foreach(promotionType => {
+        Option(r.rateInfo.promotionType).foreach(promotionType =>
+        {
             rate.promoId = promotionType.id
             rate.promoDesc = promotionType.text
         })
@@ -86,7 +103,8 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
         roomPrice.nightlyPrice = _populateNightlyPrice(r)
         roomPrice.totals = _populateTotals(r)
 
-        _populateSurcharges(r).foreach(surcharge => {
+        _populateSurcharges(r).foreach(surcharge =>
+        {
             roomPrice.stayPrice = surcharge._1
             roomPrice.fees = surcharge._2
         })
@@ -162,7 +180,7 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
 
     def _populateInclusivePriceWithCurrency(r: Room): PropertyAvailabilityPriceWithCurrency =
     {
-        val inclusiveRate:Double = r.rateInfo.totalPaymentAmount.inclusive
+        val inclusiveRate: Double = r.rateInfo.totalPaymentAmount.inclusive
         new PropertyAvailabilityPriceWithCurrency(
             new PropertyAvailabilityPrice(inclusiveRate, r.currency),
             new PropertyAvailabilityPrice(inclusiveRate, r.currency)
@@ -171,7 +189,7 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
 
     def _populateExclusivePriceWithCurrency(r: Room): PropertyAvailabilityPriceWithCurrency =
     {
-        val exclusiveRate:Double = r.rateInfo.totalPaymentAmount.exclusive
+        val exclusiveRate: Double = r.rateInfo.totalPaymentAmount.exclusive
 
         new PropertyAvailabilityPriceWithCurrency(
             new PropertyAvailabilityPrice(exclusiveRate, r.currency),
@@ -194,7 +212,7 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
     def _populateBedGroups(r: Room, hotel: Hotel): Array[PropertyAvailabilityBedGroups] =
     {
         val bedGroup = new PropertyAvailabilityBedGroups
-        val href:String = PriceCheckHrefConverter.buildHref(r, hotel, request)
+        val href: String = PreBookHrefBuilder.buildHref(r, hotel, request)
 
         bedGroup.links = Map("price_check" -> new PropertyAvailabilityLinks(Method.Get.toString, href))
 
@@ -214,4 +232,5 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
 }
 
 /*Companion Object*/
-object AvailabilityResponseConverter{}
+object AvailabilityResponseConverter
+{}

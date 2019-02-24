@@ -1,4 +1,4 @@
-package com.hopper.model.availability.eps
+package com.hopper.commons.eps.model.availability
 
 import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonProperty}
 import com.hopper.model.availability.agoda.response.PolicyDate

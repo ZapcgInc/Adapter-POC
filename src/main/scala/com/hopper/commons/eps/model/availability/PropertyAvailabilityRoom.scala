@@ -1,4 +1,4 @@
-package com.hopper.model.availability.eps
+package com.hopper.commons.eps.model.availability
 
 import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonInclude, JsonProperty}
 
@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonInclude, Json
 @JsonInclude(JsonInclude.Include.NON_NULL)
 class PropertyAvailabilityRoom
 {
+
     @JsonProperty("id")
     var id: String = _
 

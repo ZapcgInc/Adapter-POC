@@ -2,7 +2,7 @@ package com.hopper.model.availability.agoda.request
 
 import java.io.StringWriter
 
-import com.hopper.converter.PriceCheckHrefConverter.PriceCheckToken
+import com.hopper.converter.href.PreBookHrefBuilder.PriceCheckToken
 import com.hopper.model.availability.agoda.request.constants.AgodaAvailabilityRequestType
 import com.hopper.model.constants.AvailabilityRequestHeaders
 import com.twitter.finagle.http.Request
