@@ -4,6 +4,9 @@ import zap.framework.xml.XmlSupport
 
 import scala.xml.{Elem, Node}
 
+case class AvailabilityRequest(siteId: String, apiKey: String, requestType: Option[Int], id: String, propertyIds: String,
+                               checkInDate: String, checkOutDate:String, roomCount : Int, adultCount:Int,
+                               childrenAges:List[Int])
 
 object AvailabilityRequest extends XmlSupport[AvailabilityRequest] {
 
@@ -47,9 +50,6 @@ object AvailabilityRequest extends XmlSupport[AvailabilityRequest] {
 
 }
 
-case class AvailabilityRequest(siteId: String, apiKey: String, requestType: Option[Int], id: String, propertyIds: String,
-                               checkInDate: String, checkOutDate:String, roomCount : Int, adultCount:Int,
-                               childrenAges:List[Int])
 
 class AvailabityRequestBuilder(){
 

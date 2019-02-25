@@ -10,7 +10,7 @@ trait AgodaRestClientDefault extends AgodaRestClient  {
 
   val httpClient : ZapHttpClient
 
-  override def affliateLongSearch(ar: AvailabilityRequest, authorization: String): Either[ZapHttpResponse,AvailabilityResponse] = {
+  override def affliateLongSearch(ar: AvailabilityRequest): Either[ZapHttpResponse,AvailabilityResponse] = {
 
     val baseurl = zaperties.req("agoda.url")
     val request = ZapHttpRequest(Post,ZapUrl(s"${baseurl}/xmlpartner/xmlservice/search_lrv3"),

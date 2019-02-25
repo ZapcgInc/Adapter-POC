@@ -6,6 +6,6 @@ import zap.framework.httpclient.ZapHttpResponse
 trait AgodaRestClient {
 
 
-  def affliateLongSearch(availabilityRequest : AvailabilityRequest, authorization:String) :Either[ZapHttpResponse,AvailabilityResponse]
+  def affliateLongSearch(availabilityRequest : AvailabilityRequest) :Either[ZapHttpResponse,AvailabilityResponse]
 
 }
