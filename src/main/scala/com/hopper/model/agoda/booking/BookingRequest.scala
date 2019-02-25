@@ -1,6 +1,6 @@
 package com.hopper.model.agoda.booking
 
-import javax.xml.bind.annotation.{XmlAccessType, XmlAccessorType, XmlAttribute, XmlElement, XmlElementWrapper, XmlRootElement}
+import javax.xml.bind.annotation.{XmlAccessType, XmlAccessorType, XmlAttribute, XmlElement, XmlRootElement}
 
 @XmlRootElement(name = "BookingRequestV3")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -15,13 +15,9 @@ class BookingRequest
     @XmlAttribute(name = "delaybooking")
     var delayBooking: Boolean = true
 
-    @XmlElementWrapper(name = "Rooms")
-    @XmlElement(name = "Room")
-    var rooms: Array[Room] = _
-
-    @XmlAttribute(name = "BookingDetails")
+    @XmlElement(name = "BookingDetails")
     var bookingDetails: BookingDetails = _
 
-    @XmlAttribute(name = "CustomerDetail")
+    @XmlElement(name = "CustomerDetail")
     var customerDetail: CustomerDetail = _
 }

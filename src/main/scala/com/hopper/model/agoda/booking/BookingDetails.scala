@@ -1,5 +1,5 @@
 package com.hopper.model.agoda.booking
-import javax.xml.bind.annotation.{XmlAccessType, XmlAccessorType, XmlAttribute, XmlRootElement, XmlElement}
+import javax.xml.bind.annotation.{XmlAccessType, XmlAccessorType, XmlAttribute, XmlRootElement, XmlElement, XmlElementWrapper}
 
 @XmlRootElement(name = "BookingDetails")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -19,4 +19,7 @@ class BookingDetails
 
     @XmlElement(name = "UserCountry")
     var userCountry:String = _
+
+    @XmlElement(name = "Hotel")
+    var hotel:Hotel = _
 }

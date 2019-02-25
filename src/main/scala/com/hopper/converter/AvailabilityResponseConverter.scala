@@ -42,12 +42,12 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
 
         val rates: Map[String, PropertyAvailabilityRoomRates] = _populateRates(room.get)
 
-        Some(new EPSPreBookingResponse("matched", rates, _populateBookingHref()))
+        Some(new EPSPreBookingResponse("matched", rates, _populateBookingHref(hotelID, roomID)))
     }
 
-    def _populateBookingHref(): Map[String, PropertyAvailabilityLinks] =
+    def _populateBookingHref(hotelID: String, roomID: String): Map[String, PropertyAvailabilityLinks] =
     {
-        Map("book" -> new PropertyAvailabilityLinks(Method.Get.toString, BookHrefBuilder.buildHref()))
+        Map("book" -> new PropertyAvailabilityLinks(Method.Get.toString, BookHrefBuilder.buildHref(request, response, hotelID, roomID)))
     }
 
     def _getRoomInfo(r: Room, hotel: Hotel): PropertyAvailabilityRoom =

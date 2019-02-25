@@ -1,6 +1,5 @@
 package com.hopper.model.agoda.booking
 
-import com.hopper.model.agoda.availability.response.{Rate, Surcharge}
 import javax.xml.bind.annotation.{XmlAccessType, XmlAccessorType, XmlAttribute, XmlElement, XmlElementWrapper, XmlRootElement}
 
 @XmlRootElement(name = "BookingRequestV3")
@@ -11,7 +10,7 @@ class Room
     var id: String = _
 
     @XmlAttribute(name = "promotionid")
-    var promotionid:String = _
+    var promotionID:String = _
 
     @XmlAttribute(name = "name")
     var name: String = _
