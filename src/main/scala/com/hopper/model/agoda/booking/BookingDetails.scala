@@ -8,16 +8,16 @@ class BookingDetails
     @XmlAttribute(name = "searchid")
     var searchID: String = _
 
-    @XmlElement(name = "AllowDuplication")
+    @XmlAttribute(name = "AllowDuplication")
     var allowDuplication:Boolean = true
 
-    @XmlElement(name = "CheckIn")
+    @XmlAttribute(name = "CheckIn")
     var checkInDate: String = _
 
-    @XmlElement(name = "CheckOut")
+    @XmlAttribute(name = "CheckOut")
     var checkOutDate: String = _
 
-    @XmlElement(name = "UserCountry")
+    @XmlAttribute(name = "UserCountry")
     var userCountry:String = _
 
     @XmlElement(name = "Hotel")

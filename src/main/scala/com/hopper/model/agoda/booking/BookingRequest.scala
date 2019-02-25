@@ -21,7 +21,7 @@ class BookingRequest
     @XmlAttribute(name = "delaybooking")
     var delayBooking: Boolean = true
 
-    @XmlElement(name = "tag")
+    @XmlAttribute(name = "tag")
     var tag: String = "0000-0000-00"
 
     @XmlElement(name = "BookingDetails")

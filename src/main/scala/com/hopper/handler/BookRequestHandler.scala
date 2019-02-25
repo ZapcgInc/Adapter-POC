@@ -10,7 +10,7 @@ import org.jboss.netty.handler.codec.http.{DefaultHttpResponse, HttpVersion}
 
 class BookRequestHandler extends Service[Request, Response]
 {
-    private val END_POINT = "http://sandbox-affiliateapi.agoda.com/xmlpartner/xmlbookservice/book_v3"
+    private val END_POINT = "https://sandbox-affiliateapisecure.agoda.com/xmlpartner/xmlbookservice/book_v3"
 
     override def apply(request: Request): Future[Response] =
     {
@@ -20,6 +20,7 @@ class BookRequestHandler extends Service[Request, Response]
 
         val agodaRequestXML: String = bookRequest.convertToXML()
 
+        println(agodaRequestXML)
         val agodaResponseAsString: String = AgodaPOSTRequestUtil.postXMLRequestAndGetResponse(agodaRequestXML, END_POINT)
 
         val response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, HttpResponseStatus.OK))
