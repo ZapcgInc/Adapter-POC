@@ -18,12 +18,6 @@ class BookingRequest
     @XmlAttribute(name = "apikey")
     var apiKey: String = "6fae573e-b261-4c02-97b4-3dd20d1e74b2"
 
-    @XmlAttribute(name = "xmlns")
-    var xmlns: String = "http://xml.agoda.com"
-
-    @XmlAttribute(name = "xmlns:xsi")
-    var xmlnsXsi: String = "http://www.w3.org/2001/XMLSchema-instance"
-
     @XmlAttribute(name = "xsi:schemaLocation")
     var schemaLocation: String = "http://xml.agoda.com BookingRequestV3.xsd"
 
@@ -36,11 +30,15 @@ class BookingRequest
     @XmlElement(name = "CustomerDetail")
     var customerDetail: CustomerDetail = _
 
-    def this(p_bookingDetails: BookingDetails, p_customerDetail: CustomerDetail)
+    @XmlElement(name = "PaymentDetails")
+    var paymentDetails : PaymentDetails = new PaymentDetails
+
+    def this(p_bookingDetails: BookingDetails, p_customerDetail: CustomerDetail, p_guestDetails : Array[GuestDetail])
     {
         this()
         bookingDetails = p_bookingDetails
         customerDetail = p_customerDetail
+        bookingDetails.hotel.rooms.foreach(r => r.guestDetail = p_guestDetails)
     }
 
     def convertToXML(): String =

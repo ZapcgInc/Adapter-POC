@@ -1,30 +1,23 @@
 package com.hopper.auth
 
-import java.io.StringReader
-
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.hopper.commons.eps.model.availability.EPSShoppingResponse
 import com.hopper.commons.eps.model.error.EPSErrorResponse
 import com.hopper.converter.AvailabilityResponseConverter
+import com.hopper.model.agoda.availability.request.AvailabilityRequestV2
 import com.hopper.model.agoda.availability.response.AvailabilityLongResponseV2
 import com.hopper.util.AgodaPOSTRequestUtil
 import com.hopper.validators.{AvailabilityRequestDataValidator, RequestTestHeaderValidator}
 import com.twitter.finagle.Service
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.util.Future
-import javax.xml.bind.{JAXBContext, Marshaller, Unmarshaller}
 import org.jboss.netty.handler.codec.http.{DefaultHttpResponse, HttpResponseStatus, HttpVersion}
 
 class AvailabilityRequestHandler extends Service[Request, Response]
 {
-
-    import com.hopper.model.agoda.availability.request.AvailabilityRequestV2
-
+    private val RESPONSE_JSON_MAPPER = (new ObjectMapper).registerModule(DefaultScalaModule)
     private val END_POINT = "http://sandbox-affiliateapi.agoda.com/xmlpartner/xmlservice/search_lrv3"
-
-    private val AGODA_REQUEST_MARSHALLER: Marshaller = JAXBContext.newInstance(classOf[AvailabilityRequestV2]).createMarshaller
-    private val AGODA_RESPONSE_UNMARSHALLER: Unmarshaller = JAXBContext.newInstance(classOf[AvailabilityLongResponseV2]).createUnmarshaller()
 
     override def apply(request: Request): Future[Response] =
     {
@@ -49,10 +42,10 @@ class AvailabilityRequestHandler extends Service[Request, Response]
 
         // Post to Agoda API and get response
         val agodaResponseAsString: String = AgodaPOSTRequestUtil.postXMLRequestAndGetResponse(agodaRequestXML, END_POINT)
+
         println(agodaResponseAsString)
-        val agodaResponse: AvailabilityLongResponseV2 = AGODA_RESPONSE_UNMARSHALLER
-          .unmarshal(new StringReader(agodaResponseAsString))
-          .asInstanceOf[AvailabilityLongResponseV2]
+
+        val agodaResponse: AvailabilityLongResponseV2 = AvailabilityLongResponseV2.unmarshall(agodaResponseAsString)
 
         // Convert to EPS Response
         val epsResponse: EPSShoppingResponse = new AvailabilityResponseConverter(agodaAvailabilityRequest, agodaResponse).convertToEPSResponse()
@@ -63,7 +56,7 @@ class AvailabilityRequestHandler extends Service[Request, Response]
     def _convertToEPSResponse(httpResponseStatus: HttpResponseStatus, agodaResponse: AnyRef): Response =
     {
         // Convert EPS Response to JSON
-        val jsonResponse = (new ObjectMapper).registerModule(DefaultScalaModule).writeValueAsString(agodaResponse)
+        val jsonResponse = RESPONSE_JSON_MAPPER.writeValueAsString(agodaResponse)
 
         val response = Response.apply(new DefaultHttpResponse(HttpVersion.HTTP_1_0, httpResponseStatus))
         response.setContentTypeJson()

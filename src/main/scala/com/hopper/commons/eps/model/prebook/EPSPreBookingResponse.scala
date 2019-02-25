@@ -1,7 +1,7 @@
 package com.hopper.commons.eps.model.prebook
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.hopper.commons.eps.model.availability.{PropertyAvailabilityLinks, PropertyAvailabilityRoomRates}
+import com.hopper.commons.eps.model.availability.PropertyAvailabilityRoomRates
 
 class EPSPreBookingResponse
 {
@@ -12,9 +12,9 @@ class EPSPreBookingResponse
     var roomPriceByOccupancy: Map[String, PropertyAvailabilityRoomRates] = _
 
     @JsonProperty("links")
-    var links: Map[String, PropertyAvailabilityLinks] = _
+    var links: Map[String, Links] = _
 
-    def this(p_status: String, p_roomPriceByOccupancy: Map[String, PropertyAvailabilityRoomRates], p_links: Map[String, PropertyAvailabilityLinks])
+    def this(p_status: String, p_roomPriceByOccupancy: Map[String, PropertyAvailabilityRoomRates], p_links: Map[String, Links])
     {
         this()
         status = p_status

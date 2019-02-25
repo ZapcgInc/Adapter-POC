@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.{XmlAccessType, XmlAccessorType, XmlAttribute, 
 class GuestDetail
 {
     @XmlAttribute(name = "Primary")
-    val primary: Boolean = false
+    var primary: Boolean = false
 
     @XmlElement(name = "Title")
     var title: String = _

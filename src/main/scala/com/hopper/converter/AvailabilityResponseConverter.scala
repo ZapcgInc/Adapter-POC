@@ -8,6 +8,7 @@ import com.hopper.converter.href.{BookHrefBuilder, PreBookHrefBuilder}
 import com.hopper.model.agoda.availability.request.AvailabilityRequestV2
 import com.hopper.model.agoda.availability.response.{AvailabilityLongResponseV2, Hotel, Room}
 import com.twitter.finagle.http.Method
+import com.hopper.commons.eps.model.prebook.Links
 
 /**
   * Convert Agoda Availability XML Response to EPS Standard JSON Response
@@ -25,7 +26,7 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
         new EPSShoppingResponse(propertyList)
     }
 
-    def convertToEPSResponse(hotelID: String, roomID: String): Option[EPSPreBookingResponse] =
+    def convertToEPSResponse(hotelID: String, roomID: String, rateID: String): Option[EPSPreBookingResponse] =
     {
 
         val hotel: Option[Hotel] = response.hotels.find(hotel => hotel.id == hotelID)
@@ -45,9 +46,10 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
         Some(new EPSPreBookingResponse("matched", rates, _populateBookingHref(hotelID, roomID)))
     }
 
-    def _populateBookingHref(hotelID: String, roomID: String): Map[String, PropertyAvailabilityLinks] =
+    def _populateBookingHref(hotelID: String, roomID: String): Map[String, Links] =
     {
-        Map("book" -> new PropertyAvailabilityLinks(Method.Get.toString, BookHrefBuilder.buildHref(request, response, hotelID, roomID)))
+        val bookingHref:String = BookHrefBuilder.buildHref(request, response, hotelID, roomID)
+        Map("book" -> new Links(Method.Get.toString, bookingHref))
     }
 
     def _getRoomInfo(r: Room, hotel: Hotel): PropertyAvailabilityRoom =

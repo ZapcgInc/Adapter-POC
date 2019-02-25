@@ -48,12 +48,12 @@ class Room
     @XmlAttribute(name = "children")
     var childrenCount: Int = _
 
+    @XmlElement(name = "Rate")
+    var rate:Rate = _
+
     @XmlElementWrapper(name = "ChildrenAges")
     @XmlElement(name = "Age")
     var childrenAges: Array[Int] = _
-
-    @XmlElement(name = "Rate")
-    var rate:Rate = _
 
     @XmlElementWrapper(name = "Surcharges")
     @XmlElement(name = "Surcharge")

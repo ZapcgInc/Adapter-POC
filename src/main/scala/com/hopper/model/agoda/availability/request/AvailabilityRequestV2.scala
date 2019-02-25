@@ -71,6 +71,7 @@ class AvailabilityRequestV2
         roomCount = token.requestParams.roomCount
         adultsCount = token.requestParams.adultsCount
         childrenCount = token.requestParams.childrenCount
+        childrenAges = token.requestParams.childrenAges
 
         occupancy = token.requestParams.occupancy
         currency = token.requestParams.currency

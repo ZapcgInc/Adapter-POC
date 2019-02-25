@@ -18,6 +18,9 @@ class CustomerDetail
     @XmlElement(name = "LastName")
     var lastName: String = _
 
+    @XmlElement(name = "Email")
+    var email: String = _
+
     @XmlElement(name="Phone")
     var phone: Phone = _
 
