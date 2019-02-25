@@ -17,11 +17,15 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
 {
     def convertToEPSResponse(): EPSShoppingResponse =
     {
-        val propertyList: Array[PropertyAvailability] = response.hotels
-          .map(hotel => new PropertyAvailability(
-              hotel.id,
-              hotel.rooms.map(r => _getRoomInfo(r, hotel)))
-          )
+        val propertyList: Array[PropertyAvailability] = response.hotels.map{hotel =>
+            val rooms = hotel.rooms.groupBy(_.id).map{roomt =>
+                val roomInfo = _getRoomInfo(roomt._2.head,hotel)
+                val rates: Array[PropertyAvailabilityRates] = roomt._2.map{ room=> _populateRateInfo(room, hotel)}
+                roomInfo.rates = rates
+                roomInfo
+            }
+            new PropertyAvailability(hotel.id,rooms.toArray)
+        }
 
         new EPSShoppingResponse(propertyList)
     }
@@ -57,13 +61,8 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
         new PropertyAvailabilityRoom(
             r.id,
             r.name,
-            _getRateList(r, hotel)
+            Array()
         )
-    }
-
-    def _getRateList(r: Room, hotel: Hotel): Array[PropertyAvailabilityRates] =
-    {
-        Array(_populateRateInfo(r, hotel))
     }
 
     def _populateRateInfo(r: Room, hotel: Hotel): PropertyAvailabilityRates =
@@ -75,7 +74,7 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
 
         rate.depositRequired = false
         rate.fencedDeal = false
-        rate.merchantOfRecordString = "TBD"
+        rate.merchantOfRecordString = "merchant"
 
         rate.bedGroups = _populateBedGroups(r, hotel)
         rate.roomPriceByOccupancy = _populateRates(r)
