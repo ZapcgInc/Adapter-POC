@@ -39,7 +39,7 @@ class Room
     @XmlAttribute(name = "booknowpaylaterdate")
     var bookNowPayLaterDate: String = _
 
-    @XmlElement(name = "Rooms")
+    @XmlAttribute(name = "count")
     var roomCount: Int = _
 
     @XmlAttribute(name = "Adults")
@@ -52,7 +52,7 @@ class Room
     @XmlElement(name = "Age")
     var childrenAges: Array[Int] = _
 
-    @XmlAttribute(name = "Rate")
+    @XmlElement(name = "Rate")
     var rate:Rate = _
 
     @XmlElementWrapper(name = "Surcharges")

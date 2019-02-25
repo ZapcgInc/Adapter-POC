@@ -1,5 +1,5 @@
 package com.hopper.model.agoda.booking
-import javax.xml.bind.annotation.{XmlAccessType, XmlAccessorType, XmlAttribute, XmlRootElement, XmlElement, XmlElementWrapper}
+import javax.xml.bind.annotation.{XmlAccessType, XmlAccessorType, XmlAttribute, XmlRootElement, XmlElement}
 
 @XmlRootElement(name = "BookingDetails")
 @XmlAccessorType(XmlAccessType.FIELD)

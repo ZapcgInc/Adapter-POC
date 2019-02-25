@@ -2,6 +2,7 @@ package com.hopper.converter.href
 
 import com.hopper.model.agoda.availability.request.AvailabilityRequestV2
 import com.hopper.model.agoda.availability.response.{AvailabilityLongResponseV2, Hotel, Room}
+import com.hopper.model.agoda.booking.BookingDetails
 
 object BookHrefBuilder
 {
@@ -27,7 +28,7 @@ object BookHrefBuilder
             None
         }
 
-        val requestParams: BookingRequestParams = create(request, response, hotel.get, room.get)
+        val requestParams: BookingDetails = create(request, response, hotel.get, room.get)
 
         val jsonResponse: String = (new ObjectMapper).registerModule(DefaultScalaModule).writeValueAsString(requestParams)
         val encodedToken: String = GZIPStringURLEncoder.encodeString(jsonResponse)
@@ -35,7 +36,7 @@ object BookHrefBuilder
         BOOKING_HREF_TEMPLATE.format(encodedToken)
     }
 
-    def getBookRequestDetail(token: String): BookingRequestParams =
+    def getBookRequestDetail(token: String): BookingDetails =
     {
         val jsonString: String = GZIPStringURLEncoder.decodeString(token)
 
@@ -43,11 +44,12 @@ object BookHrefBuilder
         objectMapper.registerModule(DefaultScalaModule)
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-        objectMapper.readValue[BookingRequestParams](jsonString)
+        objectMapper.readValue[BookingDetails](jsonString)
     }
 
-    def create(request: AvailabilityRequestV2, response: AvailabilityLongResponseV2, hotel: Hotel, room: Room): BookingRequestParams =
+    def create(request: AvailabilityRequestV2, response: AvailabilityLongResponseV2, hotel: Hotel, room: Room): BookingDetails =
     {
+
         val bookRoom: com.hopper.model.agoda.booking.Room = new com.hopper.model.agoda.booking.Room
 
         bookRoom.id = room.id
@@ -74,7 +76,7 @@ object BookHrefBuilder
         bookHotel.id = hotel.id
         bookHotel.rooms = Array(bookRoom)
 
-        val requestParams: BookingRequestParams = new BookingRequestParams
+        val requestParams: BookingDetails = new BookingDetails
         requestParams.searchID = response.searchID
         requestParams.checkInDate = request.checkInDate
         requestParams.checkOutDate = request.checkOutDate
@@ -83,14 +85,4 @@ object BookHrefBuilder
 
         requestParams
     }
-
-    class BookingRequestParams
-    {
-        var searchID: String = _
-        var checkInDate: String = _
-        var checkOutDate: String = _
-        var userCountry: String = _
-        var hotel: com.hopper.model.agoda.booking.Hotel = _
-    }
-
 }
