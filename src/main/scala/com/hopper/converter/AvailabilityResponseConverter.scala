@@ -26,7 +26,7 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
         new EPSShoppingResponse(propertyList)
     }
 
-    def convertToEPSResponse(hotelID: String, roomID: String, rateID: String): Option[EPSPreBookingResponse] =
+    def convertToEPSResponse(hotelID: String, roomID: String): Option[EPSPreBookingResponse] =
     {
 
         val hotel: Option[Hotel] = response.hotels.find(hotel => hotel.id == hotelID)
