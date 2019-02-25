@@ -52,6 +52,19 @@ zaperties.get[String]("my.key","my.val") //returns my.val if key not found
 This package provides a trait that you can extend to enable a consisten contract for xml ser/de. It also provides basic
 xml formatting.  Ref https://github.com/scala/scala-xml/wiki/Getting-started
 
+# Adapter
+
+The adapter follows a layered design, where the layer below is abstracted from the layer above, in both domain and technology.
+
+## Finagle Layer
+This layer deals with the details of the finagle technology. This is the only layer that is finagle aware. Layers below are
+agnostic of finagle.
+
+## Controller Layer
+This layer abstract the http server logic and can be plugged into any Rest framework like finagle, Play2, etc. This layer is resonsbile
+for request input validation, content negogiation, http response creation.
+
+## Service Layer
 
 
 

@@ -42,14 +42,14 @@ object build {
 
   val scala_xml = "org.scala-lang.modules" %% "scala-xml" % "1.1.1"
 
-  val http4s_dsl = "org.http4s" %% "http4s-dsl" % "0.18.22"
+//  val http4s_dsl = "org.http4s" %% "http4s-dsl" % "0.18.22"
 
-  val fs2_core = "co.fs2" %% "fs2-core" % "0.10.4"
-  val fs2_io = "co.fs2" %% "fs2-io" % "0.10.4"
-  val fs2_codec = "co.fs2" %% "fs2-scodec" % "0.10.4"
-  val fs2_libs = compile(fs2_core,fs2_io,fs2_codec)
+//  val fs2_core = "co.fs2" %% "fs2-core" % "0.10.4"
+//  val fs2_io = "co.fs2" %% "fs2-io" % "0.10.4"
+//  val fs2_codec = "co.fs2" %% "fs2-scodec" % "0.10.4"
+//  val fs2_libs = compile(fs2_core,fs2_io,fs2_codec)
 
-  val deps = compile(jackson_scala, apacheHttpClient, commons_io, scala_xml, http4s_dsl, twitter_server) ++
+  val deps = compile(jackson_scala, apacheHttpClient, commons_io, scala_xml, twitter_server) ++
     test(junit, junitint, scalatest) ++
     logging_libs ++ cucumber_libs ++ circe_libs
 

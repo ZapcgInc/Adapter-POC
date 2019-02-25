@@ -12,7 +12,7 @@ object HaiTwitterServer extends TwitterServer  {
 
     val factory = new HaiFactoryDefault {}
 
-    HttpMuxer.addHandler("/", factory.finagleService.service)
+    HttpMuxer.addHandler("/", factory.finagleService.routes)
     Await.ready(adminHttpServer)
   }
 
