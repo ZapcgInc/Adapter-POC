@@ -14,7 +14,12 @@ case class ZapHttpByteArrayEntity(array:Array[Byte]) extends ZapHttpEntity
 
 case class ZapUrl(baseUrl:String,params:(String,String)*) {
   def build : String = {
-    ???
+    if(params.isEmpty){
+      baseUrl
+    } else {
+      s"${baseUrl}?${params.map(t=>s"${t._1}=${t._2}").mkString("&")}"
+    }
+
   }
 }
 
