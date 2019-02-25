@@ -5,6 +5,9 @@ import javax.xml.bind.annotation.{XmlAccessType, XmlAccessorType, XmlAttribute, 
 @XmlAccessorType(XmlAccessType.FIELD)
 class BookingDetails
 {
+    @XmlAttribute(name = "tag")
+    var tag: String = "0000-0000-00"
+
     @XmlAttribute(name = "searchid")
     var searchID: String = _
 

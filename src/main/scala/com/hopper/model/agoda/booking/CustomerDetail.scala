@@ -25,5 +25,5 @@ class CustomerDetail
     var newsletter:Boolean = false
 
     @XmlElement(name = "IpAddress")
-    var ipAddress:String = _
+    var ipAddress:String = "172.0.0.0"
 }

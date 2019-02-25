@@ -42,10 +42,10 @@ class Room
     @XmlAttribute(name = "count")
     var roomCount: Int = _
 
-    @XmlAttribute(name = "Adults")
+    @XmlAttribute(name = "adults")
     var adultsCount: Int = _
 
-    @XmlAttribute(name = "Children")
+    @XmlAttribute(name = "children")
     var childrenCount: Int = _
 
     @XmlElementWrapper(name = "ChildrenAges")

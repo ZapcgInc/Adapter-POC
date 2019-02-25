@@ -33,10 +33,10 @@ class BookRequestHandler extends Service[Request, Response]
     def _populateCustomerDetails() : CustomerDetail =
     {
         val customerDetail: CustomerDetail = new CustomerDetail
-        customerDetail.title = "Mr"
+        customerDetail.title = "Mr."
         customerDetail.firstName = "John"
         customerDetail.lastName = "Mayer"
-        customerDetail.language = "en-US"
+        customerDetail.language = "en-us"
 
         customerDetail
     }

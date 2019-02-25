@@ -18,11 +18,17 @@ class BookingRequest
     @XmlAttribute(name = "apikey")
     var apiKey: String = "6fae573e-b261-4c02-97b4-3dd20d1e74b2"
 
+    @XmlAttribute(name = "xmlns")
+    var xmlns: String = "http://xml.agoda.com"
+
+    @XmlAttribute(name = "xmlns:xsi")
+    var xmlnsXsi: String = "http://www.w3.org/2001/XMLSchema-instance"
+
+    @XmlAttribute(name = "xsi:schemaLocation")
+    var schemaLocation: String = "http://xml.agoda.com BookingRequestV3.xsd"
+
     @XmlAttribute(name = "delaybooking")
     var delayBooking: Boolean = true
-
-    @XmlAttribute(name = "tag")
-    var tag: String = "0000-0000-00"
 
     @XmlElement(name = "BookingDetails")
     var bookingDetails: BookingDetails = _
