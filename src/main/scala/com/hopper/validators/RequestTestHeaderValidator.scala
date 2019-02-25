@@ -14,7 +14,7 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus
 object RequestTestHeaderValidator extends RequestValidator
 {
     private val INVALID_CONTENT_TYPE_RESPONSE_ERROR_TYPE: String = "test.content_invalid"
-    private val INVALID_CONTENT_TYPE_RESPONSE_ERROR_MSG: String = "Content of the test header is invalid. Please use one of the following valid values " + ValidTestResponse.getValueSetAsString()
+    private val INVALID_CONTENT_TYPE_RESPONSE_ERROR_MSG: String = "Content of the test header is invalid. Please use one of the following valid values: forbidden, no_availability, service_unavailable, standard, unknown_internal_error"
 
     private val INVALID_CONTENT_TYPE_RESPONSE_ERROR: ResponseError = new ResponseError(INVALID_CONTENT_TYPE_RESPONSE_ERROR_TYPE, INVALID_CONTENT_TYPE_RESPONSE_ERROR_MSG)
 
@@ -36,6 +36,7 @@ object RequestTestHeaderValidator extends RequestValidator
             case Some(ValidTestResponse.INVALID) =>  Some(Status.BadRequest, new EPSErrorResponse(EPSResponseErrorType.INVALID_INPUT, INVALID_CONTENT_TYPE_RESPONSE_ERROR))
             case _ => None
         }
+
     }
 
     private object ValidTestResponse extends Enumeration

@@ -34,6 +34,7 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
     {
 
         val hotel: Option[Hotel] = response.hotels.find(hotel => hotel.id == hotelID)
+        println("hotel"+hotel.toString)
         if (hotel.isEmpty)
         {
             None
@@ -145,7 +146,7 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
         {
             var stayPrices: Array[PropertyAvailabilityPrice] = null
             var fees: Array[PropertyAvailabilityPrice] = null
-
+            println("Surcharges",r.rateInfo.surcharges.toString)
             for (surcharge <- r.rateInfo.surcharges)
             {
                 if (surcharge.charge != null)

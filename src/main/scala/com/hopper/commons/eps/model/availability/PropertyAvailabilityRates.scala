@@ -1,8 +1,9 @@
 package com.hopper.commons.eps.model.availability
 
-import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonProperty}
+import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonInclude, JsonProperty}
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class PropertyAvailabilityRates
 {
     @JsonProperty("id")
@@ -43,4 +44,6 @@ class PropertyAvailabilityRates
 
     @JsonProperty("promo_description")
     var promoDesc: String = _
+
+    override def toString = s"PropertyAvailabilityRates($id, $availableRooms, $refundable, $depositRequired, $fencedDeal, $merchantOfRecordString, $links, $bedGroups, $cancelPolicies, $amenities, $roomPriceByOccupancy, $promoId, $promoDesc)"
 }

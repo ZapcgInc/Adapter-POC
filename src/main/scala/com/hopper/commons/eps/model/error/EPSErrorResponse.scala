@@ -46,9 +46,47 @@ object EPSErrorResponseBuilder extends EPSErrorResponse
         ))
     }
 
+    def _createErrorTypeForUnsupportedInput(fieldName: String): String = {
+        AvailabilityRequestHeaders.withNameOpt(fieldName) match
+        {
+            case Some(AvailabilityRequestHeaders.CURRENCY_CODE_KEY) =>
+            {
+                "currency.not_supported"
+            }
+            case Some(AvailabilityRequestHeaders.LANGUAGE_CODE_KEY) =>
+            {
+                "language.not_supported"
+            }
+            case Some(AvailabilityRequestHeaders.SALES_CHANNEL) =>
+            {
+                "sales_channel.invalid"
+            }
+            case Some(AvailabilityRequestHeaders.SALES_ENVIRONMENT) =>
+            {
+                "sales_environment.invalid"
+            }
+            case Some(AvailabilityRequestHeaders.COUNTRY_CODE_KEY) =>
+            {
+                "country_code.invalid"
+            }
+            case Some(AvailabilityRequestHeaders.RATE_OPTION) =>
+            {
+                "rate_option.invalid"
+            }
+            case Some(AvailabilityRequestHeaders.SORT_TYPE) =>
+            {
+                "sort_type.invalid"
+            }
+            case _ =>
+            {
+                throw new RuntimeException("No message configured for field" + fieldName)
+            }
+        }
+    }
+
     def createForUnsupportedInput(fieldName: String): Option[EPSErrorResponse] =
     {
-        val responseErrorType: String = s"$fieldName.not_supported"
+        val responseErrorType: String = _createErrorTypeForUnsupportedInput(fieldName)
         val responseErrorMessage: String = _createErrorMessageForUnsupportedInput(fieldName)
 
         Some(new EPSErrorResponse(
@@ -65,6 +103,27 @@ object EPSErrorResponseBuilder extends EPSErrorResponse
             {
                 "Sales Channel is required.  Accepted sales_channel values are: [website, agent_tool, mobile_app, mobile_web, cache, meta]."
             }
+            case Some(AvailabilityRequestHeaders.LANGUAGE_CODE_KEY) =>
+            {
+                "Language code is required."
+            }
+            case Some(AvailabilityRequestHeaders.COUNTRY_CODE_KEY) =>
+            {
+                "Country code is required."
+            }
+            case Some(AvailabilityRequestHeaders.OCCUPANCY_KEY) =>
+            {
+                "Occupancy is required."
+            }
+            case Some(AvailabilityRequestHeaders.SALES_ENVIRONMENT) =>
+            {
+                "Sales Environment is required.  Accepted sales_environment values are: [hotel_only, hotel_package, loyalty]."
+            }
+            case Some(AvailabilityRequestHeaders.SORT_TYPE) =>
+            {
+                "Sort Type is required.  Accepted sort_type values are: [preferred]."
+            }
+
             case _ =>
             {
                 s"$fieldName is required."
@@ -78,16 +137,37 @@ object EPSErrorResponseBuilder extends EPSErrorResponse
         {
             case Some(AvailabilityRequestHeaders.CURRENCY_CODE_KEY) =>
             {
-                "Currency is not supported. Supported currencies are: [AED, ARS, AUD, BRL, CAD, CHF, CNY, DKK, EGP, EUR, GBP, HKD, IDR, ILS, INR, JPY, KRW, MXN, MYR, NOK, NZD, PHP, PLN, RUB, SAR, SEK, SGD, THB, TRY, TWD, USD, VND, ZAR]."
+                "Currency is not supported. Supported currencies are: [AED, ARS, AUD, BRL, CAD, CHF, CNY, DKK, EGP, EUR, GBP, HKD, IDR, ILS, INR, JPY, KRW, MXN, MYR, NOK, NZD, PHP, PLN, RUB, SAR, SEK, SGD, THB, TRY, TWD, USD, VND, ZAR]"
             }
             case Some(AvailabilityRequestHeaders.LANGUAGE_CODE_KEY) =>
             {
                 "Language is not supported. Supported languages are: [ar-SA, cs-CZ, da-DK, de-DE, el-GR, en-US, es-ES, es-MX, fi-FI, fr-CA, fr-FR, hr-HR, hu-HU, id-ID, is-IS, it-IT, ja-JP, ko-KR, lt-LT, ms-MY, nb-NO, nl-NL, pl-PL, pt-BR, pt-PT, ru-RU, sk-SK, sv-SE, th-TH, tr-TR, uk-UA, vi-VN, zh-CN, zh-TW]"
             }
+            case Some(AvailabilityRequestHeaders.SALES_CHANNEL) =>
+            {
+                "Sales Channel is invalid.  Accepted sales_channel values are: [website, agent_tool, mobile_app, mobile_web, cache, meta]."
+            }
             case Some(AvailabilityRequestHeaders.SALES_ENVIRONMENT) =>
             {
-                "Sales Environment is required.  Accepted sales_environment values are: [hotel_only, hotel_package, loyalty]."
+                "Sales Environment is invalid.  Accepted sales_environment values are: [hotel_only, hotel_package, loyalty]."
             }
+            case Some(AvailabilityRequestHeaders.COUNTRY_CODE_KEY) =>
+            {
+                "Country code is invalid."
+            }
+            case Some(AvailabilityRequestHeaders.RATE_OPTION) =>
+            {
+                "Rate Option is invalid.  Accepted rate_option values are: [net_rates, closed_user_group]."
+            }
+//            case Some(AvailabilityRequestHeaders.FILTER) =>
+//            {
+//                "Filter is invalid. Accepted filter values are: [refundable, expedia_collect, property_collect]."
+//            }
+            case Some(AvailabilityRequestHeaders.SORT_TYPE) =>
+            {
+                "Sort Type is invalid.  Accepted sort_type values are: [preferred]."
+            }
+
             case _ =>
             {
                 throw new RuntimeException("No message configured for field" + fieldName)

@@ -20,7 +20,7 @@ class ResponseErrorFields
     {
         this()
         errorType = "querystring"
-        value = "null"
+       // value = "null"
         name = p_name
     }
 

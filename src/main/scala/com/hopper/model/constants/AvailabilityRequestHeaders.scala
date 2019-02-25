@@ -12,6 +12,8 @@ object AvailabilityRequestHeaders extends Enumeration
     val SALES_CHANNEL = Value("sales_channel")
     val SALES_ENVIRONMENT = Value("sales_environment")
     val SORT_TYPE = Value("sort_type")
+    val RATE_OPTION = Value("rate_option")
+//    val FILTER = Value("filter")
 
     def withNameOpt(s: String): Option[Value] = values.find(_.toString == s)
 }

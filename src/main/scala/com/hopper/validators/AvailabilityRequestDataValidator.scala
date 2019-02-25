@@ -1,11 +1,14 @@
 package com.hopper.validators
 
+import java.sql.Date
+import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.time.{Duration, LocalDate}
 import java.util
 
 import com.hopper.model.constants.{AvailabilityRequestHeaders, EPSResponseErrorType}
 import com.hopper.commons.eps.model.error.{EPSErrorResponse, EPSErrorResponseBuilder, ResponseError, ResponseErrorFields}
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException
 import com.twitter.finagle.http.{Request, Status}
 import org.apache.commons.collections.CollectionUtils
 import org.apache.commons.lang.StringUtils
@@ -20,6 +23,8 @@ object AvailabilityRequestDataValidator extends RequestValidator
 {
     def validate(request: Request): Option[(HttpResponseStatus, EPSErrorResponse)] =
     {
+        println("Values"+AvailabilityRequestHeaders.values)
+
         for (header <- AvailabilityRequestHeaders.values)
         {
             val errorResponse: Option[EPSErrorResponse] = _validateMissingOrBlank(request, header.toString)
@@ -54,6 +59,36 @@ object AvailabilityRequestDataValidator extends RequestValidator
         }
 
         errorResponse = LanguageCodeValidator.validate(request)
+        if (errorResponse.isDefined)
+        {
+            return Some(Status.BadRequest, errorResponse.get)
+        }
+        errorResponse = CountryCodeValidator.validate(request)
+        if (errorResponse.isDefined)
+        {
+            return Some(Status.BadRequest, errorResponse.get)
+        }
+        errorResponse = SalesChannelValidator.validate(request)
+        if (errorResponse.isDefined)
+        {
+            return Some(Status.BadRequest, errorResponse.get)
+        }
+        errorResponse = SalesEnvironmentValidator.validate(request)
+        if (errorResponse.isDefined)
+        {
+            return Some(Status.BadRequest, errorResponse.get)
+        }
+//        errorResponse = FilterValidator.validate(request)
+//        if (errorResponse.isDefined)
+//        {
+//            return Some(Status.BadRequest, errorResponse.get)
+//        }
+        errorResponse = RateOptionValidator.validate(request)
+        if (errorResponse.isDefined)
+        {
+            return Some(Status.BadRequest, errorResponse.get)
+        }
+        errorResponse = SortTypeValidator.validate(request)
         if (errorResponse.isDefined)
         {
             return Some(Status.BadRequest, errorResponse.get)
@@ -113,10 +148,11 @@ object AvailabilityRequestDataValidator extends RequestValidator
 
                 if (adultsCount > 8)
                 {
+                    // TODO: Add value to error response
                     val responseError: ResponseError = new ResponseError(
-                        "number_of_occupancies.invalid_above_maximum",
+                        "number_of_adults.invalid_above_maximum",
                         "Number of occupancies must be less than 9.",
-                        new ResponseErrorFields("occupancy", adultsCount.toString))
+                        new ResponseErrorFields("occupancy"))
 
                     return Some(new EPSErrorResponse(EPSResponseErrorType.INVALID_INPUT, responseError))
                 }
@@ -124,7 +160,7 @@ object AvailabilityRequestDataValidator extends RequestValidator
                 if (adultsCount == 0)
                 {
                     val responseError: ResponseError = new ResponseError(
-                        "number_of_occupancies.invalid_below_minimum",
+                        "number_of_adults.invalid_below_minimum",
                         "Number of adults must be greater than 0.",
                         new ResponseErrorFields("occupancy", adultsCount.toString))
 
@@ -139,8 +175,7 @@ object AvailabilityRequestDataValidator extends RequestValidator
                         val responseError: ResponseError = new ResponseError(
                             "child_age.invalid_outside_accepted_range",
                             "Child age must be between 0 and 17.",
-                            new ResponseErrorFields("occupancy", invalidChildrenAge.toString))
-
+                            new ResponseErrorFields("occupancy"))
                         return Some(new EPSErrorResponse(EPSResponseErrorType.INVALID_INPUT, responseError))
                     }
                 }
@@ -150,15 +185,56 @@ object AvailabilityRequestDataValidator extends RequestValidator
         None
     }
 
+    def _validateDateFormat(value: String): Boolean = {
+        var date :util.Date = null
+        var sdf: SimpleDateFormat  = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            date = sdf.parse(value)
+
+            if (!value.equals(sdf.format(date))) {
+                date = null
+            }
+        } catch {
+            case e:ParseException => e.printStackTrace()
+        }
+        if(date==null) false else true
+    }
+
     def _validateStayInfo(request: Request): Option[EPSErrorResponse] =
     {
         val checkinParam: String = request.getParam(AvailabilityRequestHeaders.CHECKIN_PARAM_KEY.toString)
         val checkoutParam: String = request.getParam(AvailabilityRequestHeaders.CHECKOUT_PARAM_KEY.toString)
 
+        var isCheckinValid:Boolean  = _validateDateFormat(checkinParam)
+        var isCheckoutValid:Boolean = _validateDateFormat(checkoutParam)
+
+        if(!isCheckinValid)
+        {
+            println("Valid: "+isCheckinValid)
+            val responseError: ResponseError = new ResponseError(
+                "checkin.invalid_date_format",
+                "Invalid checkin format. " +
+                  "It must be formatted in ISO 8601 (YYYY-mm-dd) http://www.iso.org/iso/catalogue_detail?csnumber=40874.",
+                new ResponseErrorFields("checkin", checkinParam))
+
+            return Some(new EPSErrorResponse(EPSResponseErrorType.INVALID_INPUT, responseError))
+        }
+        if(!isCheckoutValid)
+        {
+            val responseError: ResponseError = new ResponseError(
+                "checkout.invalid_date_format",
+                "Invalid checkout format. " +
+                  "It must be formatted in ISO 8601 (YYYY-mm-dd) http://www.iso.org/iso/catalogue_detail?csnumber=40874.",
+                new ResponseErrorFields("checkout", checkinParam))
+
+            return Some(new EPSErrorResponse(EPSResponseErrorType.INVALID_INPUT, responseError))
+        }
+
         val differenceInDays: Long = Duration.between(
             LocalDate.now().atStartOfDay(),
             LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse(checkinParam)).atStartOfDay()
         ).toDays
+
 
         if (differenceInDays < 0)
         {
