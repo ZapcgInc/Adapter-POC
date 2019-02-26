@@ -94,6 +94,6 @@ This class demonstrates one way of doing dependency injection in scala using sca
 
 4. sbt docker:publish
 
-6. 
+6. select 2.1, get swagger-spec for eps
 
-
+7. Add version to the Finagle url, /2.1/properties/availability
