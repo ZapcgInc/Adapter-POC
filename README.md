@@ -15,6 +15,7 @@ val response = zttpClient.execute(GetReq("http://www.google.com"))
 val response = zttpClient.execute(GetReq("http://www.google.com"),("Accept","application/json"),("Authorization","mykeysecret"))
 
 ```
+Other request type are supported
 
 
 ## zap.framework.json
@@ -46,6 +47,8 @@ zaperties.opt[String]("my.key")  //returns None if key not found
 zaperties.get[String]("my.key","my.val") //returns my.val if key not found
 
 ```
+Properties can be read from env vars, sys props, property files like typesafe config, etc.  The precendence of property loading can also be controlled.
+
 
 ## zap.framework.xml
 This package provides a trait that you can extend to enable a consisten contract for xml ser/de. It also provides basic
@@ -72,14 +75,25 @@ This layer calls the agoda rest api client sdk.
 This layer is responsible for dealing with making http client calls to the Agoda service. The input to this layer is the
 Agoda domain, and the output is Either Agoda domain or HttpResonse.  The framework http client used in this layer, will allow
 us to mock out the http calls to Agoda and create a rich set of automated tests. That can test all possible success and
-failure scenarios.
+failure scenarios.  The Agoda domain is built with case classes.
 
 ## Transformation Layer
 This layer is invoked by the service layer. It is responsible to transform the Agoda domain into EPS Domain.  This layer is only
 aware of these two domains.
 
+## HaiFactory
+This class demonstrates one way of doing dependency injection in scala using scala features like traits and lazy vals.
 
 
 
+1. hopper.framework
+
+2. com.hopper.adapter.server, {finale, controller, services, eps}
+
+3. com.hopper.agoda{models, transfomers, rest client.}
+
+4. sbt docker:publish
+
+6. 
 
 

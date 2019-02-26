@@ -4,7 +4,6 @@ import com.twitter.finagle.http.HttpMuxer
 import com.twitter.server.TwitterServer
 import com.twitter.util.Await
 import com.zap.hai.HaiFactoryDefault
-import com.zap.hai.finch.routes.Routes
 
 object HaiTwitterServer extends TwitterServer  {
 

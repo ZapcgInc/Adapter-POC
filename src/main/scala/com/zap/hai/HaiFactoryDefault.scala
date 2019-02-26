@@ -12,7 +12,7 @@ import zap.framework.httpclient.{ZapHttpApacheClient, ZapHttpClient, ZapHttpRequ
 
 trait HaiFactoryDefault extends HaiFactory { self =>
 
-  override val httpClient: ZapHttpClient = new ZapHttpApacheClient {
+  override lazy val httpClient: ZapHttpClient = new ZapHttpApacheClient {
     override val apacheClient: CloseableHttpClient = HttpClients.createDefault()
   }
 

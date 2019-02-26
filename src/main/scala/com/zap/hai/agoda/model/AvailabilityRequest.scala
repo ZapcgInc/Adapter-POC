@@ -2,16 +2,18 @@ package com.zap.hai.agoda.model
 
 import zap.framework.xml.XmlSupport
 
+import scala.collection.mutable.ArrayBuffer
 import scala.xml.{Elem, Node}
+
 
 case class AvailabilityRequest(siteId: String, apiKey: String, requestType: Option[Int], id: String, propertyIds: String,
                                checkInDate: String, checkOutDate:String, roomCount : Int, adultCount:Int,
-                               childrenAges:List[Int])
+                               childrenAges:List[Int], language:String, currency:String, occypancy : List[String])
 
 object AvailabilityRequest extends XmlSupport[AvailabilityRequest] {
 
   override def fromXml(node: Node): AvailabilityRequest = {
-    val siteId = (node \@  "siteId")
+    val siteId: String = (node \@  "siteId")
     val apiKey = (node \@ "apiKey")
     val `type` = (node \ "Type")
     val id = (node \ "Id")
@@ -45,6 +47,8 @@ object AvailabilityRequest extends XmlSupport[AvailabilityRequest] {
           <Children>0</Children>
         }
       }
+      <Language>{ar.language}</Language>
+      <Currency>{ar.currency}</Currency>
     </AvailabilityRequestV2>
   }
 
@@ -62,7 +66,10 @@ class AvailabityRequestBuilder(){
   var checkOutDate:String = _
   var roomCount : Int = 0
   var adultCount:Int = 0
-  var  childrenAges:List[Int] = Nil
+  var childrenAges:List[Int] = Nil
+  var language:String = _
+  var currency:String = _
+  var occupancy : ArrayBuffer[String] = ArrayBuffer()
 
 
   def withSiteId(siteId:String) = {
@@ -81,7 +88,7 @@ class AvailabityRequestBuilder(){
 
 
   def build : AvailabilityRequest = {
-    AvailabilityRequest(siteId, apiKey, requestType,id,propertyIds,checkInDate,checkOutDate,roomCount,adultCount,childrenAges)
+    AvailabilityRequest(siteId, apiKey, requestType,id,propertyIds,checkInDate,checkOutDate,roomCount,adultCount,childrenAges,language, currency, occupancy.toList)
   }
 
 }
