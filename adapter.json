@@ -5,7 +5,7 @@
       "image": "saiteja50/adapterv3",
       "network": "BRIDGE",
       "portMappings": [
-        { "containerPort": 7001, "hostPort": 0, "protocol": "tcp" }
+        { "containerPort": 7001, "hostPort": 31074, "protocol": "tcp" }
 	
       ]
     }

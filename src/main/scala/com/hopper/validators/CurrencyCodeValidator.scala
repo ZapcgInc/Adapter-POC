@@ -2,7 +2,7 @@ package com.hopper.validators
 import com.hopper.commons.eps.model.error.EPSErrorResponse
 import com.twitter.finagle.http.Request
 import com.hopper.commons.eps.model.error.EPSErrorResponseBuilder
-import com.hopper.model.constants.AvailabilityRequestHeaders
+import com.hopper.model.constants.AvailabilityRequestParams
 
 object CurrencyCodeValidator
 {
@@ -12,11 +12,11 @@ object CurrencyCodeValidator
 
     def validate(request: Request): Option[EPSErrorResponse] =
     {
-        val currencyCode:String = request.getParam(AvailabilityRequestHeaders.CURRENCY_CODE_KEY.toString)
+        val currencyCode:String = request.getParam(AvailabilityRequestParams.CURRENCY_CODE_KEY.toString)
 
         if (!VALID_CURRENCY_CODES.contains(currencyCode))
         {
-            return Some(EPSErrorResponseBuilder.createForUnsupportedInput(AvailabilityRequestHeaders.CURRENCY_CODE_KEY.toString).get)
+            return Some(EPSErrorResponseBuilder.createForUnsupportedInput(AvailabilityRequestParams.CURRENCY_CODE_KEY.toString).get)
         }
 
         None

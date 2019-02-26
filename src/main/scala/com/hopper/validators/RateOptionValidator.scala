@@ -1,8 +1,7 @@
 package com.hopper.validators
-import com.hopper.commons.eps.model.error.EPSErrorResponse
+import com.hopper.commons.eps.model.error.{EPSErrorResponse, EPSErrorResponseBuilder}
+import com.hopper.model.constants.AvailabilityRequestParams
 import com.twitter.finagle.http.Request
-import com.hopper.commons.eps.model.error.EPSErrorResponseBuilder
-import com.hopper.model.constants.AvailabilityRequestHeaders
 
 object RateOptionValidator
 {
@@ -10,11 +9,11 @@ object RateOptionValidator
 
   def validate(request: Request): Option[EPSErrorResponse] =
   {
-    val rateOptions:String = request.getParam(AvailabilityRequestHeaders.RATE_OPTION.toString)
+    val rateOptions:String = request.getParam(AvailabilityRequestParams.RATE_OPTION.toString)
 
-    if (!VALID_RATE_OPTION.contains(rateOptions))
+    if (rateOptions!=null && !VALID_RATE_OPTION.contains(rateOptions))
     {
-      return Some(EPSErrorResponseBuilder.createForUnsupportedInput(AvailabilityRequestHeaders.RATE_OPTION.toString).get)
+      return Some(EPSErrorResponseBuilder.createForUnsupportedInput(AvailabilityRequestParams.RATE_OPTION.toString).get)
     }
 
     None

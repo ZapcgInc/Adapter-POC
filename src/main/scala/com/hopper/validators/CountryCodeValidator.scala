@@ -2,7 +2,7 @@ package com.hopper.validators
 import com.hopper.commons.eps.model.error.EPSErrorResponse
 import com.twitter.finagle.http.Request
 import com.hopper.commons.eps.model.error.EPSErrorResponseBuilder
-import com.hopper.model.constants.AvailabilityRequestHeaders
+import com.hopper.model.constants.AvailabilityRequestParams
 
 object CountryCodeValidator
 {
@@ -12,11 +12,11 @@ object CountryCodeValidator
 
   def validate(request: Request): Option[EPSErrorResponse] =
   {
-    val countryCode:String = request.getParam(AvailabilityRequestHeaders.COUNTRY_CODE_KEY.toString)
+    val countryCode:String = request.getParam(AvailabilityRequestParams.COUNTRY_CODE_KEY.toString)
 
     if (!VALID_COUNTRY_CODE.contains(countryCode))
     {
-      return Some(EPSErrorResponseBuilder.createForUnsupportedInput(AvailabilityRequestHeaders.COUNTRY_CODE_KEY.toString).get)
+      return Some(EPSErrorResponseBuilder.createForUnsupportedInput(AvailabilityRequestParams.COUNTRY_CODE_KEY.toString).get)
     }
 
     None

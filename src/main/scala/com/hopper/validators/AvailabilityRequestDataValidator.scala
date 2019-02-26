@@ -6,8 +6,9 @@ import java.time.format.DateTimeFormatter
 import java.time.{Duration, LocalDate}
 import java.util
 
-import com.hopper.model.constants.{AvailabilityRequestHeaders, EPSResponseErrorType}
+import com.hopper.model.constants.{AvailabilityRequestParams, EPSResponseErrorType}
 import com.hopper.commons.eps.model.error.{EPSErrorResponse, EPSErrorResponseBuilder, ResponseError, ResponseErrorFields}
+import com.hopper.model.constants
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException
 import com.twitter.finagle.http.{Request, Status}
 import org.apache.commons.collections.CollectionUtils
@@ -23,11 +24,16 @@ object AvailabilityRequestDataValidator extends RequestValidator
 {
     def validate(request: Request): Option[(HttpResponseStatus, EPSErrorResponse)] =
     {
-        println("Values"+AvailabilityRequestHeaders.values)
-
-        for (header <- AvailabilityRequestHeaders.values)
+        println("Values"+AvailabilityRequestParams.values)
+        
+        val mandatoryParams = List(AvailabilityRequestParams.PROPERTY_ID,AvailabilityRequestParams.CURRENCY_CODE_KEY,
+            AvailabilityRequestParams.LANGUAGE_CODE_KEY,AvailabilityRequestParams.OCCUPANCY_KEY,AvailabilityRequestParams.SALES_CHANNEL,
+            AvailabilityRequestParams.SALES_ENVIRONMENT,AvailabilityRequestParams.CHECKIN_PARAM_KEY,AvailabilityRequestParams.CHECKOUT_PARAM_KEY,
+            AvailabilityRequestParams.SORT_TYPE,AvailabilityRequestParams.COUNTRY_CODE_KEY)
+        
+        for (param <- mandatoryParams)
         {
-            val errorResponse: Option[EPSErrorResponse] = _validateMissingOrBlank(request, header.toString)
+            val errorResponse: Option[EPSErrorResponse] = _validateMissingOrBlank(request, param.toString)
             if (errorResponse.isDefined)
             {
                 return Some(Status.BadRequest, errorResponse.get)
@@ -78,11 +84,11 @@ object AvailabilityRequestDataValidator extends RequestValidator
         {
             return Some(Status.BadRequest, errorResponse.get)
         }
-//        errorResponse = FilterValidator.validate(request)
-//        if (errorResponse.isDefined)
-//        {
-//            return Some(Status.BadRequest, errorResponse.get)
-//        }
+        errorResponse = FilterValidator.validate(request)
+        if (errorResponse.isDefined)
+        {
+            return Some(Status.BadRequest, errorResponse.get)
+        }
         errorResponse = RateOptionValidator.validate(request)
         if (errorResponse.isDefined)
         {
@@ -100,6 +106,7 @@ object AvailabilityRequestDataValidator extends RequestValidator
     def _validateMissingOrBlank(request: Request, header: String): Option[EPSErrorResponse] =
     {
         val headerValues: util.List[String] = request.getParams(header.toString)
+        println("Headers"+headerValues)
         if (CollectionUtils.isEmpty(headerValues))
         {
             return Some(EPSErrorResponseBuilder.createForMissingInput(header.toString).get)
@@ -117,7 +124,7 @@ object AvailabilityRequestDataValidator extends RequestValidator
 
     def _validatePropertyID(request: Request): Option[EPSErrorResponse] =
     {
-        if (request.getParams(AvailabilityRequestHeaders.PROPERTY_ID.toString).size() > 250)
+        if (request.getParams(AvailabilityRequestParams.PROPERTY_ID.toString).size() > 250)
         {
             val responseError: ResponseError = new ResponseError(
                 "property_id.above_maximum",
@@ -133,13 +140,13 @@ object AvailabilityRequestDataValidator extends RequestValidator
     def _validateOccupancy(request: Request): Option[EPSErrorResponse] =
     {
 
-        val countNonBlankOccupancy: Int = request.getParams(AvailabilityRequestHeaders.OCCUPANCY_KEY.toString).count(StringUtils.isNotBlank)
+        val countNonBlankOccupancy: Int = request.getParams(AvailabilityRequestParams.OCCUPANCY_KEY.toString).count(StringUtils.isNotBlank)
         if (countNonBlankOccupancy == 0)
         {
-            return Some(EPSErrorResponseBuilder.createForMissingInput(AvailabilityRequestHeaders.OCCUPANCY_KEY.toString).get)
+            return Some(EPSErrorResponseBuilder.createForMissingInput(AvailabilityRequestParams.OCCUPANCY_KEY.toString).get)
         }
 
-        for (occupancy: String <- request.getParams(AvailabilityRequestHeaders.OCCUPANCY_KEY.toString))
+        for (occupancy: String <- request.getParams(AvailabilityRequestParams.OCCUPANCY_KEY.toString))
         {
             if (StringUtils.isNotBlank(occupancy))
             {
@@ -202,8 +209,8 @@ object AvailabilityRequestDataValidator extends RequestValidator
 
     def _validateStayInfo(request: Request): Option[EPSErrorResponse] =
     {
-        val checkinParam: String = request.getParam(AvailabilityRequestHeaders.CHECKIN_PARAM_KEY.toString)
-        val checkoutParam: String = request.getParam(AvailabilityRequestHeaders.CHECKOUT_PARAM_KEY.toString)
+        val checkinParam: String = request.getParam(AvailabilityRequestParams.CHECKIN_PARAM_KEY.toString)
+        val checkoutParam: String = request.getParam(AvailabilityRequestParams.CHECKOUT_PARAM_KEY.toString)
 
         var isCheckinValid:Boolean  = _validateDateFormat(checkinParam)
         var isCheckoutValid:Boolean = _validateDateFormat(checkoutParam)

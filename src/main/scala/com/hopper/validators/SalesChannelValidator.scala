@@ -2,7 +2,7 @@ package com.hopper.validators
 import com.hopper.commons.eps.model.error.EPSErrorResponse
 import com.twitter.finagle.http.Request
 import com.hopper.commons.eps.model.error.EPSErrorResponseBuilder
-import com.hopper.model.constants.AvailabilityRequestHeaders
+import com.hopper.model.constants.AvailabilityRequestParams
 
 object SalesChannelValidator
 {
@@ -10,11 +10,11 @@ object SalesChannelValidator
 
   def validate(request: Request): Option[EPSErrorResponse] =
   {
-    val rateOptions:String = request.getParam(AvailabilityRequestHeaders.SALES_CHANNEL.toString)
+    val rateOptions:String = request.getParam(AvailabilityRequestParams.SALES_CHANNEL.toString)
 
     if (!VALID_SALES_CHANNEL.contains(rateOptions))
     {
-      return Some(EPSErrorResponseBuilder.createForUnsupportedInput(AvailabilityRequestHeaders.SALES_CHANNEL.toString).get)
+      return Some(EPSErrorResponseBuilder.createForUnsupportedInput(AvailabilityRequestParams.SALES_CHANNEL.toString).get)
     }
 
     None

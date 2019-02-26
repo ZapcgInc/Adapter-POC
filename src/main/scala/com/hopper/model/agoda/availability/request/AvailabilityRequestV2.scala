@@ -4,7 +4,7 @@ import java.io.StringWriter
 
 import com.hopper.converter.href.PreBookHrefBuilder.PriceCheckToken
 import com.hopper.model.agoda.availability.request.constants.AgodaAvailabilityRequestType
-import com.hopper.model.constants.AvailabilityRequestHeaders
+import com.hopper.model.constants.AvailabilityRequestParams
 import com.twitter.finagle.http.Request
 import javax.xml.bind.annotation.{XmlElement, _}
 import javax.xml.bind.{JAXBContext, JAXBException, Marshaller}
@@ -93,28 +93,28 @@ class AvailabilityRequestV2
         {
             val k = entry.getKey
             val v = entry.getValue
-            AvailabilityRequestHeaders.withNameOpt(k) match
+            AvailabilityRequestParams.withNameOpt(k) match
             {
-                case Some(AvailabilityRequestHeaders.CHECKIN_PARAM_KEY) =>
+                case Some(AvailabilityRequestParams.CHECKIN_PARAM_KEY) =>
                 {
                     checkInDate = v
                 }
 
-                case Some(AvailabilityRequestHeaders.CHECKOUT_PARAM_KEY) =>
+                case Some(AvailabilityRequestParams.CHECKOUT_PARAM_KEY) =>
                 {
                     checkOutDate = v
                 }
-                case Some(AvailabilityRequestHeaders.CURRENCY_CODE_KEY) =>
+                case Some(AvailabilityRequestParams.CURRENCY_CODE_KEY) =>
                 {
                     currency = v
                 }
 
-                case Some(AvailabilityRequestHeaders.LANGUAGE_CODE_KEY) =>
+                case Some(AvailabilityRequestParams.LANGUAGE_CODE_KEY) =>
                 {
                     language = v.toLowerCase()
                 }
 
-                case Some(AvailabilityRequestHeaders.OCCUPANCY_KEY) =>
+                case Some(AvailabilityRequestParams.OCCUPANCY_KEY) =>
                 {
                     occupancies = v :: occupancies
                     _populateOccupancy(v)
@@ -133,7 +133,7 @@ class AvailabilityRequestV2
     def _populatePropertyID(request: Request): Unit =
     {
         import com.hopper.model.agoda.availability.request.constants.AgodaAvailabilityRequestType
-        val requestPropertyIds: List[String] = request.getParams(AvailabilityRequestHeaders.PROPERTY_ID.toString)
+        val requestPropertyIds: List[String] = request.getParams(AvailabilityRequestParams.PROPERTY_ID.toString)
           .filter(p => StringUtils.isNotBlank(p))
           .toList
 

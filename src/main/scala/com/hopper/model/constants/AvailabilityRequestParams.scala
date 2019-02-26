@@ -1,6 +1,6 @@
 package com.hopper.model.constants
 
-object AvailabilityRequestHeaders extends Enumeration
+object AvailabilityRequestParams extends Enumeration
 {
     val CHECKIN_PARAM_KEY = Value("checkin")
     val CHECKOUT_PARAM_KEY = Value("checkout")
@@ -13,7 +13,7 @@ object AvailabilityRequestHeaders extends Enumeration
     val SALES_ENVIRONMENT = Value("sales_environment")
     val SORT_TYPE = Value("sort_type")
     val RATE_OPTION = Value("rate_option")
-//    val FILTER = Value("filter")
+    val FILTER = Value("filter")
 
     def withNameOpt(s: String): Option[Value] = values.find(_.toString == s)
 }

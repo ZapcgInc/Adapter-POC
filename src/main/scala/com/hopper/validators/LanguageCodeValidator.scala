@@ -1,6 +1,6 @@
 package com.hopper.validators
 
-import com.hopper.model.constants.AvailabilityRequestHeaders
+import com.hopper.model.constants.AvailabilityRequestParams
 import com.hopper.commons.eps.model.error.{EPSErrorResponse, EPSErrorResponseBuilder}
 import com.twitter.finagle.http.Request
 
@@ -13,11 +13,11 @@ object LanguageCodeValidator
 
     def validate(request: Request): Option[EPSErrorResponse] =
     {
-        val languageCode: String = request.getParam(AvailabilityRequestHeaders.LANGUAGE_CODE_KEY.toString)
+        val languageCode: String = request.getParam(AvailabilityRequestParams.LANGUAGE_CODE_KEY.toString)
 
         if (!VALID_LANGUAGE_CODES.contains(languageCode))
         {
-            return Some(EPSErrorResponseBuilder.createForUnsupportedInput(AvailabilityRequestHeaders.LANGUAGE_CODE_KEY.toString).get)
+            return Some(EPSErrorResponseBuilder.createForUnsupportedInput(AvailabilityRequestParams.LANGUAGE_CODE_KEY.toString).get)
         }
 
         None
