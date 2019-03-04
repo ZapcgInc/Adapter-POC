@@ -15,6 +15,8 @@ import com.hopper.commons.eps.model.prebook.Links
   */
 class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: AvailabilityLongResponseV2)
 {
+    var totalPriceInclusive : Double = 0
+    var totalPriceExclusive : Double = 0
     def convertToEPSResponse(): EPSShoppingResponse =
     {
         val propertyList: Array[PropertyAvailability] = response.hotels.map{hotel =>
@@ -102,13 +104,15 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
         val roomPrice: PropertyAvailabilityRoomRates = new PropertyAvailabilityRoomRates
 
         roomPrice.nightlyPrice = _populateNightlyPrice(r)
-        roomPrice.totals = _populateTotals(r)
+
 
         _populateSurcharges(r).foreach(surcharge =>
         {
             roomPrice.stayPrice = surcharge._1
             roomPrice.fees = surcharge._2
         })
+
+        roomPrice.totals = _populateTotals(r)
 
         // return immutable Map.
         var occupancyMap: scala.collection.mutable.Map[String, PropertyAvailabilityRoomRates] = scala.collection.mutable.Map[String, PropertyAvailabilityRoomRates]()
@@ -123,11 +127,21 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
     def _populateNightlyPrice(r: Room): List[List[PropertyAvailabilityPrice]] =
     {
         val lengthOfStay: Int = _calculateLengthOfStay(request)
+        val base_rate = r.rateInfo.rate.exclusive
+        println("base rate"+base_rate)
+        val base_rate_temp = base_rate*1.1111
+        val new_base_rate = Math.round(base_rate_temp*100.0) / 100.0
 
+        val tax_and_service_fee = r.rateInfo.rate.fees+r.rateInfo.rate.tax
+        println("new base rate"+new_base_rate)
         val priceList = List(
-            new PropertyAvailabilityPrice("base_rate", r.rateInfo.rate.exclusive, r.currency),
-            new PropertyAvailabilityPrice("sales_tax", r.rateInfo.rate.tax, r.currency),
-            new PropertyAvailabilityPrice("tax_and_service_fee", r.rateInfo.rate.fees, r.currency))
+            new PropertyAvailabilityPrice("base_rate", new_base_rate, r.currency),
+//            new PropertyAvailabilityPrice("sales_tax", r.rateInfo.rate.tax, r.currency),
+            new PropertyAvailabilityPrice("tax_and_service_fee", r.rateInfo.rate.fees+r.rateInfo.rate.tax, r.currency))
+
+        totalPriceInclusive = (new_base_rate+tax_and_service_fee)*lengthOfStay
+
+        totalPriceExclusive =new_base_rate * lengthOfStay
 
         List.fill(lengthOfStay)(priceList)
     }
@@ -146,25 +160,31 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
         {
             var stayPrices: Array[PropertyAvailabilityPrice] = null
             var fees: Array[PropertyAvailabilityPrice] = null
-            println("Surcharges",r.rateInfo.surcharges.toString)
+
             for (surcharge <- r.rateInfo.surcharges)
             {
                 if (surcharge.charge != null)
                 {
                     if (surcharge.charge.equals("Excluded"))
                     {
+                        val taxAndServiceFee = surcharge.rate.tax +surcharge.rate.fees
                         fees = Array(
                             new PropertyAvailabilityPrice("mandatory_fee", surcharge.rate.exclusive, r.currency),
-                            new PropertyAvailabilityPrice("mandatory_tax", surcharge.rate.tax, r.currency)
+                            new PropertyAvailabilityPrice("tax_and_service_fee", taxAndServiceFee, r.currency)
                         )
                     }
                     else
                     {
+                        val taxAndServiceFee = surcharge.rate.tax+surcharge.rate.fees
+                        val propertyFee = surcharge.rate.exclusive
                         stayPrices = Array(
-                            new PropertyAvailabilityPrice("Property_fee", surcharge.rate.exclusive, r.currency),
-                            new PropertyAvailabilityPrice("sales_tax", surcharge.rate.tax, r.currency)
+                            new PropertyAvailabilityPrice("Property_fee", propertyFee, r.currency),
+                            new PropertyAvailabilityPrice("tax_and_service_fee", taxAndServiceFee, r.currency)
                         )
+                        totalPriceInclusive = totalPriceInclusive + propertyFee + taxAndServiceFee
+                        println("totalsIfSurcharges"+totalPriceInclusive)
                     }
+
                 }
             }
 
@@ -181,7 +201,9 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
 
     def _populateInclusivePriceWithCurrency(r: Room): PropertyAvailabilityPriceWithCurrency =
     {
-        val inclusiveRate: Double = r.rateInfo.totalPaymentAmount.inclusive
+        //val inclusiveRate: Double = r.rateInfo.totalPaymentAmount.inclusive
+        val inclusiveRate: Double = Math.round(totalPriceInclusive * 100.0) / 100.0
+        println("totalPriceInclusive"+inclusiveRate)
         new PropertyAvailabilityPriceWithCurrency(
             new PropertyAvailabilityPrice(inclusiveRate, r.currency),
             new PropertyAvailabilityPrice(inclusiveRate, r.currency)
@@ -190,8 +212,9 @@ class AvailabilityResponseConverter(request: AvailabilityRequestV2, response: Av
 
     def _populateExclusivePriceWithCurrency(r: Room): PropertyAvailabilityPriceWithCurrency =
     {
-        val exclusiveRate: Double = r.rateInfo.totalPaymentAmount.exclusive
-
+       // val exclusiveRate: Double = r.rateInfo.totalPaymentAmount.exclusive
+       val exclusiveRate: Double = Math.round(totalPriceExclusive * 100.0) / 100.0
+        println("totalPriceExclusive"+exclusiveRate)
         new PropertyAvailabilityPriceWithCurrency(
             new PropertyAvailabilityPrice(exclusiveRate, r.currency),
             new PropertyAvailabilityPrice(exclusiveRate, r.currency)

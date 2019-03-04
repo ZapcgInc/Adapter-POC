@@ -106,7 +106,7 @@ object AvailabilityRequestDataValidator extends RequestValidator
     def _validateMissingOrBlank(request: Request, header: String): Option[EPSErrorResponse] =
     {
         val headerValues: util.List[String] = request.getParams(header.toString)
-        println("Headers"+headerValues)
+        //println("Headers"+headerValues)
         if (CollectionUtils.isEmpty(headerValues))
         {
             return Some(EPSErrorResponseBuilder.createForMissingInput(header.toString).get)
